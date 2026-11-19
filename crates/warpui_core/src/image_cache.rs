@@ -23,7 +23,16 @@ use crate::{Entity, SingletonEntity};
 
 const MIN_REFRESH_DELAY_MS: u32 = 50;
 
-static SVG_FONT_DB: LazyLock<Arc<usvg::fontdb::Database>> = LazyLock::new(|| {
+/// Font database for SVGs without text, which never consult fonts.
+static SVG_FALLBACK_FONT_DB: LazyLock<Arc<usvg::fontdb::Database>> = LazyLock::new(|| {
+    let mut fontdb = usvg::fontdb::Database::new();
+    load_svg_fallback_fonts(&mut fontdb);
+    Arc::new(fontdb)
+});
+
+/// Font database for SVGs with text. Built lazily because loading every system font maps hundreds
+/// of MB of font files into memory.
+static SVG_SYSTEM_FONT_DB: LazyLock<Arc<usvg::fontdb::Database>> = LazyLock::new(|| {
     let mut fontdb = usvg::fontdb::Database::new();
     fontdb.load_system_fonts();
     load_svg_fallback_fonts(&mut fontdb);
@@ -37,8 +46,12 @@ fn load_svg_fallback_fonts(fontdb: &mut usvg::fontdb::Database) {
     fontdb.set_sans_serif_family("Roboto");
 }
 
-pub fn prewarm_svg_font_db() {
-    LazyLock::force(&SVG_FONT_DB);
+fn svg_font_db(svg_data: &[u8]) -> Arc<usvg::fontdb::Database> {
+    if svg_data.windows(5).any(|window| window == b"<text") {
+        SVG_SYSTEM_FONT_DB.clone()
+    } else {
+        SVG_FALLBACK_FONT_DB.clone()
+    }
 }
 
 #[derive(EnumIter, Debug)]
@@ -276,7 +289,7 @@ impl Asset for ImageType {
         // if it's an SVG ourselves.
         if data.first() == Some(&b'<') {
             let options = usvg::Options {
-                fontdb: SVG_FONT_DB.clone(),
+                fontdb: svg_font_db(data),
                 ..Default::default()
             };
             let svg = Rc::new(usvg::Tree::from_data(data, &options)?);

@@ -45,23 +45,23 @@ impl ImportedConfigModel {
         use std::sync::Arc;
 
         use itertools::Itertools;
-        use strum::IntoEnumIterator;
         self.started = true;
+
+        let terminal_types = enabled_terminal_types().collect_vec();
+        // Loading every system font costs hundreds of MB, so skip it when nothing can be imported.
+        if terminal_types.is_empty() {
+            return;
+        }
 
         let loaded_system_fonts = warpui::fonts::Cache::handle(ctx)
             .update(ctx, |font_cache, ctx| font_cache.all_system_fonts(ctx));
-        ctx.spawn(loaded_system_fonts, |_, fonts, ctx| {
+        ctx.spawn(loaded_system_fonts, move |_, fonts, ctx| {
             let fonts = fonts
                 .into_iter()
                 .map(|(_family_id, font_info)| font_info)
                 .collect_vec();
             let fonts_ref = Arc::new(fonts);
-            for terminal_type in TerminalType::iter() {
-                if terminal_type == TerminalType::Alacritty
-                    && !FeatureFlag::AlacrittySettingsImport.is_enabled()
-                {
-                    continue;
-                }
+            for terminal_type in terminal_types {
                 let fonts_ref_clone = Arc::clone(&fonts_ref);
                 ctx.spawn(
                     async move {
@@ -241,16 +241,16 @@ impl ImportedConfigModel {
     }
 
     pub fn finished_searching_for_settings(&self) -> bool {
-        TerminalType::iter()
-            .filter(|terminal_type| {
-                if !FeatureFlag::AlacrittySettingsImport.is_enabled() {
-                    *terminal_type != TerminalType::Alacritty
-                } else {
-                    true
-                }
-            })
-            .all(|terminal| self.parsed_terminals.contains_key(&terminal))
+        enabled_terminal_types().all(|terminal| self.parsed_terminals.contains_key(&terminal))
     }
+}
+
+fn enabled_terminal_types() -> impl Iterator<Item = TerminalType> {
+    TerminalType::iter().filter(|terminal_type| match terminal_type {
+        TerminalType::Alacritty => FeatureFlag::AlacrittySettingsImport.is_enabled(),
+        #[cfg(target_os = "macos")]
+        TerminalType::ITerm => true,
+    })
 }
 
 impl Entity for ImportedConfigModel {
