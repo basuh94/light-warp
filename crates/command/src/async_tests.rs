@@ -203,4 +203,38 @@ mod windows {
             "grandchild {grandchild} survived the job handle being closed"
         );
     }
+
+    #[test]
+    fn output_collects_stdout_stderr_and_status() {
+        let output = block_on(
+            Command::new("cmd.exe")
+                .args(["/C", "echo out & echo err 1>&2 & exit 3"])
+                .output(),
+        )
+        .expect("runs");
+
+        assert_eq!(String::from_utf8_lossy(&output.stdout).trim(), "out");
+        assert_eq!(String::from_utf8_lossy(&output.stderr).trim(), "err");
+        assert_eq!(output.status.code(), Some(3));
+    }
+
+    #[test]
+    fn output_larger_than_the_pipe_buffer_on_both_streams_does_not_deadlock() {
+        // Writes ~1 MB to each stream, far beyond the OS pipe buffer, so both must be drained
+        // concurrently for the child to finish.
+        let script = "$line = 'x' * 1023; \
+                      foreach ($i in 1..1024) { [Console]::Out.WriteLine($line); \
+                      [Console]::Error.WriteLine($line) }";
+        let child = Command::new("powershell.exe")
+            .args(["-NoProfile", "-Command", script])
+            .spawn_for_output()
+            .expect("spawns");
+        assert_ne!(child.id(), 0);
+
+        let output = block_on(child.output()).expect("collects output");
+
+        assert!(output.status.success());
+        assert_eq!(output.stdout.len(), 1024 * 1025);
+        assert_eq!(output.stderr.len(), 1024 * 1025);
+    }
 }

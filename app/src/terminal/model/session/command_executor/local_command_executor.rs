@@ -318,9 +318,7 @@ impl LocalCommandExecutor {
         let child = command_process
             .kill_on_drop(true)
             .stdin(Stdio::null())
-            .stdout(Stdio::piped())
-            .stderr(Stdio::piped())
-            .spawn()?;
+            .spawn_for_output()?;
 
         let child_cleanup =
             SpawnedChildCleanup::new(child.id(), self.active_process_groups.clone());

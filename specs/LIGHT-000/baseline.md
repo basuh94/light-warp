@@ -49,3 +49,31 @@ Heap en el pico: 583 MB. De ellos, **572 MB (98 %)** salen de `AgentOnboardingVi
 Total: **−77 % de WS y −60 % de memoria privada** en la pantalla de bienvenida.
 
 En el reposo, el proceso principal ocupaba 1.197 MB de WS y 967 MB de memoria privada. El segundo `warp-oss` (terminal server) ocupaba 13,5 MB, y había además 2 `conhost`. No aparece ningún proceso de shell en el árbol.
+
+## Terminal en reposo (2026-11-20)
+
+Medido con la bienvenida ya completada: una pestaña de PowerShell en reposo durante 5 min.
+
+### Perfil de heap con dhat
+
+Heap en el pico: 147 MB. Al cerrar: 27 MB.
+
+| Sitio | MB en el pico | Causa |
+|---|---|---|
+| `piper::pipe` vía `async_process::Child::output` | **96** | En Windows, `async-process` lee stdout y stderr con `blocking::Unblock`, que crea un pipe de **8 MB por flujo**. Ocurre en cada comando en segundo plano: historial (`read_history_contents`), prompt (`context_chips`), `load_deferred_name_set`… |
+| `tantivy::IndexWriter::recreate_document_channel` | 23 | Cola del índice de búsqueda; se recrea en cada commit. Pendiente. |
+| Resto | ~28 | Fuentes, menús, expresiones regulares… |
+
+Arreglo: `command::r#async::Command::spawn_for_output()` y `output()` leen la salida en Windows con `std::io::pipe` y un hilo bloqueante, sin el buffer de 8 MB. `LocalCommandExecutor` usa `spawn_for_output()`.
+
+### Resultado
+
+| Escenario | WS árbol | Proceso principal: WS | Proceso principal: privada | Heap WS (VMMap) | CPU media |
+|---|---|---|---|---|---|
+| Antes (`9c431ed3`) | 697 MB | 486 MB | 561 MB | 212 MB | 0,03 % |
+| **Con el arreglo de pipes** | **510 MB** | **317 MB** | **417 MB** | **64 MB** | 0,40 % |
+
+- El PowerShell que corre dentro ocupa 150 MB de WS en ambos casos; no es memoria de Warp.
+- La CPU media sube un poco (0,40 %), pero sigue siendo despreciable. Habrá que vigilarla en la prueba larga.
+
+Nota sobre los tests: el sandbox de Claude Code ejecuta los comandos dentro de un Job Object que no permite `CREATE_BREAKAWAY_FROM_JOB`. Por eso `Command::new` falla con «Acceso denegado» y los tests de procesos de `command` hay que lanzarlos fuera del job, por ejemplo con `Win32_Process.Create` vía WMI. Así pasan los 8.

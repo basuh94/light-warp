@@ -462,18 +462,118 @@ impl Command {
     /// # std::io::Result::Ok(()) });
     /// ```
     pub fn output(&mut self) -> impl Future<Output = io::Result<Output>> {
+        let collect = if self.stdout_is_default && self.stderr_is_default {
+            Ok(self.spawn_for_output())
+        } else {
+            if self.stdin_is_default {
+                self.inner.stdin(Stdio::null());
+            }
+            if self.stdout_is_default {
+                self.inner.stdout(Stdio::piped());
+            }
+            if self.stderr_is_default {
+                self.inner.stderr(Stdio::piped());
+            }
+            Err(self.inner.output())
+        };
+
+        async move {
+            match collect {
+                Ok(child) => child?.output().await,
+                Err(output) => output.await,
+            }
+        }
+    }
+
+    /// Spawns the command with stdout and stderr captured, so that [`OutputChild::output`] can
+    /// collect them. Any stdout or stderr configured on this command is replaced. If not
+    /// configured, stdin will be set to [`Stdio::null()`].
+    ///
+    /// Prefer this over [`Child::output`]: on Windows, `async_process` buffers each captured
+    /// stream through an 8 MB pipe, which made every background command (history, prompt,
+    /// completions) allocate 16 MB.
+    pub fn spawn_for_output(&mut self) -> io::Result<OutputChild> {
         if self.stdin_is_default {
             self.inner.stdin(Stdio::null());
         }
-        if self.stdout_is_default {
-            self.inner.stdout(Stdio::piped());
-        }
-        if self.stderr_is_default {
-            self.inner.stderr(Stdio::piped());
+
+        #[cfg(windows)]
+        {
+            let (stdout, stdout_writer) = io::pipe()?;
+            let (stderr, stderr_writer) = io::pipe()?;
+            self.inner.stdout(stdout_writer);
+            self.inner.stderr(stderr_writer);
+            let child = self.inner.spawn();
+            // Close our copies of the write ends; otherwise the reads would never reach EOF.
+            self.inner.stdout(Stdio::null());
+            self.inner.stderr(Stdio::null());
+            Ok(OutputChild {
+                child: child?,
+                stdout,
+                stderr,
+            })
         }
 
-        self.inner.output()
+        #[cfg(not(windows))]
+        {
+            self.inner.stdout(Stdio::piped());
+            self.inner.stderr(Stdio::piped());
+            Ok(OutputChild {
+                child: self.inner.spawn()?,
+            })
+        }
     }
+}
+
+/// A child spawned by [`Command::spawn_for_output`].
+pub struct OutputChild {
+    child: Child,
+    #[cfg(windows)]
+    stdout: io::PipeReader,
+    #[cfg(windows)]
+    stderr: io::PipeReader,
+}
+
+impl OutputChild {
+    /// The OS-assigned process identifier of the child.
+    pub fn id(&self) -> u32 {
+        self.child.id()
+    }
+
+    /// Waits for the child to exit and collects its stdout and stderr.
+    pub async fn output(self) -> io::Result<Output> {
+        #[cfg(windows)]
+        {
+            let Self {
+                mut child,
+                stdout,
+                stderr,
+            } = self;
+            let (stdout, stderr) =
+                futures_lite::future::try_zip(read_to_end(stdout), read_to_end(stderr)).await?;
+            let status = child.status().await?;
+            Ok(Output {
+                status,
+                stdout,
+                stderr,
+            })
+        }
+
+        #[cfg(not(windows))]
+        {
+            self.child.output().await
+        }
+    }
+}
+
+#[cfg(windows)]
+async fn read_to_end(mut reader: io::PipeReader) -> io::Result<Vec<u8>> {
+    blocking::unblock(move || {
+        let mut bytes = Vec::new();
+        io::Read::read_to_end(&mut reader, &mut bytes)?;
+        Ok(bytes)
+    })
+    .await
 }
 
 /// Control over the process tree of a child spawned with [`Command::spawn_in_job`]: the process
