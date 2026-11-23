@@ -1035,6 +1035,14 @@ impl CurrentPrompt {
                 let state = ChipState::new(chip_kind);
                 self.states.insert(chip_kind.clone(), state);
             }
+            if self.is_local_git_chip_outside_repo(chip_kind, ctx) {
+                if let Some(state) = self.states.get_mut(chip_kind) {
+                    state.clear_abort_handlers();
+                }
+                self.update_chip_value(chip_kind, None);
+                self.update_on_click_value(chip_kind, None);
+                return;
+            }
             if self.is_updated_externally(chip_kind) {
                 // For chips updated externally (e.g. by the per-repo git status
                 // filesystem watcher), avoid running the shell-based fallback
@@ -1516,6 +1524,14 @@ impl CurrentPrompt {
                     state.clear_cache();
                 }
             }
+            // Local sessions don't poll for the branch outside a repo, so nothing else would clear
+            // the branch of the repo that was just left.
+            if self.is_local_git_chip_outside_repo(&ContextChipKind::ShellGitBranch, ctx)
+                && let Some(state) = self.states.get_mut(&ContextChipKind::ShellGitBranch)
+            {
+                state.clear_abort_handlers();
+                state.clear_cache();
+            }
             let _ = self.update_tx.try_send(());
             return;
         }
@@ -1665,6 +1681,31 @@ impl CurrentPrompt {
             | ContextChipKind::GitBranchStatus
             | ContextChipKind::GitDiffStats => self.git_repo_status.is_some(),
             ContextChipKind::GithubPullRequest => self.github_repo_model.is_some(),
+            _ => false,
+        }
+    }
+
+    /// Local sessions get git state from the repo watcher, which attaches whenever the working
+    /// directory is inside a repo. Without it there is no repo to describe, so the shell fallback
+    /// would only spawn a shell and git on every refresh to rediscover that.
+    fn is_local_git_chip_outside_repo(
+        &self,
+        chip_kind: &ContextChipKind,
+        ctx: &AppContext,
+    ) -> bool {
+        if !cfg!(feature = "local_fs") || self.git_repo_status.is_some() {
+            return false;
+        }
+        match chip_kind {
+            ContextChipKind::ShellGitBranch
+            | ContextChipKind::GitBranchStatus
+            | ContextChipKind::GitDiffStats => self
+                .with_current_generator_context(ctx, |generator_context| {
+                    generator_context
+                        .active_session
+                        .is_some_and(|session| session.is_local())
+                })
+                .unwrap_or(false),
             _ => false,
         }
     }

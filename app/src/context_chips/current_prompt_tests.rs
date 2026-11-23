@@ -41,7 +41,7 @@ use crate::terminal::cli_agent_sessions::{
 };
 use crate::terminal::model::block::BlockMetadata;
 use crate::terminal::model::session::{
-    CommandExecutor, ExecuteCommandOptions, SessionId, SessionInfo, Sessions,
+    BootstrapSessionType, CommandExecutor, ExecuteCommandOptions, SessionId, SessionInfo, Sessions,
 };
 use crate::terminal::session_settings::{
     AgentToolbarChipSelection, CLIAgentToolbarChipSelection, SessionSettings, ToolbarChipSelection,
@@ -275,8 +275,11 @@ fn test_shell_chip_is_disabled_when_required_executable_is_missing() {
         let executor = Arc::new(RecordingCommandExecutor::default());
         let sessions = app.add_model(|ctx| {
             let mut sessions = Sessions::new_for_test().with_command_executor(executor.clone());
+            // Local sessions never run git chips' shell fallback, so exercise it remotely.
             sessions.initialize_bootstrapped_session(
-                SessionInfo::new_for_test().with_id(session_id),
+                SessionInfo::new_for_test()
+                    .with_id(session_id)
+                    .with_session_type(BootstrapSessionType::WarpifiedRemote),
                 "test command".to_string(),
                 vec![],
                 None,
@@ -317,6 +320,87 @@ fn test_shell_chip_is_disabled_when_required_executable_is_missing() {
             assert_eq!(state.update_status, ChipUpdateStatus::Disabled);
             assert!(state.generator_handle.is_none());
             assert!(state.on_click_generator_handle.is_none());
+        });
+
+        assert!(executor.commands.lock().is_empty());
+    });
+}
+
+#[test]
+fn test_local_git_chips_outside_repo_run_no_shell_commands() {
+    App::test((), |mut app| async move {
+        let session_id = SessionId::from(321);
+        app.add_singleton_model(|_| {
+            Prompt::mock_with(
+                [
+                    ContextChipKind::ShellGitBranch,
+                    ContextChipKind::GitDiffStats,
+                ],
+                false,
+                WarpPromptSeparator::None,
+            )
+        });
+        app.add_singleton_model(SessionSettings::new_with_defaults);
+        app.add_singleton_model(|_| History::new(vec![]));
+        app.add_singleton_model(|_ctx| {
+            settings::PublicPreferences::new(
+                Box::<user_preferences::in_memory::InMemoryPreferences>::default(),
+            )
+        });
+        app.add_singleton_model(|_| {
+            settings::PrivatePreferences::new(
+                Box::<user_preferences::in_memory::InMemoryPreferences>::default(),
+            )
+        });
+        app.add_singleton_model(|_| ServerApiProvider::new_for_test());
+        app.add_singleton_model(|_| AuthStateProvider::new_for_test());
+        app.add_singleton_model(AppTelemetryContextProvider::new_context_provider);
+        app.add_singleton_model(AuthManager::new_for_test);
+        app.add_singleton_model(|_| crate::settings::manager::SettingsManager::default());
+        crate::settings::InputSettings::register(&mut app);
+        app.update(crate::settings::AISettings::register_and_subscribe_to_events);
+        app.add_singleton_model(crate::workspaces::user_workspaces::UserWorkspaces::default_mock);
+        #[cfg(windows)]
+        app.add_singleton_model(SystemInfo::new);
+
+        let executor = Arc::new(RecordingCommandExecutor::default());
+        let sessions = app.add_model(|ctx| {
+            let mut sessions = Sessions::new_for_test().with_command_executor(executor.clone());
+            sessions.initialize_bootstrapped_session(
+                SessionInfo::new_for_test().with_id(session_id),
+                "test command".to_string(),
+                vec![],
+                None,
+                ctx,
+            );
+            sessions
+        });
+        let current_prompt = app.add_model(move |ctx| CurrentPrompt::new(sessions, ctx));
+        executor.clear();
+
+        current_prompt.update(&mut app, |current_prompt, ctx| {
+            current_prompt.latest_context = Some(PromptContext {
+                active_block_metadata: BlockMetadata::new(
+                    Some(session_id),
+                    Some("/tmp/not-a-repo".to_string()),
+                ),
+                environment: Environment::default(),
+            });
+            current_prompt.update_states_with_new_context(ctx);
+
+            for chip_kind in [
+                ContextChipKind::ShellGitBranch,
+                ContextChipKind::GitDiffStats,
+            ] {
+                let state = current_prompt
+                    .states
+                    .get(&chip_kind)
+                    .expect("expected git chip state");
+                assert!(state.last_computed_value.is_none(), "{chip_kind:?}");
+                assert!(state.generator_handle.is_none(), "{chip_kind:?}");
+                assert!(state.refresh_handle.is_none(), "{chip_kind:?}");
+            }
+            assert!(!current_prompt.are_any_generators_running());
         });
 
         assert!(executor.commands.lock().is_empty());
@@ -428,8 +512,11 @@ fn test_disabling_chips() {
 
         let sessions = app.add_model(|ctx| {
             let mut sessions = Sessions::new_for_test().with_command_executor(executor.clone());
+            // Local sessions never run git chips' shell fallback, so exercise it remotely.
             sessions.initialize_bootstrapped_session(
-                SessionInfo::new_for_test().with_id(session_id),
+                SessionInfo::new_for_test()
+                    .with_id(session_id)
+                    .with_session_type(BootstrapSessionType::WarpifiedRemote),
                 "test command".to_string(),
                 vec![],
                 None,

@@ -96,3 +96,11 @@ Resultado tras abrir y cerrar 3 pestañas:
 | `CurrentPrompt` (sondeo de git cada 30 s) | retenido | liberado |
 
 Pendiente: siguen retenidos `BlocklistAIContextModel` → `ConversationSelection` → `AgentViewController` → `EphemeralMessageModel` (1 de cada por pestaña). No es un ciclo directo entre ellos; falta encontrar qué retiene `BlocklistAIContextModel`.
+
+## Chips de git: sin sondeo en sesiones locales fuera de un repo (2026-11-23)
+
+Dentro de un repo, los chips de git de una sesión local se alimentan de `GitRepoStatusModel` (vigilante de ficheros, sin procesos). Fuera de un repo no hay vigilante, y los chips recurrían a la alternativa por shell: cada 30 s y por pestaña, `powershell.exe -c "git symbolic-ref…"` y `git diff --shortstat` (~150 MB de PowerShell cada uno) solo para volver a descubrir que no hay repo.
+
+Arreglo (`CurrentPrompt::is_local_git_chip_outside_repo`): en sesiones locales sin vigilante, los chips de rama, estado y diff no ejecutan nada ni programan refrescos. Al salir de un repo se limpia también la rama. Las sesiones remotas mantienen la alternativa por shell.
+
+Verificado: arrancando en `~`, 0 consultas de git en 2 min (antes ~2 PowerShell + 2 git cada 30 s por pestaña). Con `cd` a un repo el prompt muestra la rama y el diff, y al salir desaparecen.
