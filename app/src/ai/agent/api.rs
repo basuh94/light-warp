@@ -187,6 +187,9 @@ pub struct RequestParams {
     pub parent_agent_id: Option<String>,
     /// The display name for this agent (e.g. "Agent 1"), assigned by the orchestrator.
     pub agent_name: Option<String>,
+    /// The local model server to send the request to, in builds that serve agent requests
+    /// locally. None when the user has not configured one.
+    pub local_model: Option<crate::ai::local_models::LocalModelConfig>,
 }
 
 pub type Event = Result<warp_multi_agent_api::ResponseEvent, Arc<AIApiError>>;
@@ -249,6 +252,7 @@ impl RequestParams {
             supported_tools_override: None,
             parent_agent_id: None,
             agent_name: None,
+            local_model: None,
         }
     }
 
@@ -436,6 +440,7 @@ impl RequestParams {
             context_window_limit,
             metadata,
             session_context,
+            local_model: crate::ai::local_models::LocalModelConfig::from_settings(app),
             model: request_input.model_id.clone(),
             coding_model: request_input.coding_model_id.clone(),
             cli_agent_model: request_input.cli_agent_model_id.clone(),

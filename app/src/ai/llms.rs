@@ -1,5 +1,6 @@
 use std::collections::{HashMap, HashSet};
 use std::sync::{Arc, OnceLock};
+use std::time::Duration;
 
 use ai::api_keys::{
     ApiKeyManager, ApiKeyManagerEvent, ChatGPTConnectionStatus, CustomEndpoint, CustomEndpointModel,
@@ -11,13 +12,16 @@ use warp_core::features::FeatureFlag;
 use warp_core::ui::Icon;
 use warp_errors::report_error;
 use warp_multi_agent_api as api;
+use warpui::r#async::{SpawnedFutureHandle, Timer};
 use warpui::{AppContext, Entity, EntityId, ModelContext, SingletonEntity};
 
 use super::agent::conversation::AIConversation;
 use super::custom_model_routers::{self, CustomModelRouter, ModelConfigError};
 use super::execution_profiles::profiles::AIExecutionProfilesModel;
+use super::local_models;
 use crate::auth::AuthStateProvider;
 use crate::server::ids::ServerId;
+use crate::settings::{AISettings, AISettingsChangedEvent};
 use crate::server::server_api::ServerApiProvider;
 use crate::user_config::{WarpConfig, WarpConfigUpdateEvent};
 use crate::workspaces::update_manager::TeamUpdateManager;
@@ -666,6 +670,16 @@ impl AvailableLLMs {
     pub(crate) fn push_choice_for_test(&mut self, llm: LLMInfo) {
         self.choices.push(llm);
     }
+
+    #[cfg(test)]
+    pub(crate) fn choices_for_test(&self) -> &[LLMInfo] {
+        &self.choices
+    }
+
+    #[cfg(test)]
+    pub(crate) fn default_id_for_test(&self) -> &LLMId {
+        &self.default_id
+    }
 }
 
 /// The set of models available to the client, grouped by the feature they support.
@@ -838,6 +852,8 @@ pub struct LLMPreferences {
     /// Whether the server held delegated ChatGPT credentials as of the last observed
     /// connection update. `None` until the server has reported a status at least once.
     last_seen_chatgpt_subscription_connected: Option<bool>,
+    /// The in-flight fetch of the local model server's models, or the pending retry of one.
+    local_models_refresh: Option<SpawnedFutureHandle>,
 }
 
 impl LLMPreferences {
@@ -886,6 +902,7 @@ impl LLMPreferences {
             custom_llms,
             custom_model_routers: Vec::new(),
             last_seen_chatgpt_subscription_connected: None,
+            local_models_refresh: None,
         };
 
         // Seed from any already-loaded local config (the async load emits
@@ -900,6 +917,22 @@ impl LLMPreferences {
         // to avoid duplicate requests at startup.
         #[cfg(feature = "agent_mode_evals")]
         me.refresh_available_models(&ResolvedTeamScope::teamless(), ctx);
+
+        // The local catalog does not depend on sign-in or network events, but on the local model
+        // settings.
+        if local_models::is_enabled() {
+            ctx.subscribe_to_model(&AISettings::handle(ctx), |me, _, event, ctx| {
+                if matches!(
+                    event,
+                    AISettingsChangedEvent::LocalModelEnabled { .. }
+                        | AISettingsChangedEvent::LocalModelUrl { .. }
+                        | AISettingsChangedEvent::LocalModelName { .. }
+                ) {
+                    me.refresh_local_models(ctx);
+                }
+            });
+            me.refresh_local_models(ctx);
+        }
 
         me
     }
@@ -2041,15 +2074,63 @@ impl LLMPreferences {
     }
 
     pub fn refresh_available_models(
-        &self,
+        &mut self,
         scope: &(impl TeamScope + ?Sized),
         ctx: &mut ModelContext<Self>,
     ) {
-        if AuthStateProvider::as_ref(ctx).get().is_logged_in() {
+        if local_models::is_enabled() {
+            self.refresh_local_models(ctx);
+        } else if AuthStateProvider::as_ref(ctx).get().is_logged_in() {
             self.refresh_authed_models(scope, ctx);
         } else {
             self.refresh_public_models(ctx);
         }
+    }
+
+    /// Replaces the model catalog with the models installed on the local model server the user
+    /// configured, or with the empty default catalog if none is configured. While the server
+    /// cannot be reached, retries periodically so models appear once it starts.
+    fn refresh_local_models(&mut self, ctx: &mut ModelContext<Self>) {
+        const RETRY_INTERVAL: Duration = Duration::from_secs(30);
+
+        if let Some(pending) = self.local_models_refresh.take() {
+            pending.abort();
+        }
+        let Some(config) = local_models::LocalModelConfig::from_settings(ctx) else {
+            let default = ModelsByFeature::default();
+            if *UserWorkspaces::as_ref(ctx).feature_model_choice_for_team_uid(None) != default {
+                self.on_server_update(None, default, ctx);
+                ctx.emit(LLMPreferencesEvent::UpdatedAvailableLLMs);
+            }
+            return;
+        };
+        let client = config.client();
+        let refresh = ctx.spawn(
+            async move { client.list_models().await },
+            move |me, result, ctx| {
+                me.local_models_refresh = None;
+                match result {
+                    Ok(installed) => match local_models::models_by_feature(&installed, &config) {
+                        Some(models) => {
+                            me.on_server_update(None, models, ctx);
+                            ctx.emit(LLMPreferencesEvent::UpdatedAvailableLLMs);
+                        }
+                        None => log::warn!(
+                            "The local model server at {} has no models installed",
+                            config.base_url
+                        ),
+                    },
+                    Err(error) => {
+                        log::info!("Local model server unavailable, retrying: {error}");
+                        me.local_models_refresh =
+                            Some(ctx.spawn(Timer::after(RETRY_INTERVAL), |me, _, ctx| {
+                                me.refresh_local_models(ctx);
+                            }));
+                    }
+                }
+            },
+        );
+        self.local_models_refresh = Some(refresh);
     }
 
     /// Refetches the server's model catalogs when the connected ChatGPT subscription starts or
@@ -2334,6 +2415,7 @@ impl LLMPreferences {
             custom_llms,
             custom_model_routers: Vec::new(),
             last_seen_chatgpt_subscription_connected: None,
+            local_models_refresh: None,
         }
     }
 }

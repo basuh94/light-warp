@@ -80,3 +80,16 @@ Paso 1 hecho: conversación de texto con `qwen3:8b` dentro de Warp.
 - Configuración provisional por variables de entorno: `LIGHT_WARP_OLLAMA_URL`, `LIGHT_WARP_OLLAMA_MODEL` y `LIGHT_WARP_OLLAMA_NUM_CTX`.
 
 Pendiente detectado: el ajuste guardado `agents.warp_agent.is_any_ai_enabled` se quedó en `false` al saltarse el login en la bienvenida, y hubo que activarlo a mano en `settings.toml`. En la build sin conexión debe venir activado y poder activarse desde la interfaz.
+
+## Paso 2: configuración desde Warp (2026-11-23)
+
+El proveedor local es opcional: nada contacta con un servidor de modelos hasta que el usuario lo activa.
+- Ajustes nuevos en `agents.local_model`: `enabled` (por defecto `false`), `url` (por defecto `http://127.0.0.1:11434`), `model` y `context_window` (16384).
+- **Ajustes → Agente → "Local model"** (`settings_view/local_model_settings.rs`): interruptor, dirección del servidor, "Detect models" con el estado de la conexión, lista de modelos para elegir y tamaño de contexto.
+- **Sin configurar:** el agente responde con un `InvalidApiKey`, que en la build sin conexión se muestra como "No local model configured" con un botón "Configure local model" que abre esa sección.
+- **Configurado:** el catálogo del selector de modelos se rellena con los modelos instalados (`LLMPreferences::refresh_local_models`), reintentando cada 30 s mientras el servidor no responda. Se recarga al cambiar los ajustes. El modelo elegido en el selector tiene prioridad sobre el de Ajustes.
+- La bienvenida ya no desactiva la IA al elegir el modo agente sin cuenta, en la build sin conexión.
+
+Verificado a mano: aviso y botón, activación, detección de modelos, selección y respuesta del modelo.
+
+Pendiente: los tests del crate `warp` (`local_models`, `agent::api::local`) no se han podido pasar tras estos cambios. Compilar los tests de `warp` necesita más de 17 GB, y el watchdog los detiene con las aplicaciones habituales abiertas, tanto en debug como en release. El ejecutable release sí compila.

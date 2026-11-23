@@ -54,6 +54,7 @@ use super::ai_shared::{
     render_ai_setting_toggle, render_toolbar_layout_editor, styles,
     update_editor_interaction_state,
 };
+use super::local_model_settings::LocalModelSettingsView;
 use super::custom_inference_modal::{
     CustomEndpointModal, CustomEndpointModalEvent, CustomEndpointModalViewState,
 };
@@ -655,6 +656,7 @@ pub struct WarpAgentPageView {
     voice_input_language_dropdown: ViewHandle<FilterableDropdown<WarpAgentPageAction>>,
     local_only_icon_tooltip_states: RefCell<HashMap<String, MouseStateHandle>>,
     autodetection_denylist_editor: ViewHandle<EditorView>,
+    local_model_settings: ViewHandle<LocalModelSettingsView>,
     agent_toolbar_inline_editor: ViewHandle<AgentToolbarInlineEditor>,
 
     thinking_display_mode_dropdown: ViewHandle<Dropdown<WarpAgentPageAction>>,
@@ -1211,8 +1213,11 @@ impl WarpAgentPageView {
             );
         }
 
+        let local_model_settings = ctx.add_typed_action_view(LocalModelSettingsView::new);
+
         Self {
             page: Self::build_page(ctx),
+            local_model_settings,
             self_handle,
             voice_input_toggle_key_dropdown,
             voice_input_language_dropdown,
@@ -2289,6 +2294,13 @@ impl WarpAgentPageView {
         let ai_settings = AISettings::as_ref(ctx);
 
         let mut categories: Vec<Category<Self>> = Vec::new();
+
+        if crate::ai::local_models::is_enabled() {
+            categories.push(Category::new(
+                "Local model",
+                vec![Box::new(LocalModelWidget)],
+            ));
+        }
 
         if ai_settings
             .intelligent_autosuggestions_enabled_internal
@@ -6912,5 +6924,27 @@ impl SettingsWidget for CustomModelRoutersWidget {
         Container::new(column.finish())
             .with_margin_bottom(HEADER_PADDING)
             .finish()
+    }
+}
+
+/// The settings of the local model server, in builds that serve the agent locally.
+struct LocalModelWidget;
+
+impl SettingsWidget for LocalModelWidget {
+    type View = WarpAgentPageView;
+
+    fn search_terms(&self) -> &str {
+        // Must contain LOCAL_MODEL_SETTINGS_SEARCH_QUERY, which the "no local model configured"
+        // agent error searches for.
+        "local model server ollama llm private offline"
+    }
+
+    fn render(
+        &self,
+        view: &Self::View,
+        _appearance: &Appearance,
+        _app: &AppContext,
+    ) -> Box<dyn Element> {
+        ChildView::new(&view.local_model_settings).finish()
     }
 }

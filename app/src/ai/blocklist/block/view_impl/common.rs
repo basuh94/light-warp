@@ -3340,6 +3340,8 @@ fn render_invalid_api_key_error(
 ) -> Box<dyn Element> {
     let appearance = Appearance::as_ref(app);
     let theme = appearance.theme();
+    // Builds that run the agent on a local model report a missing configuration this way.
+    let is_local_model_error = crate::ai::local_models::is_enabled();
 
     let alert_icon = ConstrainedBox::new(
         Icon::AlertTriangle
@@ -3381,12 +3383,20 @@ fn render_invalid_api_key_error(
             background: Some(internal_colors::fg_overlay_3(theme).into()),
             ..Default::default()
         })
-        .with_text_label("Edit API Keys".to_string())
+        .with_text_label(if is_local_model_error {
+            "Configure local model".to_string()
+        } else {
+            "Edit API Keys".to_string()
+        })
         .with_cursor(Some(Cursor::PointingHand))
         .build()
         .on_click(move |ctx, _, _| {
             ctx.dispatch_typed_action(WorkspaceAction::ShowSettingsPageWithSearch {
-                search_query: "api keys".to_string(),
+                search_query: if is_local_model_error {
+                    crate::settings_view::LOCAL_MODEL_SETTINGS_SEARCH_QUERY.to_string()
+                } else {
+                    "api keys".to_string()
+                },
                 section: Some(SettingsSection::WarpAgent),
             });
         })

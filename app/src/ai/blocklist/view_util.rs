@@ -150,6 +150,15 @@ pub fn failed_output_presentation(
                 message: message.clone(),
             }
         }
+        // A local agent request reports a missing model server configuration this way.
+        RenderableAIError::InvalidApiKey { .. } if crate::ai::local_models::is_enabled() => {
+            FailedOutputPresentation::InvalidApiKey {
+                title: "No local model configured",
+                detail: "The agent runs on a model server on your machine, such as Ollama. \
+                         Configure it to start using the agent."
+                    .to_owned(),
+            }
+        }
         RenderableAIError::InvalidApiKey {
             provider,
             model_name,

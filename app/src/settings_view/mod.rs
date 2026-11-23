@@ -100,6 +100,7 @@ pub(crate) mod handoff_environment_creation_modal;
 mod join_teams_modal;
 pub mod keybindings;
 mod knowledge_page;
+mod local_model_settings;
 mod main_page;
 pub mod mcp_servers;
 pub mod mcp_servers_page;
@@ -489,6 +490,8 @@ impl DisplayCount {
         Self(1)
     }
 }
+
+pub use local_model_settings::LOCAL_MODEL_SETTINGS_SEARCH_QUERY;
 
 pub mod flags {
     // The following are context flags to determine if the enable or disable binding is shown.

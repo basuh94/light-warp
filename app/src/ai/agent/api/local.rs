@@ -8,10 +8,9 @@ use std::sync::Arc;
 use std::time::SystemTime;
 
 use futures_util::StreamExt as _;
-use light_llm::{ChatEvent, ChatMessage, ChatOptions, ChatRequest, OllamaClient};
+use light_llm::{ChatEvent, ChatMessage, ChatOptions, ChatRequest};
 use prost_types::FieldMask;
 use uuid::Uuid;
-use warp_core::channel::ChannelState;
 use warp_multi_agent_api as api;
 use warp_multi_agent_api::client_action::{AddMessagesToTask, AppendToMessageContent, CreateTask};
 use warp_multi_agent_api::message::{
@@ -22,44 +21,15 @@ use warp_multi_agent_api::{ClientAction, Message, ResponseEvent, Task, client_ac
 
 use super::convert_to::convert_input;
 use super::{ConvertToAPITypeError, RequestParams, ResponseStream};
+use crate::ai::local_models::{self, LocalModelConfig};
 use crate::server::server_api::AIApiError;
 
 const AGENT_OUTPUT_TEXT_PATH: &str = "agent_output.text";
 const AGENT_REASONING_TEXT_PATH: &str = "agent_reasoning.reasoning";
 
-const DEFAULT_MODEL: &str = "qwen3:8b";
-/// Fits a 7-8B model and its context in 8 GB of VRAM.
-const DEFAULT_CONTEXT_WINDOW: u32 = 16_384;
-
 /// Whether agent requests should be served locally.
 pub fn is_enabled() -> bool {
-    ChannelState::is_offline()
-}
-
-/// Where to find the local model and how to run it.
-#[derive(Debug, Clone, PartialEq)]
-struct LocalModelConfig {
-    base_url: String,
-    model: String,
-    context_window: u32,
-}
-
-impl LocalModelConfig {
-    fn from_env() -> Self {
-        let var = |name: &str| {
-            std::env::var(name)
-                .ok()
-                .filter(|value| !value.trim().is_empty())
-        };
-        Self {
-            base_url: var("LIGHT_WARP_OLLAMA_URL")
-                .unwrap_or_else(|| light_llm::DEFAULT_OLLAMA_URL.to_owned()),
-            model: var("LIGHT_WARP_OLLAMA_MODEL").unwrap_or_else(|| DEFAULT_MODEL.to_owned()),
-            context_window: var("LIGHT_WARP_OLLAMA_NUM_CTX")
-                .and_then(|value| value.parse().ok())
-                .unwrap_or(DEFAULT_CONTEXT_WINDOW),
-        }
-    }
+    local_models::is_enabled()
 }
 
 pub async fn generate_local_agent_output(
@@ -67,7 +37,7 @@ pub async fn generate_local_agent_output(
     cancellation_rx: futures::channel::oneshot::Receiver<()>,
 ) -> Result<ResponseStream, ConvertToAPITypeError> {
     let input = convert_input(params.input)?;
-    let config = LocalModelConfig::from_env();
+    let local_model = params.local_model;
     let conversation_id = params
         .conversation_token
         .as_ref()
@@ -87,6 +57,15 @@ pub async fn generate_local_agent_output(
             run_id: String::new(),
         })),
     };
+
+    let Some(config) = local_model else {
+        let events: Vec<Result<_, Arc<AIApiError>>> = vec![Ok(init), Ok(not_configured())];
+        return Ok(Box::pin(futures::stream::iter(events)));
+    };
+    // A model picked in the model selector wins over the configured default.
+    let requested_model = local_models::model_name_for_llm_id(&params.model)
+        .map(str::to_owned)
+        .or_else(|| Some(config.default_model.clone()).filter(|model| !model.is_empty()));
 
     let queries = user_queries(&input);
     if queries.is_empty() {
@@ -129,25 +108,41 @@ pub async fn generate_local_agent_output(
     let mut messages = vec![ChatMessage::system(system_prompt(input.context.as_ref()))];
     messages.extend(history_messages(&params.tasks));
     messages.extend(queries.into_iter().map(ChatMessage::user));
-    let request = ChatRequest {
-        model: config.model.clone(),
-        messages,
-        tools: Vec::new(),
-        stream: true,
-        options: Some(ChatOptions {
-            num_ctx: Some(config.context_window),
-        }),
-    };
-    let client = OllamaClient::new(config.base_url.clone());
+    let client = config.client();
 
     let stream = async_stream::stream! {
         yield Ok::<_, Arc<AIApiError>>(init);
         yield Ok(client_actions(opening_actions));
 
+        let model = match requested_model {
+            Some(model) => model,
+            None => match client.list_models().await {
+                Ok(installed) => match installed.into_iter().next() {
+                    Some(model) => model.name,
+                    None => {
+                        yield Ok(no_models_installed(&config));
+                        return;
+                    }
+                },
+                Err(error) => {
+                    yield Ok(model_error(&config, "", &error));
+                    return;
+                }
+            },
+        };
+        let request = ChatRequest {
+            model: model.clone(),
+            messages,
+            tools: Vec::new(),
+            stream: true,
+            options: Some(ChatOptions {
+                num_ctx: Some(config.context_window),
+            }),
+        };
         let mut events = match client.chat_stream(&request).await {
             Ok(events) => events,
             Err(error) => {
-                yield Ok(model_error(&config, &error));
+                yield Ok(model_error(&config, &model, &error));
                 return;
             }
         };
@@ -167,7 +162,7 @@ pub async fn generate_local_agent_output(
                 Ok(ChatEvent::ToolCall(_)) => {}
                 Ok(ChatEvent::Done(_)) => break,
                 Err(error) => {
-                    yield Ok(model_error(&config, &error));
+                    yield Ok(model_error(&config, &model, &error));
                     return;
                 }
             }
@@ -260,7 +255,7 @@ fn system_prompt(context: Option<&api::InputContext>) -> String {
     prompt
 }
 
-fn model_error(config: &LocalModelConfig, error: &light_llm::Error) -> ResponseEvent {
+fn model_error(config: &LocalModelConfig, model: &str, error: &light_llm::Error) -> ResponseEvent {
     let message = match error {
         light_llm::Error::Http(_) => format!(
             "Could not reach the local model server at {}. Make sure Ollama is running. ({error})",
@@ -268,7 +263,7 @@ fn model_error(config: &LocalModelConfig, error: &light_llm::Error) -> ResponseE
         ),
         light_llm::Error::Status { status: 404, .. } => format!(
             "The model '{}' is not installed. Run `ollama pull {}`. ({error})",
-            config.model, config.model
+            model, model
         ),
         light_llm::Error::Status { .. }
         | light_llm::Error::Decode(_)
@@ -277,6 +272,30 @@ fn model_error(config: &LocalModelConfig, error: &light_llm::Error) -> ResponseE
     log::warn!("Local agent request failed: {error}");
     finished(stream_finished::Reason::InternalError(
         stream_finished::InternalError { message },
+    ))
+}
+
+fn no_models_installed(config: &LocalModelConfig) -> ResponseEvent {
+    finished(stream_finished::Reason::InternalError(
+        stream_finished::InternalError {
+            message: format!(
+                "The local model server at {} has no models installed. Install one, for \
+                 example with `ollama pull qwen3:8b`.",
+                config.base_url
+            ),
+        },
+    ))
+}
+
+/// Reported as an invalid API key, which the client renders with a button that opens the
+/// settings; in builds that serve agent requests locally, that error means no model server is
+/// configured.
+fn not_configured() -> ResponseEvent {
+    finished(stream_finished::Reason::InvalidApiKey(
+        stream_finished::InvalidApiKey {
+            provider: api::LlmProvider::Unknown as i32,
+            model_name: String::new(),
+        },
     ))
 }
 

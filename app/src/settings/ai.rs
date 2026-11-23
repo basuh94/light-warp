@@ -1232,6 +1232,48 @@ define_settings_group!(AISettings, settings: [
         toml_path: "agents.warp_agent.is_any_ai_enabled",
         description: "Controls whether all AI features are enabled.",
     },
+    // The local model server that serves agent requests in builds that reach no Warp servers.
+    // Nothing contacts it until the user enables it.
+    local_model_enabled: LocalModelEnabled {
+        type: bool,
+        default: false,
+        supported_platforms: SupportedPlatforms::DESKTOP,
+        sync_to_cloud: SyncToCloud::Never,
+        surface: settings::SettingSurfaces::GUI,
+        private: false,
+        toml_path: "agents.local_model.enabled",
+        description: "Whether the agent uses a locally hosted model server.",
+    },
+    local_model_url: LocalModelUrl {
+        type: String,
+        default: light_llm::DEFAULT_OLLAMA_URL.to_string(),
+        supported_platforms: SupportedPlatforms::DESKTOP,
+        sync_to_cloud: SyncToCloud::Never,
+        surface: settings::SettingSurfaces::GUI,
+        private: false,
+        toml_path: "agents.local_model.url",
+        description: "The address of the local model server.",
+    },
+    local_model_name: LocalModelName {
+        type: String,
+        default: String::new(),
+        supported_platforms: SupportedPlatforms::DESKTOP,
+        sync_to_cloud: SyncToCloud::Never,
+        surface: settings::SettingSurfaces::GUI,
+        private: false,
+        toml_path: "agents.local_model.model",
+        description: "The model the agent uses on the local model server.",
+    },
+    local_model_context_window: LocalModelContextWindow {
+        type: usize,
+        default: 16_384,
+        supported_platforms: SupportedPlatforms::DESKTOP,
+        sync_to_cloud: SyncToCloud::Never,
+        surface: settings::SettingSurfaces::GUI,
+        private: false,
+        toml_path: "agents.local_model.context_window",
+        description: "The context window, in tokens, requested from the local model server.",
+    },
     // This field should not be referenced directly to lookup active AI enablement -- use the
     // `is_active_ai_enabled()` getter.
     is_active_ai_enabled_internal: IsActiveAIEnabled {

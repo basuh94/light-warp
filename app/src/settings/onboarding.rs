@@ -104,8 +104,9 @@ pub(crate) fn apply_onboarding_settings(
             // Agent intent means the user wants AI, but Warp's AI features run
             // on a Warp account, so AI is only enabled once they have one.
             // Skipping login leaves AI off even for agent intent (including the
-            // bring-your-own-agents `disable_oz` path).
-            has_account
+            // bring-your-own-agents `disable_oz` path). Offline builds run AI on a local model
+            // and need no account.
+            has_account || warp_core::channel::ChannelState::is_offline()
         }
         SelectedSettings::Terminal {
             ui_customization,
