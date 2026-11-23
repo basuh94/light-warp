@@ -67,7 +67,25 @@ impl WarpServerConfig {
             iap_config: None,
         }
     }
+
+    /// A configuration that cannot reach any Warp service: every endpoint points at a closed
+    /// loopback port, so requests fail immediately and nothing leaves the machine.
+    pub fn offline() -> Self {
+        Self {
+            server_root_url: OFFLINE_HTTP_URL.into(),
+            prewarmed_sandbox_control_url: None,
+            rtc_server_url: OFFLINE_WS_URL.into(),
+            session_sharing_server_url: None,
+            firebase_auth_api_key: "".into(),
+            iap_config: None,
+        }
+    }
 }
+
+/// Port 9 is the discard service, which is not listening on Windows or typical Unix hosts, so
+/// connections are refused right away instead of timing out.
+const OFFLINE_HTTP_URL: &str = "http://127.0.0.1:9";
+const OFFLINE_WS_URL: &str = "ws://127.0.0.1:9/graphql/v2";
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct OzConfig {
@@ -84,6 +102,14 @@ impl OzConfig {
     pub fn production() -> Self {
         Self {
             oz_root_url: "https://oz.warp.dev".into(),
+            workload_audience_url: None,
+        }
+    }
+
+    /// See [`WarpServerConfig::offline`].
+    pub fn offline() -> Self {
+        Self {
+            oz_root_url: OFFLINE_HTTP_URL.into(),
             workload_audience_url: None,
         }
     }

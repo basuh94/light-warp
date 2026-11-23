@@ -104,3 +104,14 @@ Dentro de un repo, los chips de git de una sesión local se alimentan de `GitRep
 Arreglo (`CurrentPrompt::is_local_git_chip_outside_repo`): en sesiones locales sin vigilante, los chips de rama, estado y diff no ejecutan nada ni programan refrescos. Al salir de un repo se limpia también la rama. Las sesiones remotas mantienen la alternativa por shell.
 
 Verificado: arrancando en `~`, 0 consultas de git en 2 min (antes ~2 PowerShell + 2 git cada 30 s por pestaña). Con `cd` a un repo el prompt muestra la rama y el diff, y al salir desaparecen.
+
+## Sin conexión con los servidores de Warp (2026-11-23)
+
+Inventario de red (`watch-net.ps1`: conexiones TCP del árbol de procesos, muestreadas cada 0,5 s desde el arranque):
+- Antes del cambio, sin sesión iniciada: **0 conexiones externas** en 3 min. La versión OSS ya trae `telemetry_config`, `crash_reporting_config` y `autoupdate_config` a `None`. Los servidores de Warp (`app.warp.dev`, `rtc.app.warp.dev`, `sessions.app.warp.dev`, `oz.warp.dev`, Firebase en `*.googleapis.com`) solo se usan al iniciar sesión, usar la IA de Warp, compartir sesiones o usar Warp Drive.
+- Cambio: `WarpServerConfig::offline()` y `OzConfig::offline()` apuntan todo a `127.0.0.1:9` (puerto cerrado, rechazo inmediato) y desactivan compartir sesiones. `warp-oss` los usa. El intercambio de tokens de Firebase, que tiene la URL de Google fija en el código, no se hace si no hay clave.
+- Después: 0 conexiones externas en 4 min, interactuando con menús, ajustes y una consulta en lenguaje natural. CPU media 0,74 %, sin bloqueos.
+
+Las demás direcciones fijas del código son enlaces que se abren en el navegador (documentación, soporte) o pertenecen a funciones de agentes en la nube o del entorno de pruebas interno de Warp, que esta versión no activa.
+
+Nota: `cargo test -p warp_server_client` no enlaza en este equipo porque falta `sqlite3.lib`. Es un problema de entorno y no tiene que ver con este cambio.

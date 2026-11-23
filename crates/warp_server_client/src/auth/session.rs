@@ -460,6 +460,12 @@ impl AuthSession {
         #[cfg(test)]
         let (direct_url, proxy_url) = self.refresh_urls.clone().unwrap_or((direct_url, proxy_url));
         Box::pin(async move {
+            // The direct URL is a fixed Google endpoint, so an offline build must not reach it.
+            if firebase_api_key.is_empty() {
+                return Err(TokenRefreshError::unexpected(anyhow::anyhow!(
+                    "Firebase authentication is not configured"
+                )));
+            }
             let request_body = token.access_token_request_body();
             let direct_result = Self::fetch_access_token(
                 client
