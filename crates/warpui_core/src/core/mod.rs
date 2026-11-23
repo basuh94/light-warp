@@ -511,6 +511,26 @@ impl Subscription {
             Subscription::FromApp { .. } => None,
         }
     }
+
+    /// Whether the subscribing model or view is among the given dropped entities.
+    fn subscriber_dropped(&self, dropped: &EntityIdSet) -> bool {
+        match self {
+            Subscription::FromModel { model_id, .. } => dropped.contains(model_id),
+            Subscription::FromView { view_id, .. } => dropped.contains(view_id),
+            Subscription::FromApp { .. } => false,
+        }
+    }
+}
+
+impl Observation {
+    /// Whether the observing model or view is among the given dropped entities.
+    fn observer_dropped(&self, dropped: &EntityIdSet) -> bool {
+        match self {
+            Observation::FromModel { model_id, .. } => dropped.contains(model_id),
+            Observation::FromView { view_id, .. } => dropped.contains(view_id),
+            Observation::FromApp { .. } => false,
+        }
+    }
 }
 
 type ObservationFromModelCallback = dyn FnMut(&mut dyn Any, EntityId, &mut AppContext, EntityId);

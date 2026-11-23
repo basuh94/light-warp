@@ -872,6 +872,82 @@ fn test_dropping_observers() {
 }
 
 #[test]
+fn test_dropping_subscribers_releases_handles_captured_by_their_callbacks() {
+    struct View;
+
+    impl Entity for View {
+        type Event = ();
+    }
+
+    impl super::View for View {
+        fn render<'a>(&self, _: &AppContext) -> Box<dyn Element> {
+            Empty::new().finish()
+        }
+
+        fn ui_name() -> &'static str {
+            "View"
+        }
+    }
+
+    impl TypedActionView for View {
+        type Action = ();
+    }
+
+    struct Model;
+
+    impl Entity for Model {
+        type Event = ();
+    }
+
+    App::test((), |mut app| async move {
+        let app = &mut app;
+
+        let (window_id, _) = app.add_window(WindowStyle::NotStealFocus, |_| View);
+        // Stands in for a long-lived singleton that never emits or notifies again.
+        let long_lived = app.add_model(|_| Model);
+        let subscribing_view = app.add_view(window_id, |_| View);
+        let subscribing_model = app.add_model(|_| Model);
+        let captured_by_view = app.add_model(|_| Model);
+        let captured_by_model = app.add_model(|_| Model);
+        let weak_captured_by_view = captured_by_view.downgrade();
+        let weak_captured_by_model = captured_by_model.downgrade();
+
+        subscribing_view.update(app, |_, ctx| {
+            let captured = captured_by_view.clone();
+            ctx.subscribe_to_model(&long_lived, move |_, _, _, _| {
+                let _ = &captured;
+            });
+            let captured = captured_by_view.clone();
+            ctx.observe(&long_lived, move |_, _, _| {
+                let _ = &captured;
+            });
+        });
+        subscribing_model.update(app, |_, ctx| {
+            let captured = captured_by_model.clone();
+            ctx.subscribe_to_model(&long_lived, move |_, _, _, _| {
+                let _ = &captured;
+            });
+            let captured = captured_by_model.clone();
+            ctx.observe(&long_lived, move |_, _, _| {
+                let _ = &captured;
+            });
+        });
+
+        app.update(|_| {
+            drop(captured_by_view);
+            drop(captured_by_model);
+            drop(subscribing_view);
+            drop(subscribing_model);
+        });
+
+        app.read(|ctx| {
+            assert!(weak_captured_by_view.upgrade(ctx).is_none());
+            assert!(weak_captured_by_model.upgrade(ctx).is_none());
+        });
+    })
+}
+
+#[test]
 fn test_focus() {
     #[derive(Default)]
     struct View {

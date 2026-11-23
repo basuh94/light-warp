@@ -3398,6 +3398,26 @@ impl AppContext {
                 break;
             }
 
+            let dropped_entities: EntityIdSet = dropped_items
+                .models
+                .iter()
+                .copied()
+                .chain(dropped_items.views.iter().map(|(_, view_id)| *view_id))
+                .collect();
+            // Callbacks are stored with the entity they listen to, so a dropped subscriber's
+            // callbacks would otherwise live until that entity next emits or notifies, which for
+            // long-lived singletons may be never. The handles those closures capture would keep
+            // whole terminal sessions alive after their tab is closed.
+            self.subscriptions.retain(|_, subscriptions| {
+                subscriptions
+                    .retain(|subscription| !subscription.subscriber_dropped(&dropped_entities));
+                !subscriptions.is_empty()
+            });
+            self.observations.retain(|_, observations| {
+                observations.retain(|observation| !observation.observer_dropped(&dropped_entities));
+                !observations.is_empty()
+            });
+
             for model_id in dropped_items.models {
                 self.models.remove(&model_id);
                 self.subscriptions.remove(&model_id);
@@ -3451,6 +3471,63 @@ impl AppContext {
 
                 autotracking::remove_view(current_window_id, view_id);
             }
+        }
+
+        self.maybe_dump_entity_counts();
+    }
+
+    /// When `LIGHT_WARP_ENTITY_DUMP` names a file, appends to it, at most every 10 seconds, the
+    /// number of live models and views per type. Used to find entities that are never released.
+    fn maybe_dump_entity_counts(&self) {
+        use std::io::Write as _;
+        use std::sync::LazyLock;
+        use std::time::{Duration, Instant};
+
+        static DUMP_PATH: LazyLock<Option<std::path::PathBuf>> =
+            LazyLock::new(|| std::env::var_os("LIGHT_WARP_ENTITY_DUMP").map(Into::into));
+        static LAST_DUMP: Mutex<Option<Instant>> = Mutex::new(None);
+
+        let Some(path) = DUMP_PATH.as_ref() else {
+            return;
+        };
+        {
+            let mut last_dump = LAST_DUMP.lock();
+            if last_dump.is_some_and(|last| last.elapsed() < Duration::from_secs(10)) {
+                return;
+            }
+            *last_dump = Some(Instant::now());
+        }
+
+        let mut counts: HashMap<String, usize> = HashMap::new();
+        for model in self.models.values() {
+            *counts
+                .entry(format!("model {}", model.type_name()))
+                .or_default() += 1;
+        }
+        for window in self.windows.values() {
+            for view in window.views.values() {
+                *counts
+                    .entry(format!("view  {}", view.ui_name()))
+                    .or_default() += 1;
+            }
+        }
+        let mut counts: Vec<_> = counts.into_iter().collect();
+        counts.sort_by(|a, b| b.1.cmp(&a.1).then_with(|| a.0.cmp(&b.0)));
+
+        let secs = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map(|duration| duration.as_secs())
+            .unwrap_or_default();
+        let mut snapshot = format!("=== {secs} models={} ===\n", self.models.len());
+        for (name, count) in counts {
+            snapshot.push_str(&format!("{count:6} {name}\n"));
+        }
+        if let Ok(mut file) = std::fs::OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(path)
+        {
+            let _ = file.write_all(snapshot.as_bytes());
         }
     }
 

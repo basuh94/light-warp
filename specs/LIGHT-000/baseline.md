@@ -77,3 +77,22 @@ Arreglo: `command::r#async::Command::spawn_for_output()` y `output()` leen la sa
 - La CPU media sube un poco (0,40 %), pero sigue siendo despreciable. Habrá que vigilarla en la prueba larga.
 
 Nota sobre los tests: el sandbox de Claude Code ejecuta los comandos dentro de un Job Object que no permite `CREATE_BREAKAWAY_FROM_JOB`. Por eso `Command::new` falla con «Acceso denegado» y los tests de procesos de `command` hay que lanzarlos fuera del job, por ejemplo con `Win32_Process.Create` vía WMI. Así pasan los 8.
+
+## Fuga: las pestañas cerradas no se liberaban (2026-11-20 / 2026-11-23)
+
+Síntoma: cada 30 s, Warp lanzaba ráfagas de 20–30 procesos (`powershell.exe -c "git symbolic-ref…"` y `git diff --shortstat`), con picos de más de 1 GB. Eran los chips de git del prompt (`GIT_REFRESH_CONFIG`, `app/src/context_chips/mod.rs`). Había **una copia por cada pestaña cerrada en la sesión**: tras abrir y cerrar 3 pestañas, las copias pasaron de 10 a 14, y siguieron así más de 4 min después de cerrar (el margen del "deshacer cierre" es de 60 s).
+
+Diagnóstico: `LIGHT_WARP_ENTITY_DUMP=<fichero>` escribe cada 10 s el número de modelos y vistas vivos por tipo (`AppContext::maybe_dump_entity_counts`). Tras cerrar 3 pestañas, las vistas se liberaban, pero quedaban 3 copias de 10 modelos por terminal: `Sessions`, `CurrentPrompt`, `PromptType`, `InputBufferModel`…
+
+Causa: WarpUI guarda cada suscripción u observación en la lista del emisor. Al morir el suscriptor, su callback solo se descartaba la siguiente vez que el emisor emitía. Con emisores singleton que casi nunca emiten, los callbacks (y los `ModelHandle` que capturan) vivían para siempre.
+
+Arreglo: `remove_dropped_items` purga de todas las listas las suscripciones y observaciones de los modelos y vistas liberados. Test: `test_dropping_subscribers_releases_handles_captured_by_their_callbacks` (falla sin el arreglo).
+
+Resultado tras abrir y cerrar 3 pestañas:
+
+| | Antes | Después |
+|---|---|---|
+| Tipos de modelo retenidos por cada pestaña cerrada | 10 | 4 |
+| `CurrentPrompt` (sondeo de git cada 30 s) | retenido | liberado |
+
+Pendiente: siguen retenidos `BlocklistAIContextModel` → `ConversationSelection` → `AgentViewController` → `EphemeralMessageModel` (1 de cada por pestaña). No es un ciclo directo entre ellos; falta encontrar qué retiene `BlocklistAIContextModel`.
