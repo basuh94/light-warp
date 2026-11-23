@@ -2275,10 +2275,12 @@ impl AISettings {
     }
 
     pub fn is_any_ai_enabled(&self, app: &AppContext) -> bool {
-        // Disable AI for anonymous and logged-out users.
-        let is_anonymous_or_logged_out = AuthStateProvider::as_ref(app)
-            .get()
-            .is_anonymous_or_logged_out();
+        // Disable AI for anonymous and logged-out users, unless requests are served by a local
+        // model, which needs no Warp account.
+        let is_anonymous_or_logged_out = !warp_core::channel::ChannelState::is_offline()
+            && AuthStateProvider::as_ref(app)
+                .get()
+                .is_anonymous_or_logged_out();
 
         *self.is_any_ai_enabled
             && !is_anonymous_or_logged_out

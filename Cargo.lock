@@ -7825,6 +7825,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "light_llm"
+version = "0.1.0"
+dependencies = [
+ "async-compat",
+ "async-stream",
+ "bytes",
+ "futures",
+ "http_client",
+ "mockito",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.17",
+]
+
+[[package]]
 name = "line-clipping"
 version = "0.3.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -15445,6 +15461,7 @@ dependencies = [
  "lazy_static",
  "libc",
  "libsqlite3-sys",
+ "light_llm",
  "line-ending",
  "local_control",
  "log",

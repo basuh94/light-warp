@@ -84,7 +84,7 @@ impl WarpServerConfig {
 
 /// Port 9 is the discard service, which is not listening on Windows or typical Unix hosts, so
 /// connections are refused right away instead of timing out.
-const OFFLINE_HTTP_URL: &str = "http://127.0.0.1:9";
+pub(super) const OFFLINE_HTTP_URL: &str = "http://127.0.0.1:9";
 const OFFLINE_WS_URL: &str = "ws://127.0.0.1:9/graphql/v2";
 
 #[derive(Debug, Deserialize, Serialize)]

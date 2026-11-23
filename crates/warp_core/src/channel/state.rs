@@ -118,6 +118,13 @@ impl ChannelState {
         Ok(())
     }
 
+    /// Whether this build is configured to reach no Warp servers (see
+    /// [`WarpServerConfig::offline`](super::WarpServerConfig::offline)), in which case agent
+    /// requests are served by a locally hosted model instead.
+    pub fn is_offline() -> bool {
+        Self::server_root_url() == super::config::OFFLINE_HTTP_URL
+    }
+
     pub fn uses_staging_server() -> bool {
         let Ok(url) = Url::parse(Self::server_root_url().as_ref()) else {
             return false;

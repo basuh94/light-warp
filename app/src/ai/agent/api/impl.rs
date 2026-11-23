@@ -19,6 +19,10 @@ pub async fn generate_multi_agent_output(
     team_scope: RequestTeamScope,
     cancellation_rx: futures::channel::oneshot::Receiver<()>,
 ) -> Result<ResponseStream, ConvertToAPITypeError> {
+    if super::local::is_enabled() {
+        return super::local::generate_local_agent_output(params, cancellation_rx).await;
+    }
+
     let supported_tools = params
         .supported_tools_override
         .take()
