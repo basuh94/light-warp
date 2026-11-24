@@ -12,10 +12,8 @@ use warp_multi_agent_api::message::tool_call::{RunShellCommand, Tool};
 use warp_multi_agent_api::message::tool_call_result::Result as ToolResult;
 use warp_multi_agent_api::{RunShellCommandResult, ShellCommandFinished, run_shell_command_result};
 
-use super::{
-    StreamKind, TurnInput, TurnWriter, command_from_tool_call, describe_command_result,
-    history_messages, root_task, system_prompt, turn_inputs,
-};
+use super::tools::{LocalTool, ToolOutcome};
+use super::{StreamKind, TurnInput, TurnWriter, history_messages, root_task, system_prompt, turn_inputs};
 
 fn message(kind: MessageKind) -> Message {
     Message {
@@ -219,9 +217,9 @@ fn turn_inputs_reads_command_results() {
 
     assert_eq!(
         turn_inputs(&input),
-        vec![TurnInput::CommandResult {
+        vec![TurnInput::ToolResult {
             tool_call_id: "call-1".to_owned(),
-            result: finished_command("a.txt", 0),
+            outcome: ToolOutcome::Command(finished_command("a.txt", 0)),
         }]
     );
 }
@@ -274,48 +272,14 @@ fn history_attaches_commands_to_the_assistant_and_results_as_tool_messages() {
 }
 
 #[test]
-fn command_from_tool_call_accepts_object_and_encoded_arguments() {
-    let call = |name: &str, arguments: serde_json::Value| FunctionCall {
-        name: name.to_owned(),
-        arguments,
-    };
-
-    assert_eq!(
-        command_from_tool_call(&call("run_shell_command", json!({"command": " ls -la "}))),
-        Some("ls -la".to_owned())
-    );
-    assert_eq!(
-        command_from_tool_call(&call("run_shell_command", json!("{\"command\":\"dir\"}"))),
-        Some("dir".to_owned())
-    );
-    assert_eq!(
-        command_from_tool_call(&call("run_shell_command", json!({"command": "  "}))),
-        None
-    );
-    assert_eq!(
-        command_from_tool_call(&call("delete_everything", json!({"command": "ls"}))),
-        None
-    );
-}
-
-#[test]
-fn long_command_output_keeps_its_end() {
-    let output = format!("{}FIN", "x".repeat(10_000));
-
-    let described = describe_command_result(&finished_command(&output, 1));
-
-    assert!(described.starts_with("Exit code: 1\n[Output truncated"));
-    assert!(described.ends_with("FIN"));
-    assert!(described.len() < 8_200);
-}
-
-#[test]
 #[allow(deprecated)]
 fn tool_calls_always_require_approval() {
     let mut writer = TurnWriter::new("root".to_owned(), "request".to_owned());
     writer.chunk(StreamKind::Output, "Voy a mirar.".to_owned());
 
-    let action = writer.tool_call("ls".to_owned());
+    let action = writer.tool_call(LocalTool::RunShellCommand {
+        command: "ls".to_owned(),
+    });
 
     let Some(client_action::Action::AddMessagesToTask(added)) = action.action else {
         panic!("a tool call should add a message");
@@ -336,4 +300,47 @@ fn tool_calls_always_require_approval() {
             .and_then(|action| action.action),
         Some(client_action::Action::AddMessagesToTask(_))
     ));
+}
+
+#[test]
+fn history_names_tool_results_after_the_call_that_produced_them() {
+    use warp_multi_agent_api::message::tool_call::{ReadFiles, read_files};
+    use warp_multi_agent_api::{FileContent, ReadFilesResult, read_files_result};
+
+    let tasks = vec![root_with(vec![
+        message(MessageKind::ToolCall(ToolCall {
+            tool_call_id: "call-1".to_owned(),
+            tool: Some(Tool::ReadFiles(ReadFiles {
+                files: vec![read_files::File {
+                    name: "a.txt".to_owned(),
+                    line_ranges: vec![],
+                }],
+            })),
+        })),
+        message(MessageKind::ToolCallResult(ToolCallResultMessage {
+            tool_call_id: "call-1".to_owned(),
+            context: None,
+            result: Some(ToolResult::ReadFiles(ReadFilesResult {
+                result: Some(read_files_result::Result::TextFilesSuccess(
+                    read_files_result::TextFilesSuccess {
+                        files: vec![FileContent {
+                            file_path: "a.txt".to_owned(),
+                            content: "hola".to_owned(),
+                            line_range: None,
+                        }],
+                        failed_reads: vec![],
+                    },
+                )),
+            })),
+        })),
+    ])];
+
+    let history = history_messages(&tasks);
+
+    assert_eq!(history.len(), 2);
+    assert_eq!(history[0].tool_calls[0].function.name, "read_files");
+    assert_eq!(
+        history[1],
+        ChatMessage::tool_result("read_files", "File a.txt:\nhola")
+    );
 }

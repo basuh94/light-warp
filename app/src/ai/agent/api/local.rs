@@ -7,44 +7,40 @@
 use std::sync::Arc;
 use std::time::SystemTime;
 
+use std::collections::HashMap;
+
 use futures_util::StreamExt as _;
-use light_llm::{ChatEvent, ChatMessage, ChatOptions, ChatRequest, FunctionCall, Role};
+use light_llm::{ChatEvent, ChatMessage, ChatOptions, ChatRequest, Role};
 use prost_types::FieldMask;
-use serde_json::{Value, json};
 use uuid::Uuid;
 use warp_multi_agent_api as api;
 use warp_multi_agent_api::client_action::{AddMessagesToTask, AppendToMessageContent, CreateTask};
-use warp_multi_agent_api::message::tool_call::{RunShellCommand, Tool, run_shell_command};
-use warp_multi_agent_api::message::tool_call_result::Result as ToolResult;
 use warp_multi_agent_api::message::{
     AgentOutput, AgentReasoning, Message as MessageKind, ToolCall, ToolCallResult, UserQuery,
 };
 use warp_multi_agent_api::response_event::{StreamFinished, StreamInit, stream_finished};
-use warp_multi_agent_api::{
-    ClientAction, Message, ResponseEvent, RunShellCommandResult, Task, client_action,
-    run_shell_command_result,
-};
+use warp_multi_agent_api::{ClientAction, Message, ResponseEvent, Task, client_action};
 
 use super::convert_to::convert_input;
 use super::{ConvertToAPITypeError, RequestParams, ResponseStream};
 use crate::ai::local_models::{self, LocalModelConfig};
 use crate::server::server_api::AIApiError;
 
+#[path = "local_tools.rs"]
+mod tools;
+
+use tools::{LocalTool, ToolOutcome};
+
 const AGENT_OUTPUT_TEXT_PATH: &str = "agent_output.text";
 const AGENT_REASONING_TEXT_PATH: &str = "agent_reasoning.reasoning";
-
-const RUN_SHELL_COMMAND_TOOL: &str = "run_shell_command";
-/// Command output beyond this many characters is cut from the start, keeping the end, which
-/// usually holds the result or the error.
-const MAX_COMMAND_OUTPUT_CHARS: usize = 8_000;
 
 /// An input of the current turn.
 #[derive(Debug, Clone, PartialEq)]
 enum TurnInput {
     Query(String),
-    CommandResult {
+    ToolResult {
         tool_call_id: String,
-        result: RunShellCommandResult,
+        outcome: ToolOutcome,
     },
 }
 
@@ -122,7 +118,12 @@ pub async fn generate_local_agent_output(
 
     let mut messages = vec![ChatMessage::system(system_prompt(input.context.as_ref()))];
     messages.extend(history_messages(&params.tasks));
-    messages.extend(inputs.iter().map(chat_message_for_input));
+    let tool_names = tool_names(&params.tasks);
+    messages.extend(
+        inputs
+            .iter()
+            .map(|turn_input| chat_message_for_input(turn_input, &tool_names)),
+    );
     let client = config.client();
 
     let stream = async_stream::stream! {
@@ -148,7 +149,7 @@ pub async fn generate_local_agent_output(
         let request = ChatRequest {
             model: model.clone(),
             messages,
-            tools: vec![run_shell_command_tool()],
+            tools: tools::definitions(),
             stream: true,
             options: Some(ChatOptions {
                 num_ctx: Some(config.context_window),
@@ -173,12 +174,12 @@ pub async fn generate_local_agent_output(
                         yield Ok(client_actions(vec![action]));
                     }
                 }
-                Ok(ChatEvent::ToolCall(call)) => match command_from_tool_call(&call.function) {
-                    Some(command) => {
-                        yield Ok(client_actions(vec![writer.tool_call(command)]));
+                Ok(ChatEvent::ToolCall(call)) => match LocalTool::from_function_call(&call.function) {
+                    Some(tool) => {
+                        yield Ok(client_actions(vec![writer.tool_call(tool)]));
                     }
                     None => log::warn!(
-                        "The local model called an unsupported tool: {}",
+                        "The local model made an unsupported or malformed call to {}",
                         call.function.name
                     ),
                 },
@@ -204,11 +205,10 @@ fn root_task(tasks: &[Task]) -> Option<&Task> {
     })
 }
 
-/// The user queries and command results in this turn's input. Other inputs are not supported by
+/// The user queries and tool results in this turn's input. Other inputs are not supported by
 /// the local model and are dropped.
 fn turn_inputs(input: &api::request::Input) -> Vec<TurnInput> {
     use api::request::input::Type;
-    use api::request::input::tool_call_result::Result as RequestToolResult;
     use api::request::input::user_inputs::user_input::Input as UserInput;
 
     #[allow(deprecated)]
@@ -218,15 +218,14 @@ fn turn_inputs(input: &api::request::Input) -> Vec<TurnInput> {
             .iter()
             .filter_map(|input| match input.input.as_ref() {
                 Some(UserInput::UserQuery(query)) => Some(TurnInput::Query(query.query.clone())),
-                Some(UserInput::ToolCallResult(tool_result)) => match tool_result.result.as_ref() {
-                    Some(RequestToolResult::RunShellCommand(result)) => {
-                        Some(TurnInput::CommandResult {
-                            tool_call_id: tool_result.tool_call_id.clone(),
-                            result: result.clone(),
-                        })
-                    }
-                    _ => None,
-                },
+                Some(UserInput::ToolCallResult(tool_result)) => tool_result
+                    .result
+                    .as_ref()
+                    .and_then(ToolOutcome::from_request)
+                    .map(|outcome| TurnInput::ToolResult {
+                        tool_call_id: tool_result.tool_call_id.clone(),
+                        outcome,
+                    }),
                 _ => None,
             })
             .collect(),
@@ -243,33 +242,65 @@ fn echo(turn_input: &TurnInput, context: &Option<api::InputContext>) -> MessageK
             context: context.clone(),
             ..Default::default()
         }),
-        TurnInput::CommandResult {
+        TurnInput::ToolResult {
             tool_call_id,
-            result,
+            outcome,
         } => MessageKind::ToolCallResult(ToolCallResult {
             tool_call_id: tool_call_id.clone(),
             context: context.clone(),
-            result: Some(ToolResult::RunShellCommand(result.clone())),
+            result: Some(outcome.clone().into_message()),
         }),
     }
 }
 
-fn chat_message_for_input(turn_input: &TurnInput) -> ChatMessage {
+fn chat_message_for_input(
+    turn_input: &TurnInput,
+    tool_names: &HashMap<String, &'static str>,
+) -> ChatMessage {
     match turn_input {
         TurnInput::Query(query) => ChatMessage::user(query),
-        TurnInput::CommandResult { result, .. } => {
-            ChatMessage::tool_result(RUN_SHELL_COMMAND_TOOL, describe_command_result(result))
-        }
+        TurnInput::ToolResult {
+            tool_call_id,
+            outcome,
+        } => tool_result_message(tool_call_id, outcome, tool_names),
     }
 }
 
+fn tool_result_message(
+    tool_call_id: &str,
+    outcome: &ToolOutcome,
+    tool_names: &HashMap<String, &'static str>,
+) -> ChatMessage {
+    let name = tool_names
+        .get(tool_call_id)
+        .copied()
+        .unwrap_or_else(|| outcome.default_tool_name());
+    ChatMessage::tool_result(name, outcome.describe())
+}
+
+/// The name of the local tool each recorded tool call used, keyed by tool call id.
+fn tool_names(tasks: &[Task]) -> HashMap<String, &'static str> {
+    root_task(tasks)
+        .into_iter()
+        .flat_map(|root| &root.messages)
+        .filter_map(|message| match message.message.as_ref() {
+            Some(MessageKind::ToolCall(call)) => {
+                let tool = LocalTool::from_api_tool(call.tool.as_ref()?)?;
+                Some((call.tool_call_id.clone(), tool.name()))
+            }
+            _ => None,
+        })
+        .collect()
+}
+
 /// Rebuilds the chat history from the root task, merging consecutive output chunks and
-/// attaching each command the agent ran to the assistant message that requested it.
+/// attaching each tool the agent called to the assistant message that called it.
 fn history_messages(tasks: &[Task]) -> Vec<ChatMessage> {
     let mut messages: Vec<ChatMessage> = Vec::new();
     let Some(root) = root_task(tasks) else {
         return messages;
     };
+    let tool_names = tool_names(tasks);
     for message in &root.messages {
         match message.message.as_ref() {
             Some(MessageKind::UserQuery(query)) => messages.push(ChatMessage::user(&query.query)),
@@ -280,14 +311,11 @@ fn history_messages(tasks: &[Task]) -> Vec<ChatMessage> {
                 _ => messages.push(ChatMessage::assistant(&output.text)),
             },
             Some(MessageKind::ToolCall(call)) => {
-                let Some(Tool::RunShellCommand(run)) = call.tool.as_ref() else {
+                let Some(tool) = call.tool.as_ref().and_then(LocalTool::from_api_tool) else {
                     continue;
                 };
                 let tool_call = light_llm::ToolCall {
-                    function: FunctionCall {
-                        name: RUN_SHELL_COMMAND_TOOL.to_owned(),
-                        arguments: json!({ "command": run.command }),
-                    },
+                    function: tool.to_function_call(),
                 };
                 match messages.last_mut() {
                     Some(last) if last.role == Role::Assistant => last.tool_calls.push(tool_call),
@@ -298,10 +326,12 @@ fn history_messages(tasks: &[Task]) -> Vec<ChatMessage> {
                 }
             }
             Some(MessageKind::ToolCallResult(result)) => {
-                if let Some(ToolResult::RunShellCommand(result)) = result.result.as_ref() {
-                    messages.push(ChatMessage::tool_result(
-                        RUN_SHELL_COMMAND_TOOL,
-                        describe_command_result(result),
+                if let Some(outcome) = result.result.as_ref().and_then(ToolOutcome::from_message)
+                {
+                    messages.push(tool_result_message(
+                        &result.tool_call_id,
+                        &outcome,
+                        &tool_names,
                     ));
                 }
             }
@@ -311,101 +341,19 @@ fn history_messages(tasks: &[Task]) -> Vec<ChatMessage> {
     messages
 }
 
-fn run_shell_command_tool() -> light_llm::Tool {
-    light_llm::Tool::function(
-        RUN_SHELL_COMMAND_TOOL,
-        "Runs a command in the user's terminal and returns its output and exit code. The user \
-         reviews and approves each command before it runs.",
-        json!({
-            "type": "object",
-            "properties": {
-                "command": {
-                    "type": "string",
-                    "description": "The command to run, written for the user's shell.",
-                },
-            },
-            "required": ["command"],
-        }),
-    )
-}
-
-/// The command a `run_shell_command` call asks to run, if the call is well formed.
-fn command_from_tool_call(call: &FunctionCall) -> Option<String> {
-    if call.name != RUN_SHELL_COMMAND_TOOL {
-        return None;
-    }
-    // Some models send the arguments as a JSON-encoded string rather than an object.
-    let decoded;
-    let arguments = match call.arguments.as_str() {
-        Some(encoded) => {
-            decoded = serde_json::from_str::<Value>(encoded).ok()?;
-            &decoded
-        }
-        None => &call.arguments,
-    };
-    arguments
-        .get("command")?
-        .as_str()
-        .map(str::trim)
-        .filter(|command| !command.is_empty())
-        .map(str::to_owned)
-}
-
-/// Describes a command's outcome for the model.
-fn describe_command_result(result: &RunShellCommandResult) -> String {
-    use run_shell_command_result::Result as Outcome;
-
-    match result.result.as_ref() {
-        Some(Outcome::CommandFinished(finished)) => format!(
-            "Exit code: {}\n{}",
-            finished.exit_code,
-            truncate_command_output(&finished.output)
-        ),
-        Some(Outcome::LongRunningCommandSnapshot(_)) => {
-            "The command is still running in the user's terminal.".to_owned()
-        }
-        Some(Outcome::PermissionDenied(_)) => {
-            "The command was not run because it is on the user's deny list.".to_owned()
-        }
-        Some(Outcome::TerminalBusy(_)) => {
-            "The command was not run because the terminal is busy with another command.".to_owned()
-        }
-        #[allow(deprecated)]
-        None => format!(
-            "Exit code: {}\n{}",
-            result.exit_code,
-            truncate_command_output(&result.output)
-        ),
-    }
-}
-
-fn truncate_command_output(output: &str) -> String {
-    let char_count = output.chars().count();
-    if char_count <= MAX_COMMAND_OUTPUT_CHARS {
-        return output.to_owned();
-    }
-    let start = output
-        .char_indices()
-        .nth(char_count - MAX_COMMAND_OUTPUT_CHARS)
-        .map(|(index, _)| index)
-        .unwrap_or_default();
-    format!(
-        "[Output truncated: showing the last {MAX_COMMAND_OUTPUT_CHARS} of {char_count} characters]\n{}",
-        &output[start..]
-    )
-}
-
 fn system_prompt(context: Option<&api::InputContext>) -> String {
     let mut prompt = String::from(
         "You are an assistant built into the Warp terminal. Answer concisely and accurately. \
          Put commands and code in fenced Markdown code blocks. Reply in the language the user \
          writes in.\n\
-         You can run commands in the user's terminal with the run_shell_command tool. Use it \
-         when the task needs information from the user's machine or asks you to do something \
-         there; answer directly when it does not. The user approves every command before it \
-         runs. Run one command at a time, prefer commands that only read, and never run \
-         destructive commands unless the user asked for them. After a command runs you get its \
-         output; use it to continue the task or to answer.",
+         You have tools to work on the user's machine: read_files, grep and find_files to \
+         look at files, edit_file and create_file to change them, and run_shell_command for \
+         anything else. Use them when the task needs information from the machine or asks you \
+         to change something there; answer directly when it does not. Prefer the file tools \
+         over shell commands to read and search files, and read a file before editing it. The \
+         user approves commands and file changes before they happen. Call one tool at a time \
+         and never run destructive commands unless the user asked for them. After a tool runs \
+         you get its result; use it to continue the task or to answer.",
     );
     let Some(context) = context else {
         return prompt;
@@ -541,22 +489,12 @@ impl TurnWriter {
         Some(self.add_messages(vec![message]))
     }
 
-    /// Asks the client to run `command`. The command is marked risky and not read-only, which
-    /// makes the client ask the user for approval unless their allowlist covers it.
-    #[allow(deprecated)]
-    fn tool_call(&mut self, command: String) -> ClientAction {
+    /// Asks the client to run `tool`.
+    fn tool_call(&mut self, tool: LocalTool) -> ClientAction {
         self.open_message = None;
         let message = self.new_message(MessageKind::ToolCall(ToolCall {
             tool_call_id: Uuid::new_v4().to_string(),
-            tool: Some(Tool::RunShellCommand(RunShellCommand {
-                command,
-                is_read_only: false,
-                is_risky: true,
-                wait_until_complete_value: Some(
-                    run_shell_command::WaitUntilCompleteValue::WaitUntilComplete(true),
-                ),
-                ..Default::default()
-            })),
+            tool: Some(tool.into_api_tool()),
         }));
         self.add_messages(vec![message])
     }
