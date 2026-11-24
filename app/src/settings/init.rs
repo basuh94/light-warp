@@ -18,10 +18,11 @@ use super::{
     AISettings, AccessibilitySettings, AliasExpansionSettings, AppEditorSettings,
     BlockVisibilitySettings, ChangelogSettings, CodeSettings, DebugSettings, EmacsBindingsSettings,
     FontSettings, FontSettingsChangedEvent, GPUSettings, InputBoxType, InputModeSettings,
-    InputSettings, LocalControlSettings, PaneSettings, SameLinePromptBlockSettings, ScrollSettings,
-    SelectionSettings, SharedObjectLimitBannerSettings, SshSettings, ThemeSettings,
-    TuiAutoupdateSettings, TuiThemeSettings, TuiVoiceSettings, TuiZeroStateSettings,
-    VimBannerSettings, WarpDrivePrivacySettings,
+    InputSettings, LanguageSettings, LocalControlSettings, PaneSettings,
+    SameLinePromptBlockSettings, ScrollSettings, SelectionSettings,
+    SharedObjectLimitBannerSettings, SshSettings, ThemeSettings, TuiAutoupdateSettings,
+    TuiThemeSettings, TuiVoiceSettings, TuiZeroStateSettings, VimBannerSettings,
+    WarpDrivePrivacySettings,
 };
 use crate::ai::cloud_agent_settings::CloudAgentSettings;
 use crate::appearance;
@@ -73,6 +74,7 @@ pub fn register_all_settings(ctx: &mut AppContext) {
     CodeSettings::register(ctx);
     LigatureSettings::register(ctx);
     GPUSettings::register(ctx);
+    LanguageSettings::register(ctx);
     ChangelogSettings::register(ctx);
     GeneralSettings::register(ctx);
     AISettings::register_and_subscribe_to_events(ctx);
@@ -185,6 +187,9 @@ pub fn init(
         user_default_shell_unsupported_banner_state,
         settings_file_error,
     };
+
+    // Views build their text as they are created, so the language must be set before any are.
+    light_i18n::set_language(LanguageSettings::as_ref(ctx).language.language());
 
     let gpu_settings = GPUSettings::as_ref(ctx);
     let prefer_low_power_gpu = *gpu_settings.prefer_low_power_gpu.value();

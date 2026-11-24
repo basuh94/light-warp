@@ -103,6 +103,7 @@ pub fn initialize_settings_for_tests_with_mode_and_headlessness(
     FontSettings::register(app);
     GeneralSettings::register(app);
     GPUSettings::register(app);
+    crate::settings::LanguageSettings::register(app);
     InputModeSettings::register(app);
     InputSettings::register(app);
     KeysSettings::register(app);

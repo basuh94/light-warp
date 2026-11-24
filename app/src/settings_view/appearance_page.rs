@@ -510,6 +510,7 @@ pub enum AppearancePageAction {
     UpdateAltScreenPaddingMode(AltScreenPaddingMode),
     SetTabCloseButtonPosition(TabCloseButtonPosition),
     SetZoomLevel(u16),
+    SetLanguage(crate::settings::LanguagePreference),
     ResetZoomLevel,
     SetDefaultDirectoryTabColor {
         path: PathBuf,
@@ -546,6 +547,7 @@ pub struct AppearanceSettingsPageView {
     workspace_decorations_dropdown: ViewHandle<Dropdown<AppearancePageAction>>,
     tab_close_button_position_dropdown: ViewHandle<Dropdown<AppearancePageAction>>,
     zoom_level_dropdown: ViewHandle<Dropdown<AppearancePageAction>>,
+    language_dropdown: ViewHandle<Dropdown<AppearancePageAction>>,
     zoom_reset_button_mouse_state: MouseStateHandle,
     available_families: HashMap<String, (Option<FamilyId>, FontType)>,
     view_font_type: FontType,
@@ -740,6 +742,12 @@ impl TypedActionView for AppearanceSettingsPageView {
             }
             SetTabCloseButtonPosition(position) => {
                 self.update_tab_close_button_position(*position, ctx);
+            }
+            SetLanguage(language) => {
+                crate::settings::LanguageSettings::handle(ctx).update(ctx, |settings, ctx| {
+                    report_if_error!(settings.language.set_value(*language, ctx));
+                });
+                ctx.notify();
             }
             SetZoomLevel(zoom_level) => {
                 WindowSettings::handle(ctx).update(ctx, |window_settings, ctx| {
@@ -1334,6 +1342,7 @@ impl AppearanceSettingsPageView {
             ),
             tab_close_button_position_dropdown: Self::build_tab_close_button_position_dropdown(ctx),
             zoom_level_dropdown: Self::build_zoom_level_dropdown(ctx),
+            language_dropdown: Self::build_language_dropdown(ctx),
             zoom_reset_button_mouse_state: MouseStateHandle::default(),
             available_families: Default::default(),
             view_font_type: Default::default(),
@@ -1354,12 +1363,16 @@ impl AppearanceSettingsPageView {
 
     fn build_page(ctx: &mut ViewContext<Self>) -> PageType<Self> {
         let mut categories = vec![Category::new(
+            light_i18n::tr("Language"),
+            vec![Box::new(LanguageWidget)],
+        )];
+        categories.push(Category::new(
             "Themes",
             vec![
                 Box::new(CreateCustomThemeWidget::default()),
                 Box::new(ThemeSelectWidget::default()),
             ],
-        )];
+        ));
 
         if AppIconSettings::as_ref(ctx).is_supported_on_current_platform() {
             categories.push(Category::new(
@@ -2655,6 +2668,28 @@ impl AppearanceSettingsPageView {
             }).collect(), ctx);
             dropdown.set_selected_by_index(selected_index, ctx);
 
+            dropdown
+        })
+    }
+
+    fn build_language_dropdown(
+        ctx: &mut ViewContext<Self>,
+    ) -> ViewHandle<Dropdown<AppearancePageAction>> {
+        use crate::settings::{LanguagePreference, LanguageSettings};
+
+        ctx.add_typed_action_view(|ctx| {
+            let mut dropdown = Dropdown::new(ctx);
+            dropdown.set_items(
+                LanguagePreference::ALL
+                    .into_iter()
+                    .map(|language| {
+                        DropdownItem::new(language.label(), AppearancePageAction::SetLanguage(language))
+                    })
+                    .collect(),
+                ctx,
+            );
+            let current = *LanguageSettings::as_ref(ctx).language;
+            dropdown.set_selected_by_action(AppearancePageAction::SetLanguage(current), ctx);
             dropdown
         })
     }
@@ -4800,6 +4835,40 @@ impl SettingsWidget for BlinkingCursorWidget {
                 })
                 .finish(),
             None,
+        )
+    }
+}
+
+struct LanguageWidget;
+
+impl SettingsWidget for LanguageWidget {
+    type View = AppearanceSettingsPageView;
+
+    fn search_terms(&self) -> &str {
+        "language idioma english spanish español translation"
+    }
+
+    fn render(
+        &self,
+        view: &Self::View,
+        appearance: &Appearance,
+        app: &AppContext,
+    ) -> Box<dyn Element> {
+        use crate::settings::UiLanguage;
+
+        render_dropdown_item(
+            appearance,
+            light_i18n::tr("Interface language"),
+            Some(light_i18n::tr("Takes effect after restarting Warp.")),
+            None,
+            LocalOnlyIconState::for_setting(
+                UiLanguage::storage_key(),
+                UiLanguage::sync_to_cloud(),
+                &mut view.local_only_icon_tooltip_states.borrow_mut(),
+                app,
+            ),
+            None,
+            &view.language_dropdown,
         )
     }
 }

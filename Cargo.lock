@@ -7825,6 +7825,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "light_i18n"
+version = "0.1.0"
+dependencies = [
+ "serde_json",
+ "windows 0.62.2",
+]
+
+[[package]]
 name = "light_llm"
 version = "0.1.0"
 dependencies = [
@@ -15461,6 +15469,7 @@ dependencies = [
  "lazy_static",
  "libc",
  "libsqlite3-sys",
+ "light_i18n",
  "light_llm",
  "line-ending",
  "local_control",

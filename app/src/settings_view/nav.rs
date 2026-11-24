@@ -73,7 +73,7 @@ impl SettingsUmbrella {
             .button(ButtonVariant::Text, self.button_state_handle.clone())
             .with_text_and_icon_label(TextAndIcon::new(
                 TextAndIconAlignment::TextFirst,
-                self.label.to_string(),
+                light_i18n::tr(self.label).to_string(),
                 chevron_icon.to_warpui_icon(text_color),
                 MainAxisSize::Max,
                 MainAxisAlignment::SpaceBetween,
