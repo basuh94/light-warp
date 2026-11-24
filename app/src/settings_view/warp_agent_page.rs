@@ -3235,9 +3235,11 @@ fn render_global_ai_toggle(
     let is_ai_disabled_due_to_remote_session_org_policy =
         AISettings::as_ref(app).is_ai_disabled_due_to_remote_session_org_policy(app);
 
-    let is_anonymous = AuthStateProvider::as_ref(app)
-        .get()
-        .is_anonymous_or_logged_out();
+    // Offline builds have no accounts; their AI runs on a local model.
+    let is_anonymous = !ChannelState::is_offline()
+        && AuthStateProvider::as_ref(app)
+            .get()
+            .is_anonymous_or_logged_out();
 
     let mut row = Flex::row().with_cross_axis_alignment(CrossAxisAlignment::Center);
 

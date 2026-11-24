@@ -10057,10 +10057,16 @@ impl Workspace {
             }
         }
 
+        // Offline builds have no Warp account and fetch nothing from Warp's servers.
+        let is_offline = ChannelState::is_offline();
+        if !is_offline {
+            items.push(
+                MenuItemFields::new("What's new")
+                    .with_on_select_action(WorkspaceAction::ViewLatestChangelog)
+                    .into_item(),
+            );
+        }
         items.extend([
-            MenuItemFields::new("What's new")
-                .with_on_select_action(WorkspaceAction::ViewLatestChangelog)
-                .into_item(),
             MenuItemFields::new("Settings")
                 .with_on_select_action(WorkspaceAction::ShowSettings)
                 .into_item(),
@@ -10071,10 +10077,14 @@ impl Workspace {
             MenuItemFields::new("Documentation")
                 .with_on_select_action(WorkspaceAction::ViewUserDocs)
                 .into_item(),
-            MenuItemFields::new("Feedback")
-                .with_on_select_action(WorkspaceAction::SendFeedback)
-                .into_item(),
         ]);
+        if !is_offline {
+            items.push(
+                MenuItemFields::new("Feedback")
+                    .with_on_select_action(WorkspaceAction::SendFeedback)
+                    .into_item(),
+            );
+        }
 
         #[cfg(not(target_family = "wasm"))]
         items.push(
@@ -10082,6 +10092,10 @@ impl Workspace {
                 .with_on_select_action(WorkspaceAction::ViewLogs)
                 .into_item(),
         );
+
+        if is_offline {
+            return items;
+        }
 
         items.extend([
             MenuItemFields::new("Join our Slack community")
@@ -24086,7 +24100,7 @@ impl Workspace {
                 entry_focus: GlobalSearchEntryFocus::Results,
             });
         }
-        if *WarpDriveSettings::as_ref(ctx).enable_warp_drive {
+        if *WarpDriveSettings::as_ref(ctx).enable_warp_drive && !ChannelState::is_offline() {
             views.push(ToolPanelView::WarpDrive);
         }
         views

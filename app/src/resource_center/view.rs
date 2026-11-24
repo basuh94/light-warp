@@ -1,4 +1,5 @@
 use vec1::{Vec1, vec1};
+use warp_core::channel::ChannelState;
 use warp_core::features::FeatureFlag;
 use warp_core::ui::builder::AnimatedButtonOptions;
 use warpui::elements::{
@@ -448,14 +449,15 @@ impl ResourceCenterView {
 
     fn render_footer(&self, appearance: &Appearance) -> Box<dyn Element> {
         let docs_button = self.render_footer_button(ResourceCenterFooterItem::Docs, appearance);
-        let slack_button = self.render_footer_button(ResourceCenterFooterItem::Slack, appearance);
-        let feedback_button =
-            self.render_footer_button(ResourceCenterFooterItem::Feedback, appearance);
+        let mut footer = Flex::row().with_child(docs_button);
+        if !ChannelState::is_offline() {
+            footer.add_child(self.render_footer_button(ResourceCenterFooterItem::Slack, appearance));
+            footer.add_child(
+                self.render_footer_button(ResourceCenterFooterItem::Feedback, appearance),
+            );
+        }
 
-        let footer = Flex::row()
-            .with_child(docs_button)
-            .with_child(slack_button)
-            .with_child(feedback_button)
+        let footer = footer
             .with_main_axis_size(MainAxisSize::Max)
             .with_main_axis_alignment(MainAxisAlignment::SpaceEvenly)
             .with_cross_axis_alignment(CrossAxisAlignment::Center)

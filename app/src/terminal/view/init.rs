@@ -569,7 +569,8 @@ pub fn init(app: &mut AppContext) {
         .with_custom_action(CustomAction::CreateBlockPermalink)
         .with_context_predicate(
             id!("Terminal") & eq!("TerminalView_BlockSelectionCardinality", "One"),
-        ),
+        )
+        .with_enabled(|| !warp_core::channel::ChannelState::is_offline()),
         EditableBinding::new(
             "terminal:bookmark_selected_block",
             "Bookmark selected block",

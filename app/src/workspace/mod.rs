@@ -1692,13 +1692,15 @@ fn add_overflow_menu_items_as_editable_binding(app: &mut AppContext) {
             WorkspaceAction::ShowReferralSettingsPage,
         )
         .with_context_predicate(id!("Workspace"))
+        .with_enabled(|| !ChannelState::is_offline())
         .with_custom_action(CustomAction::ReferAFriend),
         EditableBinding::new(
             "workspace:link_to_slack",
             "Join our Slack community (opens external link)",
             WorkspaceAction::JoinSlack,
         )
-        .with_context_predicate(id!("Workspace")),
+        .with_context_predicate(id!("Workspace"))
+        .with_enabled(|| !ChannelState::is_offline()),
         EditableBinding::new(
             "workspace:link_to_user_docs",
             "View user docs (opens external link)",
@@ -1710,7 +1712,8 @@ fn add_overflow_menu_items_as_editable_binding(app: &mut AppContext) {
             BindingDescription::new("Send feedback (opens external link)"),
             WorkspaceAction::SendFeedback,
         )
-        .with_context_predicate(id!("Workspace")),
+        .with_context_predicate(id!("Workspace"))
+        .with_enabled(|| !ChannelState::is_offline()),
         #[cfg(not(target_family = "wasm"))]
         EditableBinding::new(
             "workspace:view_logs",

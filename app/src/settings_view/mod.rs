@@ -339,6 +339,36 @@ pub enum SettingsSection {
     WarpCloudAgentAPIKeys,
 }
 
+impl SettingsSection {
+    /// Whether the section only works with a Warp account or Warp's cloud services.
+    pub fn needs_warp_cloud(self) -> bool {
+        match self {
+            Self::BillingAndUsage
+            | Self::Referrals
+            | Self::SharedBlocks
+            | Self::Teams
+            | Self::WarpDrive
+            | Self::CloudEnvironments
+            | Self::WarpCloudAgentAPIKeys => true,
+            Self::About
+            | Self::Account
+            | Self::Appearance
+            | Self::Features
+            | Self::Keybindings
+            | Self::Privacy
+            | Self::Scripting
+            | Self::Warpify
+            | Self::WarpAgent
+            | Self::AgentProfiles
+            | Self::AgentMCPServers
+            | Self::Knowledge
+            | Self::ThirdPartyCLIAgents
+            | Self::CodeIndexing
+            | Self::EditorAndCodeReview => false,
+        }
+    }
+}
+
 use std::fmt::{self, Display};
 
 use crate::util::bindings::custom_tag_to_keystroke;
@@ -1464,6 +1494,9 @@ impl SettingsView {
             Some(SettingsSection::Scripting) if !FeatureFlag::WarpControlCli.is_enabled() => {
                 SettingsSection::Account
             }
+            Some(section) if ChannelState::is_offline() && section.needs_warp_cloud() => {
+                SettingsSection::Account
+            }
             other => other.unwrap_or_default(),
         };
 
@@ -2115,6 +2148,9 @@ impl SettingsView {
     }
 
     fn should_render_page(&self, settings_page: &SettingsPage, app: &AppContext) -> bool {
+        if ChannelState::is_offline() && settings_page.section.needs_warp_cloud() {
+            return false;
+        }
         match &settings_page.view_handle {
             SettingsPageViewHandle::Main(v) => v.as_ref(app).should_render(app),
             SettingsPageViewHandle::Teams(v) => v.as_ref(app).should_render(app),

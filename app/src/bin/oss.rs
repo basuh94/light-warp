@@ -25,6 +25,7 @@ fn main() -> Result<()> {
         state = state.with_additional_features(warp_core::features::DEBUG_FLAGS);
     }
     ChannelState::set(state);
+    warp_core::context_flag::ContextFlag::set_offline();
 
     warp::run()
 }

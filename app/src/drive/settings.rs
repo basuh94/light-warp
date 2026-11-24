@@ -47,6 +47,10 @@ impl WarpDriveSettings {
     /// feature remains unavailable until then.
     pub fn is_warp_drive_available(app: &warpui::AppContext) -> bool {
         use warpui::SingletonEntity as _;
+        // Warp Drive is a cloud service; offline builds keep workflows as local files instead.
+        if warp_core::channel::ChannelState::is_offline() {
+            return false;
+        }
         !FeatureFlag::SkipFirebaseAnonymousUser.is_enabled()
             || !crate::auth::AuthStateProvider::as_ref(app)
                 .get()

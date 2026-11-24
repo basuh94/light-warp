@@ -653,6 +653,10 @@ impl SettingsWidget for AccountWidget {
         "account sign up"
     }
 
+    fn should_render(&self, _app: &AppContext) -> bool {
+        !ChannelState::is_offline()
+    }
+
     fn render(
         &self,
         view: &Self::View,

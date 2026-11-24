@@ -1,5 +1,6 @@
 use ai::api_keys::ApiKeyManager;
 use markdown_parser::{FormattedText, FormattedTextFragment, FormattedTextLine};
+use warp_core::channel::ChannelState;
 use warp_core::ui::appearance::Appearance;
 use warpui::elements::{
     ConstrainedBox, Container, CrossAxisAlignment, Flex, FormattedTextElement,
@@ -255,6 +256,10 @@ impl PromptAlertView {
     }
 
     pub fn determine_state<S: TeamScope + ?Sized>(scope: &S, app: &AppContext) -> PromptAlertState {
+        // Offline builds run AI on a local model, with no Warp account, quota or connection.
+        if ChannelState::is_offline() {
+            return PromptAlertState::NoAlert;
+        }
         // First, if the user is offline, no AI features will work.
         if !NetworkStatus::as_ref(app).is_online() {
             return PromptAlertState::NoConnection;
