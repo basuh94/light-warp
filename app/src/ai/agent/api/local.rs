@@ -353,7 +353,9 @@ fn system_prompt(context: Option<&api::InputContext>) -> String {
          over shell commands to read and search files, and read a file before editing it. The \
          user approves commands and file changes before they happen. Call one tool at a time \
          and never run destructive commands unless the user asked for them. After a tool runs \
-         you get its result; use it to continue the task or to answer.",
+         you get its result; use it to continue the task or to answer. Searching large \
+         directories such as the user's home folder is slow; search the narrowest directory \
+         that fits, and if a file is not where you expect it, ask the user where it is.",
     );
     let Some(context) = context else {
         return prompt;

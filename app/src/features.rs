@@ -6,11 +6,27 @@ pub use warp_core::features::*;
 /// Mark all features which should be enabled on the current channel as enabled.
 /// This sets global feature flag state and should never be called in a unit test.
 pub fn init_feature_flags() {
+    let offline = ChannelState::is_offline();
     for flag in enabled_features() {
-        flag.set_enabled(true);
+        if !(offline && OFFLINE_DISABLED_FLAGS.contains(&flag)) {
+            flag.set_enabled(true);
+        }
     }
     mark_initialized();
 }
+
+/// Features that only work with Warp's servers, kept off in builds that run without them.
+const OFFLINE_DISABLED_FLAGS: &[FeatureFlag] = &[
+    FeatureFlag::AgentSharedSessions,
+    FeatureFlag::Changelog,
+    FeatureFlag::CloudMode,
+    FeatureFlag::CreatingSharedSessions,
+    FeatureFlag::HandoffLocalCloud,
+    FeatureFlag::OzHandoff,
+    FeatureFlag::SharedWithMe,
+    FeatureFlag::ViewingSharedSessions,
+    FeatureFlag::WarpPacks,
+];
 
 /// Returns all feature flags which should be enabled in the current channel.
 fn enabled_features() -> HashSet<FeatureFlag> {

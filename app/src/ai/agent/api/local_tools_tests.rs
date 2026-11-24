@@ -271,3 +271,22 @@ fn failed_edits_ask_the_model_to_reread_the_file() {
     assert!(described.contains("search text not found"));
     assert!(described.contains("Read the file again"));
 }
+
+#[test]
+fn running_commands_report_their_output_so_far() {
+    let outcome = ToolOutcome::Command(RunShellCommandResult {
+        command: "dir /s".to_owned(),
+        result: Some(run_shell_command_result::Result::LongRunningCommandSnapshot(
+            warp_multi_agent_api::LongRunningShellCommandSnapshot {
+                output: "C:\\proyecto\\Cargo.toml".to_owned(),
+                ..Default::default()
+            },
+        )),
+        ..Default::default()
+    });
+
+    let described = outcome.describe();
+
+    assert!(described.contains("still running"));
+    assert!(described.ends_with("C:\\proyecto\\Cargo.toml"));
+}

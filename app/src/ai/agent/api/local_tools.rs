@@ -530,9 +530,12 @@ fn describe_command_result(result: &RunShellCommandResult) -> String {
             finished.exit_code,
             truncate_start(&finished.output, MAX_COMMAND_OUTPUT_CHARS)
         ),
-        Some(Outcome::LongRunningCommandSnapshot(_)) => {
-            "The command is still running in the user's terminal.".to_owned()
-        }
+        Some(Outcome::LongRunningCommandSnapshot(snapshot)) => format!(
+            "The command is still running in the user's terminal, so this is not its final \
+             result. Do not conclude that it failed or found nothing. Tell the user it is still \
+             running, or try a faster, narrower command. Output so far:\n{}",
+            truncate_start(&snapshot.output, MAX_COMMAND_OUTPUT_CHARS)
+        ),
         Some(Outcome::PermissionDenied(_)) => {
             "The command was not run because it is on the user's deny list.".to_owned()
         }
