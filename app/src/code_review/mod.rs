@@ -65,14 +65,14 @@ pub fn init(app: &mut AppContext) {
     app.register_editable_bindings([
         EditableBinding::new(
             "code_review:save_all_unsaved_files",
-            "Save all unsaved files in code review",
+            light_i18n::tr("Save all unsaved files in code review"),
             CodeReviewAction::SaveAllUnsavedFiles,
         )
         .with_context_predicate(id!("CodeReviewView"))
         .with_key_binding("cmdorctrl-s"),
         EditableBinding::new(
             "code_review:show_find_bar",
-            "Show find bar in code review",
+            light_i18n::tr("Show find bar in code review"),
             CodeReviewAction::ShowFindBar,
         )
         .with_context_predicate(id!("CodeReviewView"))
@@ -80,7 +80,7 @@ pub fn init(app: &mut AppContext) {
         .with_enabled(|| crate::features::FeatureFlag::CodeReviewFind.is_enabled()),
         EditableBinding::new(
             "code_review:toggle_file_navigation",
-            "Toggle file navigation in code review",
+            light_i18n::tr("Toggle file navigation in code review"),
             CodeReviewAction::ToggleFileSidebar,
         )
         .with_context_predicate(id!("CodeReviewView_NotEditing"))
@@ -92,7 +92,7 @@ pub fn init(app: &mut AppContext) {
         FixedBinding::custom(
             CustomAction::Undo,
             CodeReviewAction::UndoRevert,
-            "Undo",
+            light_i18n::tr("Undo"),
             id!("CodeReviewView") & !id!("IMEOpen"),
         ),
         FixedBinding::new(
@@ -100,7 +100,7 @@ pub fn init(app: &mut AppContext) {
             CodeReviewAction::SubmitReviewComments,
             id!("CodeReviewView_NotEditing"),
         )
-        .with_command_description("Send code review comments to agent"),
+        .with_command_description(light_i18n::tr("Send code review comments to agent")),
     ]);
 
     diff_menu::init(app);

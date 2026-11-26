@@ -149,10 +149,10 @@ impl WorkflowViewType {
 
     fn as_str<'a>(&self, category_names: &'a [String]) -> &'a str {
         match self {
-            WorkflowViewType::All => "All",
-            WorkflowViewType::LocalPersonal => "My Workflows",
-            WorkflowViewType::Project => "Repository Workflows",
-            WorkflowViewType::Team => "Team Workflows",
+            WorkflowViewType::All => light_i18n::tr("All"),
+            WorkflowViewType::LocalPersonal => light_i18n::tr("My Workflows"),
+            WorkflowViewType::Project => light_i18n::tr("Repository Workflows"),
+            WorkflowViewType::Team => light_i18n::tr("Team Workflows"),
             WorkflowViewType::Category { category_index, .. } => &category_names[*category_index],
         }
     }
@@ -160,15 +160,15 @@ impl WorkflowViewType {
     fn as_accessibility_contents(&self, category_names: &[String]) -> AccessibilityContent {
         let a11y_content = match self {
             WorkflowViewType::Category { .. } => {
-                format!(
+                light_i18n::tr!(
                     "Showing workflows with category {}",
                     self.as_str(category_names)
                 )
             }
-            WorkflowViewType::All => "Showing all workflows".into(),
-            WorkflowViewType::LocalPersonal => "Showing my workflows".into(),
-            WorkflowViewType::Project => "Showing project workflows".into(),
-            WorkflowViewType::Team => "Showing team workflows".into(),
+            WorkflowViewType::All => light_i18n::tr("Showing all workflows").into(),
+            WorkflowViewType::LocalPersonal => light_i18n::tr("Showing my workflows").into(),
+            WorkflowViewType::Project => light_i18n::tr("Showing project workflows").into(),
+            WorkflowViewType::Team => light_i18n::tr("Showing team workflows").into(),
         };
 
         AccessibilityContent::new_without_help(a11y_content, WarpA11yRole::UserAction)
@@ -713,7 +713,7 @@ impl CategoriesView {
         if let Some(workflow_for_render) =
             self.filtered_workflows().nth(self.selected_workflow_index)
         {
-            let a11y_content_text = format!(
+            let a11y_content_text = light_i18n::tr!(
                 "Selected {} {}",
                 workflow_for_render.workflow_type.as_workflow().name(),
                 workflow_for_render.workflow_type.as_workflow().content()
@@ -753,16 +753,16 @@ impl CategoriesView {
 
     fn render_empty_list_placeholder(&self, appearance: &Appearance) -> Box<dyn Element> {
         let no_workflows_text =
-            CategoriesView::text_label("No matching workflows found.", appearance);
+            CategoriesView::text_label(light_i18n::tr("No matching workflows found."), appearance);
 
         let mut workflow_documentation_link_text =
-            Flex::row().with_child(CategoriesView::text_label("Try ", appearance));
+            Flex::row().with_child(CategoriesView::text_label(light_i18n::tr("Try "), appearance));
 
         workflow_documentation_link_text.add_child(
             appearance
                 .ui_builder()
                 .link(
-                    "creating your own workflow".into(),
+                    light_i18n::tr("creating your own workflow").into(),
                     Some(
                         "https://docs.warp.dev/knowledge-and-collaboration/warp-drive/workflows"
                             .into(),
@@ -941,7 +941,7 @@ impl CategoriesView {
         let theme = appearance.theme();
         workflow_types_list.add_child(
             Container::new(Self::workflow_types_label(
-                "Categories",
+                light_i18n::tr("Categories"),
                 Some(theme.sub_text_color(theme.surface_2()).into_solid()),
                 appearance.ui_builder(),
             ))
@@ -1208,8 +1208,8 @@ impl View for CategoriesView {
 
     fn accessibility_contents(&self, _: &AppContext) -> Option<AccessibilityContent> {
         Some(AccessibilityContent::new(
-            "Workflows",
-            "Search or use arrow up and arrow down keys to navigate and find a workflow. Use enter to confirm the workflow and esc to quit.",
+            light_i18n::tr("Workflows"),
+            light_i18n::tr("Search or use arrow up and arrow down keys to navigate and find a workflow. Use enter to confirm the workflow and esc to quit."),
             WarpA11yRole::MenuRole,
         ))
     }
@@ -1245,7 +1245,7 @@ impl View for CategoriesView {
 
 impl VoltronFeatureViewMeta for CategoriesView {
     fn editor_placeholder_text(&self) -> &'static str {
-        "Search workflows"
+        light_i18n::tr("Search workflows")
     }
 
     fn custom_action() -> Option<CustomAction> {

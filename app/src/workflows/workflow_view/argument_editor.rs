@@ -35,12 +35,8 @@ use crate::workflows::workflow::Workflow;
 use crate::workspace::WorkspaceAction;
 
 const ARGUMENT_INPUT_HEIGHT: f32 = 30.;
-const ARGUMENT_LABEL_TEXT: &str = "Arguments";
 const ARGUMENT_LABEL_HEIGHT: f32 = 20.;
 const ARGUMENT_LABEL_MARGIN_BOTTOM: f32 = 5.;
-const ARGUMENT_DESCRIPTION_PLACEHOLDER_TEXT: &str = "Description";
-const ARGUMENT_ALIAS_DESCRIPTION_PLACEHOLDER_TEXT: &str = "Value (optional)";
-const ARGUMENT_DEFAULT_VALUE_PLACEHOLDER_TEXT: &str = "Default value (optional)";
 pub const DEFAULT_ARGUMENT_PREFIX: &str = "argument";
 
 /// Width of the argument editor in alias mode.
@@ -120,7 +116,7 @@ impl WorkflowView {
                                 ctx,
                                 Some(EDITOR_FONT_SIZE),
                                 Some(ui_font_family),
-                                Some(ARGUMENT_DESCRIPTION_PLACEHOLDER_TEXT),
+                                Some(light_i18n::tr("Description")),
                                 false, /* vim_keybindings */
                                 true,
                                 false,
@@ -137,7 +133,7 @@ impl WorkflowView {
                                 ctx,
                                 Some(EDITOR_FONT_SIZE),
                                 Some(ui_font_family),
-                                Some(ARGUMENT_DEFAULT_VALUE_PLACEHOLDER_TEXT),
+                                Some(light_i18n::tr("Default value (optional)")),
                                 false, /* vim_keybindings */
                                 true,
                                 false,
@@ -563,7 +559,7 @@ impl WorkflowView {
         arguments_section_row.add_child(
             Shrinkable::new(
                 2.,
-                self.render_section_header(ARGUMENT_LABEL_TEXT, appearance),
+                self.render_section_header(light_i18n::tr("Arguments"), appearance),
             )
             .finish(),
         );
@@ -582,7 +578,7 @@ impl WorkflowView {
                 )
                 .with_tooltip(move || {
                     ui_builder
-                        .tool_tip("Add a workflow argument".to_string())
+                        .tool_tip(light_i18n::tr("Add a workflow argument").to_string())
                         .build()
                         .finish()
                 })
@@ -596,7 +592,7 @@ impl WorkflowView {
                     Container::new(
                         appearance
                         .ui_builder()
-                        .span("Fill out the arguments in this workflow and copy it to run in your terminal session")
+                        .span(light_i18n::tr("Fill out the arguments in this workflow and copy it to run in your terminal session"))
                         .with_soft_wrap()
                         .with_style(UiComponentStyles {
                             font_size: Some(EDITOR_FONT_SIZE),
@@ -771,7 +767,7 @@ impl WorkflowView {
 
             // If the description is empty, show a placeholder text.
             if current_description.is_empty() {
-                current_description.push_str(ARGUMENT_ALIAS_DESCRIPTION_PLACEHOLDER_TEXT);
+                current_description.push_str(light_i18n::tr("Value (optional)"));
                 styles.font_color = Some(theme.sub_text_color(theme.background()).into_solid());
             }
 
@@ -820,7 +816,7 @@ impl WorkflowView {
                         .add_environment_variables_mouse_state
                         .clone(),
                 )
-                .with_centered_text_label("Add environment variables".to_string())
+                .with_centered_text_label(light_i18n::tr("Add environment variables").to_string())
                 .build()
                 .on_click(|ctx, _, _| {
                     ctx.dispatch_typed_action(WorkspaceAction::CreatePersonalEnvVarCollection);
@@ -832,7 +828,7 @@ impl WorkflowView {
             .with_children([
                 appearance
                     .ui_builder()
-                    .span("Environment variables")
+                    .span(light_i18n::tr("Environment variables"))
                     .with_style(UiComponentStyles {
                         font_size: Some(13.),
                         ..Default::default()

@@ -98,7 +98,7 @@ impl AliasBar {
                 },
                 ctx,
             );
-            view.set_placeholder_text("alias name", ctx);
+            view.set_placeholder_text(light_i18n::tr("alias name"), ctx);
 
             view
         });
@@ -430,7 +430,7 @@ impl View for AliasBar {
                     |_state, background| {
                         appearance
                             .ui_builder()
-                            .span("Default")
+                            .span(light_i18n::tr("Default"))
                             .with_style(UiComponentStyles {
                                 font_color: Some(
                                     appearance.theme().main_text_color(background).into_solid(),
@@ -466,7 +466,7 @@ impl View for AliasBar {
             .with_text_and_icon_label(
                 TextAndIcon::new(
                     TextAndIconAlignment::IconFirst,
-                    "Add alias",
+                    light_i18n::tr("Add alias"),
                     Icon::Plus.to_warpui_icon(
                         appearance
                             .theme()

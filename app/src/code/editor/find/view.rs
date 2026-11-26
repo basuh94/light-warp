@@ -48,12 +48,6 @@ const FIND_EDITOR_BORDER_WIDTH: f32 = 1.;
 const FIND_EDITOR_FONT_SIZE: f32 = 12.;
 const FIND_EDITOR_ROW_SPACING: f32 = 4.;
 
-pub const REGEX_TOGGLE_TOOLTIP: &str = "Regex toggle";
-pub const CASE_SENSITIVE_TOOLTIP: &str = "Case sensitive search";
-pub const PRESERVE_CASE_TOOLTIP: &str = "Preserve case";
-pub const FIND_PLACEHOLDER_TEXT: &str = "Find";
-pub const REPLACE_PLACEHOLDER_TEXT: &str = "Replace";
-
 #[derive(Default)]
 struct ButtonMouseStates {
     match_up: MouseStateHandle,
@@ -113,7 +107,7 @@ pub fn init(app: &mut AppContext) {
     app.register_editable_bindings([
         EditableBinding::new(
             "find:find_next_occurrence",
-            "Find the next occurrence of your search query",
+            light_i18n::tr("Find the next occurrence of your search query"),
             FindAction::CmdG,
         )
         .with_context_predicate(id!("CodeEditorFind"))
@@ -123,7 +117,7 @@ pub fn init(app: &mut AppContext) {
         .with_linux_or_windows_key_binding("f3"),
         EditableBinding::new(
             "find:find_prev_occurrence",
-            "Find the previous occurrence of your search query",
+            light_i18n::tr("Find the previous occurrence of your search query"),
             FindAction::CmdShiftG,
         )
         .with_context_predicate(id!("CodeEditorFind"))
@@ -147,7 +141,7 @@ impl CodeEditorFind {
                 },
                 ctx,
             );
-            editor.set_placeholder_text(FIND_PLACEHOLDER_TEXT, ctx);
+            editor.set_placeholder_text(light_i18n::tr("Find"), ctx);
             editor
         });
 
@@ -164,7 +158,7 @@ impl CodeEditorFind {
                 },
                 ctx,
             );
-            replace_editor.set_placeholder_text(REPLACE_PLACEHOLDER_TEXT, ctx);
+            replace_editor.set_placeholder_text(light_i18n::tr("Replace"), ctx);
             replace_editor
         });
 
@@ -179,7 +173,7 @@ impl CodeEditorFind {
         let editor_height = line_height + (2. * FIND_EDITOR_PADDING) + 5.;
 
         let select_all_button = ctx.add_typed_action_view(|_ctx| {
-            ActionButton::new("Select all", SecondaryTheme)
+            ActionButton::new(light_i18n::tr("Select all"), SecondaryTheme)
                 .on_click(|ctx| {
                     ctx.dispatch_typed_action(FindAction::SelectAll);
                 })
@@ -189,7 +183,7 @@ impl CodeEditorFind {
         });
 
         let replace_all_button = ctx.add_typed_action_view(|ctx| {
-            let mut button = ActionButton::new("Replace all", SecondaryTheme)
+            let mut button = ActionButton::new(light_i18n::tr("Replace all"), SecondaryTheme)
                 .on_click(|ctx| {
                     ctx.dispatch_typed_action(FindAction::ReplaceAll);
                 })
@@ -390,16 +384,16 @@ impl CodeEditorFind {
     pub fn emit_result_a11y_content(&mut self, ctx: &mut ViewContext<Self>) {
         let content = if let Some(match_index) = self.searcher.as_ref(ctx).selected_match() {
             AccessibilityContent::new(
-                format!(
+                light_i18n::tr!(
                     "Result {} of {}.",
                     match_index + 1,
                     self.searcher.as_ref(ctx).match_count()
                 ),
-                "Use enter and shift-enter to navigate between matches. Escape to quit.",
+                light_i18n::tr("Use enter and shift-enter to navigate between matches. Escape to quit."),
                 WarpA11yRole::UserAction,
             )
         } else {
-            AccessibilityContent::new_without_help("No results.", WarpA11yRole::UserAction)
+            AccessibilityContent::new_without_help(light_i18n::tr("No results."), WarpA11yRole::UserAction)
         };
         ctx.emit_a11y_content(content);
     }
@@ -410,15 +404,15 @@ impl CodeEditorFind {
         let content = if let Some(match_index) = self.searcher.as_ref(ctx).selected_match() {
             let remaining_matches = self.searcher.as_ref(ctx).match_count();
             AccessibilityContent::new(
-                format!(
-                    "Successfully replaced match. Selected match is {match_index} of {remaining_matches}"
+                light_i18n::tr!(
+                    "Successfully replaced match. Selected match is {} of {}", match_index, remaining_matches
                 ),
-                "Continue pressing Enter to replace more matches, or use up/down arrows to navigate.",
+                light_i18n::tr("Continue pressing Enter to replace more matches, or use up/down arrows to navigate."),
                 WarpA11yRole::UserAction,
             )
         } else {
             AccessibilityContent::new_without_help(
-                "Successfully replaced the last match.",
+                light_i18n::tr("Successfully replaced the last match."),
                 WarpA11yRole::UserAction,
             )
         };
@@ -762,7 +756,7 @@ impl CodeEditorFind {
             self.button_mouse_states.toggle_regex_search.clone(),
             FindAction::ToggleRegexSearch,
             editor_height,
-            Some(REGEX_TOGGLE_TOOLTIP),
+            Some(light_i18n::tr("Regex toggle")),
             ICON_PADDING,
         );
         let case_sensitive_icon = Container::new(
@@ -774,7 +768,7 @@ impl CodeEditorFind {
                     self.button_mouse_states.toggle_case_sensitivity.clone(),
                     FindAction::ToggleCaseSensitivity,
                     editor_height,
-                    Some(CASE_SENSITIVE_TOOLTIP),
+                    Some(light_i18n::tr("Case sensitive search")),
                     ICON_PADDING,
                 ),
                 "case_sensitive_button",
@@ -881,7 +875,7 @@ impl CodeEditorFind {
             self.button_mouse_states.toggle_preserve_case.clone(),
             FindAction::TogglePreserveCase,
             editor_height,
-            Some(PRESERVE_CASE_TOOLTIP),
+            Some(light_i18n::tr("Preserve case")),
             ICON_PADDING,
         );
         replace_editor_row.add_child(preserve_case_icon);

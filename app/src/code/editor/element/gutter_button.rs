@@ -72,9 +72,9 @@ impl GutterButton for AddAsContextButton {
 
     fn tooltip_text(&self) -> Option<&'static str> {
         if self.is_enabled {
-            Some("Add diff hunk as context")
+            Some(light_i18n::tr("Add diff hunk as context"))
         } else {
-            Some("Save changes to attach as context.")
+            Some(light_i18n::tr("Save changes to attach as context."))
         }
     }
 
@@ -101,9 +101,9 @@ impl GutterButton for RevertHunkButton {
 
     fn tooltip_text(&self) -> Option<&'static str> {
         if self.is_enabled {
-            Some("Revert diff hunk")
+            Some(light_i18n::tr("Revert diff hunk"))
         } else {
-            Some("Save changes to revert")
+            Some(light_i18n::tr("Save changes to revert"))
         }
     }
 
@@ -154,9 +154,9 @@ impl GutterButton for CommentButton {
 
     fn tooltip_text(&self) -> Option<&'static str> {
         match self {
-            CommentButton::CreateNewComment => Some("Add comment on line"),
-            CommentButton::Disabled => Some("Save changes to add comment"),
-            CommentButton::AddedComment => Some("Show saved comment"),
+            CommentButton::CreateNewComment => Some(light_i18n::tr("Add comment on line")),
+            CommentButton::Disabled => Some(light_i18n::tr("Save changes to add comment")),
+            CommentButton::AddedComment => Some(light_i18n::tr("Show saved comment")),
             CommentButton::EditorOpenedToCreateNewComment
             | CommentButton::EditorOpenedToUpdateComment => None,
         }

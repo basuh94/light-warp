@@ -496,9 +496,9 @@ fn render_header(
 
     // "Showing X references" title
     let title_text = if total_refs == 1 {
-        "Showing 1 reference".to_string()
+        light_i18n::tr("Showing 1 reference").to_string()
     } else {
-        format!("Showing {total_refs} references")
+        light_i18n::tr!("Showing {} references", total_refs)
     };
 
     let title = Align::new(
@@ -644,7 +644,7 @@ fn render_reference_entry(
             } else {
                 // Show loading indicator when line_content is None
                 Text::new_inline(
-                    "Loading...",
+                    light_i18n::tr("Loading..."),
                     appearance.monospace_font_family(),
                     appearance.monospace_font_size(),
                 )

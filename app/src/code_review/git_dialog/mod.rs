@@ -130,51 +130,51 @@ fn user_facing_git_error(raw: &str) -> &'static str {
     if lower.contains("no changes added to commit") {
         // Distinct from a clean tree: changes exist but nothing is staged
         // (e.g. "include unstaged" off with an empty index).
-        "No staged changes to commit."
+        light_i18n::tr("No staged changes to commit.")
     } else if lower.contains("nothing to commit") {
-        "No changes to commit."
+        light_i18n::tr("No changes to commit.")
     } else if lower.contains("please tell me who you are")
         || lower.contains("author identity unknown")
     {
-        "Git identity not configured. Set user.name and user.email."
+        light_i18n::tr("Git identity not configured. Set user.name and user.email.")
     } else if lower.contains("updates were rejected")
         || lower.contains("non-fast-forward")
         || lower.contains("fetch first")
     {
-        "Remote has new changes \u{2014} pull before pushing."
+        light_i18n::tr("Remote has new changes — pull before pushing.")
     } else if lower.contains("does not appear to be a git repository")
         || lower.contains("no configured push destination")
         || lower.contains("no such remote")
     {
-        "No remote configured for this branch."
+        light_i18n::tr("No remote configured for this branch.")
     } else if lower.contains("authentication failed")
         || lower.contains("permission denied (publickey)")
     {
-        "Authentication failed. Check your Git credentials."
+        light_i18n::tr("Authentication failed. Check your Git credentials.")
     } else if lower.contains("could not resolve host")
         || lower.contains("network is unreachable")
         || lower.contains("connection timed out")
     {
-        "Network error. Check your connection."
+        light_i18n::tr("Network error. Check your connection.")
     } else if lower.contains("repository not found") {
-        "Remote repository not found."
+        light_i18n::tr("Remote repository not found.")
     } else if lower.contains("failed to execute gh command") {
         // `run_gh_command` wraps spawn failures with this prefix, which is
         // the reliable "gh binary missing" signal.
-        "GitHub CLI (gh) not installed. See https://cli.github.com/."
+        light_i18n::tr("GitHub CLI (gh) not installed. See https://cli.github.com/.")
     } else if lower.contains("not logged in")
         || lower.contains("authentication required")
         || lower.contains("gh auth login")
     {
         // Phrases mirror `context_chips::current_prompt::is_gh_auth_error`,
         // which has been vetted against real `gh` failure output.
-        "GitHub CLI not authenticated. Run `gh auth login`."
+        light_i18n::tr("GitHub CLI not authenticated. Run `gh auth login`.")
     } else if lower.contains("another git operation is in progress") {
         // Daemon-side guard for a repo mid-merge/rebase/cherry-pick or with a
         // held index lock (see `git_operation_in_progress`).
-        "Another git operation is in progress. Finish or abort it first."
+        light_i18n::tr("Another git operation is in progress. Finish or abort it first.")
     } else {
-        "Git operation failed."
+        light_i18n::tr("Git operation failed.")
     }
 }
 
@@ -195,7 +195,7 @@ fn render_branch_section(
     let sub_color = theme.sub_text_color(theme.surface_1()).into_solid();
 
     let label = Text::new(
-        "Branch",
+        light_i18n::tr("Branch"),
         appearance.ui_font_family(),
         appearance.ui_font_size(),
     )
@@ -280,10 +280,11 @@ fn render_file_changes_box(
     let total_deletions: usize = file_changes.iter().map(|f| f.deletions).sum();
 
     let files_text = Text::new(
-        format!(
-            "{total_files} {}",
-            if total_files == 1 { "file" } else { "files" }
-        ),
+        if total_files == 1 {
+            light_i18n::tr!("{} file", total_files)
+        } else {
+            light_i18n::tr!("{} files", total_files)
+        },
         appearance.ui_font_family(),
         appearance.ui_font_size(),
     )
@@ -490,7 +491,7 @@ impl GitDialog {
         // communicates which of commit / commit-and-push / commit-and-create-PR
         // will actually run on click.
         let (confirm_button, cancel_button, close_button) =
-            Self::build_dialog_buttons("Confirm", None, ctx);
+            Self::build_dialog_buttons(light_i18n::tr("Confirm"), None, ctx);
         ctx.subscribe_to_model(&diff_state_model, Self::handle_diff_state_event);
         let state = commit::new_state(
             repo_location.to_local_path(),
@@ -594,7 +595,7 @@ impl GitDialog {
             button.on_click(|ctx| ctx.dispatch_typed_action(GitDialogAction::Confirm))
         });
         let cancel_button = ctx.add_typed_action_view(|_ctx| {
-            ActionButton::new("Cancel", NakedTheme)
+            ActionButton::new(light_i18n::tr("Cancel"), NakedTheme)
                 .with_size(ButtonSize::Small)
                 .with_height(32.)
                 .on_click(|ctx| ctx.dispatch_typed_action(GitDialogAction::Cancel))
@@ -738,15 +739,15 @@ impl GitDialog {
 
     fn title(&self) -> &'static str {
         match &self.mode {
-            GitDialogMode::Commit(_) => "Commit your changes",
+            GitDialogMode::Commit(_) => light_i18n::tr("Commit your changes"),
             GitDialogMode::Push(state) => {
                 if state.publish {
-                    "Publish branch"
+                    light_i18n::tr("Publish branch")
                 } else {
-                    "Push changes"
+                    light_i18n::tr("Push changes")
                 }
             }
-            GitDialogMode::CreatePr(_) => "Create pull request",
+            GitDialogMode::CreatePr(_) => light_i18n::tr("Create pull request"),
         }
     }
 

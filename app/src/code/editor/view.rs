@@ -660,7 +660,7 @@ impl CodeEditorView {
                 let trimmed = input.trim().to_string();
                 if trimmed.is_empty() {
                     self.goto_line_dialog.update(ctx, |dialog, ctx| {
-                        dialog.set_error("Please enter a line number".to_string(), ctx);
+                        dialog.set_error(light_i18n::tr("Please enter a line number").to_string(), ctx);
                     });
                     return;
                 }
@@ -672,7 +672,7 @@ impl CodeEditorView {
                     Ok(n) if n >= 1 => n,
                     _ => {
                         self.goto_line_dialog.update(ctx, |dialog, ctx| {
-                            dialog.set_error("Please enter a valid line number".to_string(), ctx);
+                            dialog.set_error(light_i18n::tr("Please enter a valid line number").to_string(), ctx);
                         });
                         return;
                     }
@@ -683,7 +683,7 @@ impl CodeEditorView {
                         Err(_) => {
                             self.goto_line_dialog.update(ctx, |dialog, ctx| {
                                 dialog.set_error(
-                                    "Please enter a valid column number".to_string(),
+                                    light_i18n::tr("Please enter a valid column number").to_string(),
                                     ctx,
                                 );
                             });

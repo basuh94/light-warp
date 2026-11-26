@@ -59,7 +59,7 @@ pub(super) fn new_state(publish: bool, commits: Vec<Commit>) -> PushState {
 }
 
 pub(super) fn confirm_label(publish: bool) -> &'static str {
-    if publish { "Publish" } else { "Push" }
+    if publish { light_i18n::tr("Publish") } else { light_i18n::tr("Push") }
 }
 
 pub(super) fn confirm_icon(publish: bool) -> Icon {
@@ -72,9 +72,9 @@ pub(super) fn confirm_icon(publish: bool) -> Icon {
 
 fn loading_label(publish: bool) -> &'static str {
     if publish {
-        "Publishing…"
+        light_i18n::tr("Publishing…")
     } else {
-        "Pushing…"
+        light_i18n::tr("Pushing…")
     }
 }
 
@@ -124,9 +124,9 @@ pub(super) fn finish_push(
     match result {
         Ok(_) => {
             let toast_msg = if publish {
-                "Branch successfully published."
+                light_i18n::tr("Branch successfully published.")
             } else {
-                "Changes successfully pushed."
+                light_i18n::tr("Changes successfully pushed.")
             };
             show_toast(toast_msg, ctx);
         }
@@ -175,7 +175,7 @@ fn render_commits_section(state: &PushState, appearance: &Appearance) -> Box<dyn
     let sub_color = theme.sub_text_color(theme.surface_1()).into_solid();
 
     let label = Text::new(
-        "Included commits",
+        light_i18n::tr("Included commits"),
         appearance.ui_font_family(),
         appearance.ui_font_size(),
     )
