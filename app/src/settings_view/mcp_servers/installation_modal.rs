@@ -75,14 +75,14 @@ pub struct InstallationModalBody {
 impl InstallationModalBody {
     pub fn new(ctx: &mut ViewContext<Self>) -> Self {
         let cancel_button = ctx.add_typed_action_view(|_ctx| {
-            ActionButton::new("Cancel", NakedTheme).on_click(|ctx| {
+            ActionButton::new(light_i18n::tr("Cancel"), NakedTheme).on_click(|ctx| {
                 ctx.dispatch_typed_action(InstallationModalBodyAction::Cancel);
             })
         });
 
         let enter_keystroke = Keystroke::parse("enter").expect("valid keystroke");
         let install_button = ctx.add_typed_action_view(|ctx| {
-            ActionButton::new("Install", PrimaryTheme)
+            ActionButton::new(light_i18n::tr("Install"), PrimaryTheme)
                 .with_keybinding(KeystrokeSource::Fixed(enter_keystroke), ctx)
                 .on_click(|ctx| {
                     ctx.dispatch_typed_action(InstallationModalBodyAction::Install);
@@ -257,7 +257,7 @@ impl InstallationModalBody {
 
         // Renders MCP title text
         let title = Text::new(
-            format!("Install {name}"),
+            light_i18n::tr!("Install {}", name),
             appearance.ui_font_family(),
             appearance.header_font_size(),
         )
@@ -423,9 +423,9 @@ impl InstallationModalBody {
         .finish();
 
         let source_text = if is_shared {
-            "Shared from team"
+            light_i18n::tr("Shared from team")
         } else {
-            "From another device"
+            light_i18n::tr("From another device")
         };
 
         let label_text = Text::new_inline(
@@ -548,7 +548,7 @@ impl View for InstallationModalBody {
                 .finish()
         } else {
             Text::new(
-                "No MCP server selected",
+                light_i18n::tr("No MCP server selected"),
                 appearance.ui_font_family(),
                 appearance.ui_font_size(),
             )

@@ -22,8 +22,6 @@ use crate::settings::{AISettings, AISettingsChangedEvent, LocalModelEnabled};
 /// The settings search query that reveals this section.
 pub const LOCAL_MODEL_SETTINGS_SEARCH_QUERY: &str = "local model";
 
-const DESCRIPTION: &str = "Run the agent on a model server on your machine, such as Ollama. \
-    Nothing is sent to Warp or anywhere else.";
 const INPUT_WIDTH: f32 = 280.;
 const LABEL_FONT_SIZE: f32 = 13.;
 
@@ -173,7 +171,7 @@ impl LocalModelSettingsView {
             .trim()
             .to_owned();
         if url.is_empty() {
-            self.status = ServerStatus::Failed("Enter the server address.".to_owned());
+            self.status = ServerStatus::Failed(light_i18n::tr("Enter the server address.").to_owned());
             ctx.notify();
             return;
         }
@@ -268,14 +266,14 @@ impl LocalModelSettingsView {
     fn render_status(&self, appearance: &Appearance) -> Box<dyn Element> {
         let text = match &self.status {
             ServerStatus::NotChecked => String::new(),
-            ServerStatus::Checking => "Connecting…".to_owned(),
+            ServerStatus::Checking => light_i18n::tr("Connecting…").to_owned(),
             ServerStatus::Connected if self.models.is_empty() => {
-                "Connected, but no models are installed. Install one, for example with \
-                 `ollama pull qwen3:8b`."
-                    .to_owned()
+                light_i18n::tr("Connected, but no models are installed. Install one, for example with \
+                     `ollama pull qwen3:8b`.")
+                .to_owned()
             }
-            ServerStatus::Connected => format!("Connected · {} models", self.models.len()),
-            ServerStatus::Failed(error) => format!("Could not connect: {error}"),
+            ServerStatus::Connected => light_i18n::tr!("Connected · {} models", self.models.len()),
+            ServerStatus::Failed(error) => light_i18n::tr!("Could not connect: {}", error),
         };
         Self::label(&text, appearance)
     }
@@ -298,7 +296,7 @@ impl View for LocalModelSettingsView {
         let mut column = Flex::column()
             .with_spacing(12.)
             .with_child(render_ai_setting_toggle::<LocalModelEnabled>(
-                "Use a local model server",
+                light_i18n::tr("Use a local model server"),
                 LocalModelSettingsAction::ToggleEnabled,
                 is_enabled,
                 true,
@@ -306,7 +304,12 @@ impl View for LocalModelSettingsView {
                 &self.tooltip_states,
                 app,
             ))
-            .with_child(render_ai_setting_description(DESCRIPTION, true, app));
+            .with_child(render_ai_setting_description(
+                light_i18n::tr("Run the agent on a model server on your machine, such as Ollama. \
+                     Nothing is sent to Warp or anywhere else."),
+                true,
+                app,
+            ));
         if !is_enabled {
             return column.finish();
         }
@@ -315,7 +318,7 @@ impl View for LocalModelSettingsView {
             .with_child(
                 Flex::column()
                     .with_spacing(4.)
-                    .with_child(Self::label("Server address", appearance))
+                    .with_child(Self::label(light_i18n::tr("Server address"), appearance))
                     .with_child(Self::text_input(&self.url_editor, INPUT_WIDTH, app))
                     .finish(),
             )
@@ -324,7 +327,7 @@ impl View for LocalModelSettingsView {
                     .with_spacing(12.)
                     .with_cross_axis_alignment(CrossAxisAlignment::Center)
                     .with_child(Self::button(
-                        "Detect models".to_owned(),
+                        light_i18n::tr("Detect models").to_owned(),
                         &self.detect_button,
                         LocalModelSettingsAction::DetectModels,
                         app,
@@ -337,7 +340,7 @@ impl View for LocalModelSettingsView {
             let selected = settings.local_model_name.value();
             let mut models = Flex::column()
                 .with_spacing(4.)
-                .with_child(Self::label("Model", appearance));
+                .with_child(Self::label(light_i18n::tr("Model"), appearance));
             for (name, state) in &self.models {
                 let label = if name == selected {
                     format!("✓ {name}")
@@ -358,7 +361,7 @@ impl View for LocalModelSettingsView {
             .with_child(
                 Flex::column()
                     .with_spacing(4.)
-                    .with_child(Self::label("Context window (tokens)", appearance))
+                    .with_child(Self::label(light_i18n::tr("Context window (tokens)"), appearance))
                     .with_child(Self::text_input(&self.context_window_editor, 120., app))
                     .finish(),
             )

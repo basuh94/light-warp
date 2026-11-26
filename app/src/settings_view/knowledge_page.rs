@@ -26,7 +26,6 @@ use crate::appearance::Appearance;
 use crate::settings::{AISettings, MemoryEnabled, RuleSuggestionsEnabled, WarpDriveContextEnabled};
 use crate::util::bindings;
 
-const PAGE_TITLE: &str = "Knowledge";
 
 const RULES_DOCS_URL: &str = "https://docs.warp.dev/agents/capabilities/rules";
 
@@ -55,7 +54,7 @@ impl KnowledgePageView {
                 Box::new(WarpDriveContextWidget::default()),
             ]);
         }
-        PageType::new_uncategorized(widgets, Some(PageTitle::new(PAGE_TITLE)))
+        PageType::new_uncategorized(widgets, Some(PageTitle::new(light_i18n::tr("Knowledge"))))
     }
 }
 
@@ -215,7 +214,7 @@ impl SettingsWidget for RulesWidget {
     ) -> Box<dyn Element> {
         let ai_settings = AISettings::as_ref(app);
         let toggle = render_ai_setting_toggle::<MemoryEnabled>(
-            "Rules",
+            light_i18n::tr("Rules"),
             KnowledgePageAction::ToggleRules,
             *ai_settings.memory_enabled,
             ai_settings.is_any_ai_enabled(app),
@@ -226,9 +225,9 @@ impl SettingsWidget for RulesWidget {
 
         let rules_description = vec![
             FormattedTextFragment::plain_text(
-                "Rules help the Warp Agent follow your conventions, whether for codebases or specific workflows. ",
+                light_i18n::tr("Rules help the Warp Agent follow your conventions, whether for codebases or specific workflows. "),
             ),
-            FormattedTextFragment::hyperlink("Learn more", RULES_DOCS_URL),
+            FormattedTextFragment::hyperlink(light_i18n::tr("Learn more"), RULES_DOCS_URL),
         ];
         let description = Container::new(
             FormattedTextElement::new(
@@ -277,7 +276,7 @@ impl SettingsWidget for SuggestedRulesWidget {
     ) -> Box<dyn Element> {
         let ai_settings = AISettings::as_ref(app);
         let toggle = render_ai_setting_toggle::<RuleSuggestionsEnabled>(
-            "Suggested Rules",
+            light_i18n::tr("Suggested Rules"),
             KnowledgePageAction::ToggleRuleSuggestions,
             *ai_settings.rule_suggestions_enabled_internal,
             ai_settings.is_any_ai_enabled(app),
@@ -287,7 +286,7 @@ impl SettingsWidget for SuggestedRulesWidget {
         );
 
         let description = render_ai_setting_description(
-            "Let AI suggest rules to save based on your interactions.",
+            light_i18n::tr("Let AI suggest rules to save based on your interactions."),
             ai_settings.is_any_ai_enabled(app),
             app,
         );
@@ -318,7 +317,7 @@ impl SettingsWidget for ManageRulesWidget {
         app: &AppContext,
     ) -> Box<dyn Element> {
         render_full_pane_width_ai_button(
-            "Manage rules",
+            light_i18n::tr("Manage rules"),
             AISettings::as_ref(app).is_any_ai_enabled(app),
             self.manage_rules_button.clone(),
             KnowledgePageAction::OpenAIFactCollection,
@@ -347,7 +346,7 @@ impl SettingsWidget for WarpDriveContextWidget {
     ) -> Box<dyn Element> {
         let ai_settings = AISettings::as_ref(app);
         let toggle = render_ai_setting_toggle::<WarpDriveContextEnabled>(
-            "Warp Drive as agent context",
+            light_i18n::tr("Warp Drive as agent context"),
             KnowledgePageAction::ToggleWarpDriveContext,
             *ai_settings.warp_drive_context_enabled,
             ai_settings.is_any_ai_enabled(app),
@@ -357,7 +356,7 @@ impl SettingsWidget for WarpDriveContextWidget {
         );
 
         let description = render_ai_setting_description(
-            "The Warp Agent can leverage your Warp Drive Contents to tailor responses to your personal and team developer workflows and environments. This includes any Workflows, Notebooks, and Environment Variables.",
+            light_i18n::tr("The Warp Agent can leverage your Warp Drive Contents to tailor responses to your personal and team developer workflows and environments. This includes any Workflows, Notebooks, and Environment Variables."),
             ai_settings.is_any_ai_enabled(app),
             app,
         );
