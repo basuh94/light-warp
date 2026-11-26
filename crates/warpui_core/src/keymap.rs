@@ -111,8 +111,14 @@ impl fmt::Debug for BindingDescription {
 
 impl BindingDescription {
     pub fn new<S: Into<String>>(description: S) -> Self {
+        let description = description.into();
+        // Title Case is an English convention; other languages keep sentence case.
+        let description = match light_i18n::language() {
+            light_i18n::Language::English => titlecase(&description),
+            light_i18n::Language::Spanish => description,
+        };
         BindingDescription {
-            description: titlecase(&description.into()),
+            description,
             ..Default::default()
         }
     }

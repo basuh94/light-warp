@@ -16469,6 +16469,7 @@ dependencies = [
  "itertools 0.14.0",
  "lazy_static",
  "libc",
+ "light_i18n",
  "log",
  "markdown_parser",
  "minimp4",

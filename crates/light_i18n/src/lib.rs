@@ -167,6 +167,11 @@ fn placeholder(text: &str) -> Option<(Option<usize>, &str)> {
 const SPANISH_FILES: &[(&str, &str)] = &[
     ("common", include_str!("../locales/es/common.json")),
     ("settings", include_str!("../locales/es/settings.json")),
+    ("workspace", include_str!("../locales/es/workspace.json")),
+    ("agent", include_str!("../locales/es/agent.json")),
+    ("ai", include_str!("../locales/es/ai.json")),
+    ("terminal", include_str!("../locales/es/terminal.json")),
+    ("code", include_str!("../locales/es/code.json")),
 ];
 
 struct Catalog(HashMap<&'static str, &'static str>);

@@ -75,17 +75,22 @@ fn translations_keep_their_placeholders() {
 }
 
 #[test]
-fn no_text_is_translated_twice() {
-    let mut seen = HashMap::new();
+fn no_text_is_translated_two_ways() {
+    let mut seen: HashMap<String, (String, &str)> = HashMap::new();
     for (file, json) in SPANISH_FILES {
         let file_entries: HashMap<String, String> = serde_json::from_str(json).unwrap();
         // serde keeps only the last of two equal keys in one file, so count the keys as written.
         let written = json.matches("\":").count();
         assert_eq!(written, file_entries.len(), "{file}.json repeats a text");
-        for english in file_entries.into_keys() {
-            if let Some(other) = seen.insert(english.clone(), *file) {
-                panic!("{english:?} is in both {other}.json and {file}.json");
+        // Areas may share a text, but the catalog keeps only one translation of it.
+        for (english, spanish) in file_entries {
+            if let Some((other_spanish, other_file)) = seen.get(&english) {
+                assert_eq!(
+                    other_spanish, &spanish,
+                    "{english:?} differs between {other_file}.json and {file}.json"
+                );
             }
+            seen.insert(english, (spanish, *file));
         }
     }
 }
@@ -127,13 +132,17 @@ fn rust_files(dir: &Path) -> Vec<std::path::PathBuf> {
 /// The string literals passed to `tr!(` or `tr(` in `source`.
 fn translated_texts(source: &str) -> Vec<String> {
     let mut texts = Vec::new();
-    for call in ["tr!(\"", "tr(\""] {
+    for call in ["tr!(", "tr("] {
         for (position, _) in source.match_indices(call) {
             let before = source[..position].chars().next_back();
             if before.is_some_and(|c| c.is_alphanumeric() || c == '_') {
                 continue;
             }
-            texts.extend(string_literal(&source[position + call.len()..]));
+            // rustfmt may put the literal on the next line.
+            let argument = source[position + call.len()..].trim_start();
+            if let Some(literal) = argument.strip_prefix('"') {
+                texts.extend(string_literal(literal));
+            }
         }
     }
     texts
@@ -147,6 +156,8 @@ fn string_literal(rest: &str) -> Option<String> {
         match c {
             '"' => return Some(text),
             '\\' => match chars.next()? {
+                // A backslash at the end of a line skips the line break and the indentation.
+                '\n' | '\r' => chars = chars.as_str().trim_start().chars(),
                 'n' => text.push('\n'),
                 't' => text.push('\t'),
                 other => text.push(other),
@@ -160,7 +171,7 @@ fn string_literal(rest: &str) -> Option<String> {
 #[test]
 fn source_scanning_reads_escapes() {
     assert_eq!(
-        translated_texts(r#"x(tr!("Say \"hi\"", a)); attr("no"); tr("Yes")"#),
-        vec!["Say \"hi\"".to_owned(), "Yes".to_owned()]
+        translated_texts("x(tr!(\"Say \\\"hi\\\"\", a)); attr(\"no\"); tr(\"Long \\\n    text\")"),
+        vec!["Say \"hi\"".to_owned(), "Long text".to_owned()]
     );
 }
