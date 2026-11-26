@@ -15,6 +15,18 @@ use warpui_core::AssetProvider;
 // embedded asset set to keep the CLI binary small — mirroring the carve-out
 // already applied for the WASM target above.
 #[cfg_attr(feature = "standalone", exclude = "async/**")]
+// light-warp runs offline, where the welcome slides never show and the cloud agent modals cannot
+// open. Their files stay in the repo because the asset macros check paths at compile time.
+#[exclude = "async/png/onboarding/agent_intention/**"]
+#[exclude = "async/png/onboarding/terminal_intention/**"]
+#[exclude = "async/png/onboarding/onboarding_bg.png"]
+#[exclude = "async/png/onboarding/welcome_*.png"]
+#[exclude = "async/png/onboarding/thirdparty_*.png"]
+#[exclude = "async/png/onboarding/auto_handoff_sleep_banner.png"]
+#[exclude = "async/png/onboarding/orchestration_launch_banner.png"]
+#[exclude = "async/png/oz_*.png"]
+#[exclude = "async/png/concurrency_limit_header.png"]
+#[exclude = "async/png/build_spiral.png"]
 pub struct Assets;
 
 impl AssetProvider for Assets {

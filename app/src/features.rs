@@ -15,8 +15,10 @@ pub fn init_feature_flags() {
     mark_initialized();
 }
 
-/// Features that only work with Warp's servers, kept off in builds that run without them.
+/// Features that only work with Warp's servers, or that walk the user through them, kept off in
+/// builds that run without them.
 const OFFLINE_DISABLED_FLAGS: &[FeatureFlag] = &[
+    FeatureFlag::AgentOnboarding,
     FeatureFlag::AgentSharedSessions,
     FeatureFlag::Changelog,
     FeatureFlag::CloudMode,
