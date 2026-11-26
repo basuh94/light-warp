@@ -123,14 +123,14 @@ pub(crate) async fn run_cli_command_logged(
                 return Ok(());
             }
             Err(PluginInstallError {
-                message: format!("'{display_cmd}' failed"),
+                message: light_i18n::tr!("'{}' failed", display_cmd),
                 log: log.to_owned(),
             })
         }
         Err(err) => {
             log.push_str(&format!("error: {err}\n"));
             Err(PluginInstallError {
-                message: format!("failed to run '{display_cmd}'"),
+                message: light_i18n::tr!("failed to run '{}'", display_cmd),
                 log: log.clone(),
             })
         }
@@ -184,7 +184,7 @@ pub(crate) trait CliAgentPluginManager: Send + Sync {
     /// Default returns an error — only agents with `can_auto_install() == true` should override.
     async fn install(&self) -> Result<(), PluginInstallError> {
         Err(PluginInstallError {
-            message: "Auto-install not supported for this agent".to_owned(),
+            message: light_i18n::tr("Auto-install not supported for this agent").to_owned(),
             log: String::new(),
         })
     }
@@ -193,19 +193,19 @@ pub(crate) trait CliAgentPluginManager: Send + Sync {
     /// Default returns an error — only agents with `can_auto_install() == true` should override.
     async fn update(&self) -> Result<(), PluginInstallError> {
         Err(PluginInstallError {
-            message: "Auto-update not supported for this agent".to_owned(),
+            message: light_i18n::tr("Auto-update not supported for this agent").to_owned(),
             log: String::new(),
         })
     }
 
     /// Toast message shown after a successful auto-install.
     fn install_success_message(&self) -> &'static str {
-        "Warp plugin installed. Please restart the session to activate."
+        light_i18n::tr("Warp plugin installed. Please restart the session to activate.")
     }
 
     /// Toast message shown after a successful auto-update.
     fn update_success_message(&self) -> &'static str {
-        "Warp plugin updated. Please restart the session to activate."
+        light_i18n::tr("Warp plugin updated. Please restart the session to activate.")
     }
 
     /// Manual installation instructions for the modal UI.

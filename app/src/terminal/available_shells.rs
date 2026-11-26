@@ -118,7 +118,7 @@ impl AvailableShell {
 
     pub fn short_name(&self) -> Cow<'_, str> {
         match self.state.as_ref() {
-            Config::SystemDefault => Cow::from("Default"),
+            Config::SystemDefault => Cow::from(light_i18n::tr("Default")),
             Config::KnownLocal(LocalConfig { command, .. })
             | Config::MSYS2(LocalConfig { command, .. }) => match command.as_str() {
                 "bash" => Cow::from("Bash"),
@@ -129,14 +129,14 @@ impl AvailableShell {
                 _ => Cow::from(command),
             },
             Config::Wsl { distro } => Cow::from(distro),
-            Config::Custom(_) => Cow::from("Custom"),
+            Config::Custom(_) => Cow::from(light_i18n::tr("Custom")),
             Config::DockerSandbox { .. } => Cow::from("Docker Sandbox"),
         }
     }
 
     pub fn details(&self) -> Cow<'_, str> {
         match self.state.as_ref() {
-            Config::SystemDefault => Cow::from("System default shell"),
+            Config::SystemDefault => Cow::from(light_i18n::tr("System default shell")),
             Config::KnownLocal(LocalConfig {
                 executable_path, ..
             })
@@ -146,7 +146,7 @@ impl AvailableShell {
             Config::Wsl { .. } => Cow::from("Windows Subsystem for Linux"),
             Config::Custom(LocalConfig {
                 executable_path, ..
-            }) => Cow::from(format!("Custom: {}", executable_path.display())),
+            }) => Cow::from(light_i18n::tr!("Custom: {}", executable_path.display())),
             Config::DockerSandbox { .. } => Cow::from("Docker Sandbox"),
         }
     }
@@ -181,12 +181,12 @@ impl AvailableShell {
     /// the executable.
     fn long_name(&self) -> String {
         match &self.state.as_ref() {
-            Config::SystemDefault => "Default".to_string(),
+            Config::SystemDefault => light_i18n::tr("Default").to_string(),
             Config::KnownLocal(LocalConfig {
                 executable_path, ..
             }) => format!("{} ({})", self.short_name(), executable_path.display()),
             Config::Wsl { distro } => distro.to_string(),
-            Config::Custom(LocalConfig { command, .. }) => format!("Custom ({command})"),
+            Config::Custom(LocalConfig { command, .. }) => light_i18n::tr!("Custom ({})", command),
             Config::MSYS2(LocalConfig {
                 executable_path, ..
             }) => format!("{} ({})", self.short_name(), executable_path.display()),

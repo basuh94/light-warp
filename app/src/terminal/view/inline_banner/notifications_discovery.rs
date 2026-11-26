@@ -1,3 +1,4 @@
+use light_i18n::tr;
 use serde::Serialize;
 use warpui::Element;
 use warpui::elements::MouseStateHandle;
@@ -45,7 +46,7 @@ pub fn render_inline_notifications_discovery_banner(
     let active_ui_text_color = appearance.theme().active_ui_text_color().into_solid();
 
     let learn_more_button = InlineBannerTextButton {
-        text: "Learn more".to_string(),
+        text: tr("Learn more").to_string(),
         text_color: active_ui_text_color,
         button_state: InlineBannerButtonState {
             on_click_event: TerminalAction::NotificationsDiscoveryBanner(
@@ -58,7 +59,7 @@ pub fn render_inline_notifications_discovery_banner(
         variant: InlineBannerTextButtonVariant::Secondary,
     };
     let troubleshoot_button = InlineBannerTextButton {
-        text: "Troubleshoot".to_string(),
+        text: tr("Troubleshoot").to_string(),
         text_color: active_ui_text_color,
         button_state: InlineBannerButtonState {
             on_click_event: TerminalAction::NotificationsDiscoveryBanner(
@@ -73,11 +74,11 @@ pub fn render_inline_notifications_discovery_banner(
 
     let (title, buttons) = match notifications_mode {
         NotificationsMode::Dismissed => (
-            "We won't show this banner again, but you can always go to Settings to enable notifications.",
+            tr("We won't show this banner again, but you can always go to Settings to enable notifications."),
             vec![],
         ),
         NotificationsMode::Disabled => (
-            "Notifications were turned off, but you can always go to Settings to enable notifications.",
+            tr("Notifications were turned off, but you can always go to Settings to enable notifications."),
             vec![],
         ),
         NotificationsMode::Unset => (
@@ -85,7 +86,7 @@ pub fn render_inline_notifications_discovery_banner(
             vec![
                 learn_more_button,
                 InlineBannerTextButton {
-                    text: "Enable".to_string(),
+                    text: tr("Enable").to_string(),
                     text_color: active_ui_text_color,
                     button_state: InlineBannerButtonState {
                         on_click_event: TerminalAction::NotificationsDiscoveryBanner(
@@ -105,20 +106,20 @@ pub fn render_inline_notifications_discovery_banner(
             let (title, docs_button) = match request_outcome {
                 Some(request_outcome) => match request_outcome {
                     RequestPermissionsOutcome::Accepted => (
-                        "Success! You are now ready to receive desktop notifications.",
+                        tr("Success! You are now ready to receive desktop notifications."),
                         learn_more_button,
                     ),
                     RequestPermissionsOutcome::PermissionsDenied => (
-                        "Warp was denied permissions to send you notifications.",
+                        tr("Warp was denied permissions to send you notifications."),
                         troubleshoot_button,
                     ),
                     RequestPermissionsOutcome::OtherError { .. } => (
-                        "Something went wrong while requesting permissions.",
+                        tr("Something went wrong while requesting permissions."),
                         troubleshoot_button,
                     ),
                 },
                 None => (
-                    "Don't forget to 'Allow' the permissions request to finish setting up notifications.",
+                    tr("Don't forget to 'Allow' the permissions request to finish setting up notifications."),
                     learn_more_button,
                 ),
             };
@@ -128,7 +129,7 @@ pub fn render_inline_notifications_discovery_banner(
                 vec![
                     docs_button,
                     InlineBannerTextButton {
-                        text: "Configure notifications".to_string(),
+                        text: tr("Configure notifications").to_string(),
                         text_color: active_ui_text_color,
                         button_state: InlineBannerButtonState {
                             on_click_event: TerminalAction::NotificationsDiscoveryBanner(

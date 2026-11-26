@@ -1,3 +1,4 @@
+use light_i18n::tr;
 use ordered_float::OrderedFloat;
 use warp_core::ui::appearance::Appearance;
 use warp_core::ui::theme::Fill;
@@ -98,7 +99,7 @@ impl SearchItem for InlineItem {
                 .with_child(name_text.finish())
                 .with_child(
                     Text::new(
-                        " or ",
+                        tr(" or "),
                         appearance.ui_font_family(),
                         inline_styles::font_size(appearance),
                     )

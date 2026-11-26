@@ -316,9 +316,9 @@ impl DisplayChipMenu {
                     };
                     let mut editor = EditorView::new(options, ctx);
                     let placeholder_text = match chip_menu_type {
-                        ChipMenuType::Directories => "Search directories...",
-                        ChipMenuType::Branches => "Search branches...",
-                        ChipMenuType::Environments => "Search environments...",
+                        ChipMenuType::Directories => light_i18n::tr("Search directories..."),
+                        ChipMenuType::Branches => light_i18n::tr("Search branches..."),
+                        ChipMenuType::Environments => light_i18n::tr("Search environments..."),
                         ChipMenuType::CodeReview => {
                             unreachable!("search input should not be constructed")
                         }
@@ -879,15 +879,15 @@ impl DisplayChipMenu {
             .with_cross_axis_alignment(CrossAxisAlignment::Start)
             .with_child(row(
                 Icon::Globe4,
-                "Name:",
+                light_i18n::tr("Name:"),
                 value_text(data.name.clone()),
                 false,
             ))
-            .with_child(row(Icon::Hash, "ID:", id_value, false))
-            .with_child(row(Icon::Docker, "Image:", image_value, false))
+            .with_child(row(Icon::Hash, light_i18n::tr("ID:"), id_value, false))
+            .with_child(row(Icon::Docker, light_i18n::tr("Image:"), image_value, false))
             .with_child(row(
                 Icon::Github,
-                "Repos:",
+                light_i18n::tr("Repos:"),
                 value_text(data.repos_text.clone()),
                 true,
             ))
@@ -1073,7 +1073,7 @@ impl DisplayChipMenu {
                 let (label, font_size, horizontal_padding, vertical_padding, text_color) =
                     match self.chip_menu_type {
                         ChipMenuType::Environments => (
-                            "No results",
+                            light_i18n::tr("No results"),
                             ENV_MENU_ITEM_FONT_SIZE,
                             ENV_MENU_ITEM_HORIZONTAL_PADDING,
                             ENV_MENU_ITEM_VERTICAL_PADDING,
@@ -1082,7 +1082,7 @@ impl DisplayChipMenu {
                         ChipMenuType::Directories
                         | ChipMenuType::Branches
                         | ChipMenuType::CodeReview => (
-                            "No results found",
+                            light_i18n::tr("No results found"),
                             appearance.ui_font_size(),
                             LABEL_HORIZONTAL_PADDING,
                             LABEL_VERTICAL_PADDING * 2.0,

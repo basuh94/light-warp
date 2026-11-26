@@ -1,3 +1,4 @@
+use light_i18n::tr;
 use pathfinder_color::ColorU;
 use warp_core::ui::theme::color::internal_colors;
 use warpui::elements::{
@@ -15,14 +16,26 @@ use crate::terminal::input::inline_menu::styles as inline_styles;
 const CORNER_RADIUS: f32 = 4.0;
 const ROW_SPACING: f32 = 12.0;
 
-pub const MODEL_SPECS_TITLE: &str = "Model Specs";
-pub const MODEL_SPECS_DESCRIPTION: &str = "Warp's benchmarks for how well a model performs in our harness, the rate at which it consumes credits, and task speed.";
+pub fn model_specs_title() -> &'static str {
+    tr("Model Specs")
+}
+pub fn model_specs_description() -> &'static str {
+    tr("Warp's benchmarks for how well a model performs in our harness, the rate at which it consumes credits, and task speed.")
+}
 
-pub const REASONING_LEVEL_TITLE: &str = "Reasoning level";
-pub const REASONING_LEVEL_DESCRIPTION: &str = "Increased reasoning levels consume more credits and have higher latency, but higher performance for complicated tasks.";
+pub fn reasoning_level_title() -> &'static str {
+    tr("Reasoning level")
+}
+pub fn reasoning_level_description() -> &'static str {
+    tr("Increased reasoning levels consume more credits and have higher latency, but higher performance for complicated tasks.")
+}
 
-pub const CUSTOM_MODEL_ROUTER_TITLE: &str = "Custom Model Router";
-pub const CUSTOM_MODEL_ROUTER_DESCRIPTION: &str = "Routes each request to a concrete model based on your routing rules, rather than using a single fixed model.";
+pub fn custom_model_router_title() -> &'static str {
+    tr("Custom Model Router")
+}
+pub fn custom_model_router_description() -> &'static str {
+    tr("Routes each request to a concrete model based on your routing rules, rather than using a single fixed model.")
+}
 
 pub enum CostRow {
     Bar {
@@ -45,7 +58,7 @@ pub fn render_model_spec_scores(
     app: &AppContext,
 ) -> Box<dyn Element> {
     let mut rows = vec![render_score_row(
-        "Intelligence",
+        tr("Intelligence"),
         ScoreRowKind::Bar {
             value: spec.as_ref().map(|spec| spec.quality),
         },
@@ -54,7 +67,7 @@ pub fn render_model_spec_scores(
     )];
 
     rows.push(render_score_row(
-        "Speed",
+        tr("Speed"),
         ScoreRowKind::Bar {
             value: spec.as_ref().map(|spec| spec.speed),
         },
@@ -65,7 +78,7 @@ pub fn render_model_spec_scores(
     match cost_row {
         CostRow::Bar { value } => {
             rows.push(render_score_row(
-                "Cost",
+                tr("Cost"),
                 ScoreRowKind::Bar { value },
                 layout.bg_bar_color,
                 app,
@@ -76,7 +89,7 @@ pub fn render_model_spec_scores(
             manage_button,
         } => {
             rows.push(render_score_row(
-                "Cost",
+                tr("Cost"),
                 ScoreRowKind::BilledToProvider {
                     label,
                     manage_button,

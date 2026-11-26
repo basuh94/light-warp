@@ -609,7 +609,7 @@ fn connection_label_from_user_and_host(user: &str, host: Option<&str>) -> String
         (false, Some(host)) => format!("{user}@{host}"),
         (false, None) => user.to_string(),
         (true, Some(host)) => host.to_string(),
-        (true, None) => "Remote host".to_string(),
+        (true, None) => light_i18n::tr("Remote host").to_string(),
     }
 }
 

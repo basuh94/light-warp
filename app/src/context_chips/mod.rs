@@ -208,7 +208,7 @@ impl ContextChipKind {
     pub fn to_chip(&self) -> Option<ContextChip> {
         match self {
             Self::WorkingDirectory => Some(ContextChip::builtin_with_runtime_policy(
-                "Working Directory",
+                light_i18n::tr("Working Directory"),
                 builtins::working_directory,
                 RefreshConfig::OnDemandOnly,
                 ChipRuntimePolicy::new(
@@ -222,7 +222,7 @@ impl ContextChipKind {
                 ),
             )),
             Self::Username => Some(ContextChip::builtin_with_runtime_policy(
-                "User",
+                light_i18n::tr("User"),
                 builtins::username,
                 RefreshConfig::OnDemandOnly,
                 ChipRuntimePolicy::new(
@@ -233,7 +233,7 @@ impl ContextChipKind {
                 ),
             )),
             Self::Hostname => Some(ContextChip::builtin_with_runtime_policy(
-                "Host",
+                light_i18n::tr("Host"),
                 builtins::hostname,
                 RefreshConfig::OnDemandOnly,
                 ChipRuntimePolicy::new(
@@ -244,7 +244,7 @@ impl ContextChipKind {
                 ),
             )),
             Self::VirtualEnvironment => Some(ContextChip::builtin_with_runtime_policy(
-                "Python Virtualenv",
+                light_i18n::tr("Python Virtualenv"),
                 builtins::virtual_environment,
                 RefreshConfig::OnDemandOnly,
                 ChipRuntimePolicy::new(
@@ -258,7 +258,7 @@ impl ContextChipKind {
                 ),
             )),
             Self::CondaEnvironment => Some(ContextChip::builtin_with_runtime_policy(
-                "Conda Environment",
+                light_i18n::tr("Conda Environment"),
                 builtins::conda_environment,
                 RefreshConfig::OnDemandOnly,
                 ChipRuntimePolicy::new(
@@ -272,7 +272,7 @@ impl ContextChipKind {
                 ),
             )),
             Self::NodeVersion => Some(ContextChip::builtin_with_runtime_policy(
-                "Node.js Version",
+                light_i18n::tr("Node.js Version"),
                 builtins::node_version,
                 RefreshConfig::OnDemandOnly,
                 ChipRuntimePolicy::new(
@@ -286,17 +286,17 @@ impl ContextChipKind {
                 ),
             )),
             Self::Date => Some(ContextChip::builtin(
-                "Date",
+                light_i18n::tr("Date"),
                 builtins::date,
                 DATE_REFRESH_CONFIG,
             )),
             Self::Time12 => Some(ContextChip::builtin(
-                "Time (12-hour format)",
+                light_i18n::tr("Time (12-hour format)"),
                 builtins::time12,
                 TIME_REFRESH_CONFIG,
             )),
             Self::Time24 => Some(ContextChip::builtin(
-                "Time (24-hour format)",
+                light_i18n::tr("Time (24-hour format)"),
                 builtins::time24,
                 TIME_REFRESH_CONFIG,
             )),
@@ -305,13 +305,13 @@ impl ContextChipKind {
                 None
             }
             Self::ShellGitBranch => Some(ContextChip::shell_builtin(
-                "Git Branch",
+                light_i18n::tr("Git Branch"),
                 builtins::shell_git_branch(),
                 Some(builtins::shell_other_git_branches()),
                 GIT_REFRESH_CONFIG,
             )),
             Self::GitBranchStatus => Some(ContextChip::shell_builtin(
-                "Git Branch Status",
+                light_i18n::tr("Git Branch Status"),
                 builtins::shell_git_branch_status(),
                 // Same branch list as ShellGitBranch, so clicking the chip
                 // opens the same branch-switcher menu.
@@ -320,7 +320,7 @@ impl ContextChipKind {
             )),
             Self::GitDiffStats => Some(
                 ContextChip::shell_builtin(
-                    "Git Diff Stats",
+                    light_i18n::tr("Git Diff Stats"),
                     builtins::shell_git_line_changes(),
                     None,
                     GIT_REFRESH_CONFIG,
@@ -329,30 +329,30 @@ impl ContextChipKind {
             ),
             Self::GithubPullRequest if !FeatureFlag::GithubPrPromptChip.is_enabled() => None,
             Self::GithubPullRequest => Some(ContextChip::builtin(
-                "GitHub Pull Request",
+                light_i18n::tr("GitHub Pull Request"),
                 |_| None,
                 RefreshConfig::OnDemandOnly,
             )),
             Self::KubernetesContext => Some(ContextChip::shell_builtin(
-                "Kubernetes Context",
+                light_i18n::tr("Kubernetes Context"),
                 builtins::kubernetes_current_context(),
                 None,
                 RefreshConfig::OnDemandOnly,
             )),
             Self::SvnBranch => Some(ContextChip::shell_builtin(
-                "Svn Branch",
+                light_i18n::tr("Svn Branch"),
                 builtins::svn_branch_context(),
                 None,
                 RefreshConfig::OnDemandOnly,
             )),
             Self::SvnDirtyItems => Some(ContextChip::shell_builtin(
-                "Svn Uncommitted File Count",
+                light_i18n::tr("Svn Uncommitted File Count"),
                 builtins::svn_dirty_items(),
                 None,
                 RefreshConfig::OnDemandOnly,
             )),
             Self::Ssh => Some(ContextChip::builtin(
-                "Remote Login",
+                light_i18n::tr("Remote Login"),
                 builtins::ssh_session,
                 RefreshConfig::OnDemandOnly,
             )),
@@ -362,7 +362,7 @@ impl ContextChipKind {
                 RefreshConfig::OnDemandOnly,
             )),
             Self::AgentPlanAndTodoList => Some(ContextChip::builtin(
-                "Agent Plan and Todo List",
+                light_i18n::tr("Agent Plan and Todo List"),
                 |_| Some(ChipValue::Text(String::new())),
                 RefreshConfig::OnDemandOnly,
             )),

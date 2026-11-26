@@ -585,23 +585,21 @@ impl GitBranchTrackingStatus {
     fn tooltip_text(&self) -> String {
         match &self.upstream {
             Some(upstream) if self.is_rebased() => {
-                format!("Tracking {upstream} • branch was rebased")
+                light_i18n::tr!("Tracking {} • branch was rebased", upstream)
             }
-            Some(upstream) if self.counts_available => format!(
-                "Tracking {upstream} • ahead {}, behind {}",
-                self.ahead, self.behind
+            Some(upstream) if self.counts_available => light_i18n::tr!("Tracking {} • ahead {}, behind {}",
+                upstream, self.ahead, self.behind
             ),
             Some(upstream) => {
-                format!("Tracking {upstream}; ahead/behind counts are unavailable")
+                light_i18n::tr!("Tracking {}; ahead/behind counts are unavailable", upstream)
             }
             None if self.is_rebased() => {
-                "Branch was rebased; upstream name is unavailable".to_string()
+                light_i18n::tr("Branch was rebased; upstream name is unavailable").to_string()
             }
-            None if self.counts_available => format!(
-                "Ahead {}, behind {}; upstream name is unavailable",
+            None if self.counts_available => light_i18n::tr!("Ahead {}, behind {}; upstream name is unavailable",
                 self.ahead, self.behind
             ),
-            None => "No upstream configured".to_string(),
+            None => light_i18n::tr("No upstream configured").to_string(),
         }
     }
 }
@@ -783,7 +781,7 @@ impl GenericMenuItem for CreateGitBranch {
     }
 
     fn name(&self) -> String {
-        format!("Create new branch \"{}\"", self.0)
+        light_i18n::tr!("Create new branch \"{}\"", self.0)
     }
 
     fn icon(&self, _app: &AppContext) -> Option<Icon> {
@@ -1106,7 +1104,7 @@ impl DisplayChip {
 
         let quota_reset_popup = ctx.add_typed_action_view(|_| {
             FeaturePopup::alert_icon(NewFeaturePopupLabel::FromString(
-                "Monthly AI credits reset!".to_string(),
+                light_i18n::tr("Monthly AI credits reset!").to_string(),
             ))
         });
 
@@ -1403,7 +1401,7 @@ impl DisplayChip {
             if state.is_hovered() && is_interactive && !menu_open {
                 let tool_tip = appearance
                     .ui_builder()
-                    .tool_tip("Change git branch".to_string())
+                    .tool_tip(light_i18n::tr("Change git branch").to_string())
                     .build()
                     .finish();
                 stack.add_positioned_overlay_child(tool_tip, udi_tooltip_positioning());
@@ -1470,7 +1468,7 @@ impl DisplayChip {
             if state.is_hovered() {
                 let tool_tip = appearance
                     .ui_builder()
-                    .tool_tip("View pull request".to_string())
+                    .tool_tip(light_i18n::tr("View pull request").to_string())
                     .build()
                     .finish();
                 stack.add_positioned_overlay_child(tool_tip, udi_tooltip_positioning());
@@ -1811,7 +1809,7 @@ impl DisplayChip {
                 if state.is_hovered() {
                     let tool_tip = appearance
                         .ui_builder()
-                        .tool_tip("Change working directory".to_string())
+                        .tool_tip(light_i18n::tr("Change working directory").to_string())
                         .build()
                         .finish();
 
@@ -1858,7 +1856,7 @@ impl DisplayChip {
                 if state.is_hovered() && !is_cli_agent_active {
                     let tool_tip = appearance
                         .ui_builder()
-                        .tool_tip("Working directory".to_string())
+                        .tool_tip(light_i18n::tr("Working directory").to_string())
                         .build()
                         .finish();
 

@@ -7,6 +7,7 @@ mod view;
 
 pub use data_source::SelectUserQuery;
 pub use view::{UserQueryMenuEvent, UserQueryMenuView};
+use light_i18n::tr;
 use warpui::keymap::Keystroke;
 use warpui::platform::OperatingSystem;
 
@@ -34,7 +35,7 @@ impl InlineMenuAction for SelectUserQuery {
                         key: "enter".to_owned(),
                         ..Default::default()
                     }),
-                    MessageItem::text(" new pane"),
+                    MessageItem::text(tr(" new pane")),
                 ],
                 move |ctx| {
                     ctx.dispatch_typed_action(InlineMenuRowAction::Accept {
@@ -63,7 +64,7 @@ impl InlineMenuAction for SelectUserQuery {
             items.push(MessageItem::clickable(
                 vec![
                     MessageItem::keystroke(modifier_keystroke),
-                    MessageItem::text(" new tab"),
+                    MessageItem::text(tr(" new tab")),
                 ],
                 move |ctx| {
                     ctx.dispatch_typed_action(InlineMenuRowAction::Accept {

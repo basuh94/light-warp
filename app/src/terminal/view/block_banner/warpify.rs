@@ -1,3 +1,4 @@
+use light_i18n::tr;
 use pathfinder_color::ColorU;
 use warpui::Element;
 use warpui::elements::{
@@ -46,7 +47,7 @@ impl WarpifyBannerState {
     }
 
     pub fn title(&self) -> &str {
-        "Warpify subshell"
+        tr("Warpify subshell")
     }
 
     pub fn action(&self) -> TerminalAction {
@@ -84,7 +85,7 @@ pub fn render_warpification_banner(
                 ButtonVariant::Text,
                 state.dont_ask_button_mouse_state.clone(),
             )
-            .with_text_label("Do not show again".to_owned())
+            .with_text_label(tr("Do not show again").to_owned())
             .build()
             .on_click(move |ctx, _, _| {
                 ctx.dispatch_typed_action(TerminalAction::DismissWarpifyBanner(

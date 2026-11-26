@@ -1,3 +1,4 @@
+use light_i18n::tr;
 use warpui::Element;
 use warpui::elements::{
     Border, ConstrainedBox, Container, CornerRadius, Flex, ParentElement, Radius,
@@ -60,8 +61,8 @@ pub(super) fn render_floating_block_snapshot(
 
     // Emitted lines formatted
     let omitted_line_count = match content.omitted_line_count {
-        Some(count) if count > 1 => Some(format!("({count} lines omitted)...")),
-        Some(count) if count == 1 => Some(format!("({count} line omitted)...")),
+        Some(count) if count > 1 => Some(tr!("({} lines omitted)...", count)),
+        Some(count) if count == 1 => Some(tr!("({} line omitted)...", count)),
         _ => None,
     };
 

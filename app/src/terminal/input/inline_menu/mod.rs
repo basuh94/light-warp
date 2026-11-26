@@ -10,6 +10,7 @@ pub use message_bar::{InlineMenuMessageArgs, InlineMenuMessageBarArgs};
 pub use message_provider::{InlineMenuMessageProvider, default_navigation_message_items};
 pub use model::{InlineMenuModel, InlineMenuModelEvent, InlineMenuTabConfig};
 pub use positioning::InlineMenuPositioner;
+use light_i18n::tr;
 use serde::{Deserialize, Serialize};
 pub use view::{
     DetailsRenderConfig, InlineMenuAction, InlineMenuClickBehavior, InlineMenuEvent,
@@ -60,7 +61,7 @@ impl InlineMenuType {
             InlineMenuType::SkillMenu => "/Skills",
             InlineMenuType::UserQueryMenu => "/Fork",
             InlineMenuType::RewindMenu => "/Rewind",
-            InlineMenuType::InlineHistoryMenu => "History",
+            InlineMenuType::InlineHistoryMenu => tr("History"),
             InlineMenuType::IndexedReposMenu => "/Repos",
             InlineMenuType::PlanMenu => "/Plans",
         }

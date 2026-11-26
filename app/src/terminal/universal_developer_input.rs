@@ -85,19 +85,19 @@ impl AtContextMenuDisabledReason {
         match self {
             #[cfg(not(target_family = "wasm"))]
             AtContextMenuDisabledReason::NoObjectsAvailable => {
-                "No available objects in the current context.".to_string()
+                light_i18n::tr("No available objects in the current context.").to_string()
             }
             #[cfg(not(target_family = "wasm"))]
             AtContextMenuDisabledReason::SshWithoutRemoteServer => {
-                "Not supported in SSH sessions without remote server".to_string()
+                light_i18n::tr("Not supported in SSH sessions without remote server").to_string()
             }
             #[cfg(not(target_family = "wasm"))]
-            AtContextMenuDisabledReason::Subshell => "Not supported in subshells".to_string(),
+            AtContextMenuDisabledReason::Subshell => light_i18n::tr("Not supported in subshells").to_string(),
             #[cfg(target_family = "wasm")]
-            AtContextMenuDisabledReason::Wasm => "Requires a filesystem".to_string(),
+            AtContextMenuDisabledReason::Wasm => light_i18n::tr("Requires a filesystem").to_string(),
             #[cfg(not(target_family = "wasm"))]
             AtContextMenuDisabledReason::DisabledInTerminalMode => {
-                "Disabled in terminal mode, re-enable in settings".to_string()
+                light_i18n::tr("Disabled in terminal mode, re-enable in settings").to_string()
             }
         }
     }
@@ -187,7 +187,6 @@ impl AtContextMenuDisabledReason {
     }
 }
 
-const AT_CONTEXT_TOOLTIP: &str = "Attach context";
 
 const BLURRED_OPACITY: Opacity = 50;
 
@@ -346,7 +345,7 @@ impl UniversalDeveloperInputButtonBar {
             #[cfg_attr(not(feature = "voice_input"), allow(unused_mut))]
             let mut button = ActionButton::new("", PromptIconButtonTheme::new(false))
                 .with_icon(Icon::Microphone)
-                .with_tooltip("Voice input")
+                .with_tooltip(light_i18n::tr("Voice input"))
                 .with_size(button_size)
                 .with_tooltip_alignment(TooltipAlignment::Left);
             #[cfg(feature = "voice_input")]
@@ -363,7 +362,7 @@ impl UniversalDeveloperInputButtonBar {
         let at_button_view = ctx.add_typed_action_view(|_ctx| {
             ActionButton::new("", PromptIconButtonTheme::new(false))
                 .with_icon(Icon::AtSign)
-                .with_tooltip(AT_CONTEXT_TOOLTIP)
+                .with_tooltip(light_i18n::tr("Attach context"))
                 .with_size(button_size)
                 .with_disabled_theme(UDIDisabledButtonTheme)
                 .with_tooltip_alignment(TooltipAlignment::Left)
@@ -377,7 +376,7 @@ impl UniversalDeveloperInputButtonBar {
         let file_button_view = ctx.add_typed_action_view(|_ctx| {
             ActionButton::new("", PromptIconButtonTheme::new(false))
                 .with_icon(Icon::Plus)
-                .with_tooltip("Attach file")
+                .with_tooltip(light_i18n::tr("Attach file"))
                 .with_size(button_size)
                 .with_disabled_theme(UDIDisabledButtonTheme)
                 .with_tooltip_alignment(TooltipAlignment::Left)
@@ -389,7 +388,7 @@ impl UniversalDeveloperInputButtonBar {
         let slash_command_menu_view = ctx.add_typed_action_view(|_ctx| {
             ActionButton::new("", PromptIconButtonTheme::new(false))
                 .with_icon(Icon::SlashCommands)
-                .with_tooltip("Slash commands")
+                .with_tooltip(light_i18n::tr("Slash commands"))
                 .with_size(button_size)
                 .with_disabled_theme(UDIDisabledButtonTheme)
                 .with_tooltip_alignment(TooltipAlignment::Left)
@@ -681,9 +680,9 @@ impl UniversalDeveloperInputButtonBar {
         };
 
         let tooltip = if is_reader {
-            Some("Request edit access to change input mode".to_string())
+            Some(light_i18n::tr("Request edit access to change input mode").to_string())
         } else if is_agent_in_control {
-            Some("Input mode locked while agent is monitoring a command".to_string())
+            Some(light_i18n::tr("Input mode locked while agent is monitoring a command").to_string())
         } else {
             None
         };
@@ -705,7 +704,7 @@ impl UniversalDeveloperInputButtonBar {
             button.set_tooltip(
                 disable_reason
                     .map(|reason| reason.tooltip_text())
-                    .or(Some(AT_CONTEXT_TOOLTIP.to_string())),
+                    .or(Some(light_i18n::tr("Attach context").to_string())),
                 ctx,
             );
             ctx.notify();
@@ -1001,7 +1000,7 @@ fn build_renderable_option_config(
                 icon_color: fg_color,
                 label: None,
                 tooltip: Some(tooltip_config(
-                    "Terminal",
+                    light_i18n::tr("Terminal"),
                     Some(terminal_mode_tooltip_subtext(terminal_keybindings)),
                     app,
                 )),
@@ -1017,7 +1016,7 @@ fn build_renderable_option_config(
                 icon_color: fg_color,
                 label: None,
                 tooltip: Some(tooltip_config(
-                    "Agent Mode",
+                    light_i18n::tr("Agent Mode"),
                     Some(agent_mode_tooltip_subtext(terminal_keybindings)),
                     app,
                 )),
@@ -1064,7 +1063,7 @@ fn agent_mode_tooltip_subtext(terminal_keybindings: &TerminalKeybindings) -> Str
         return AGENT_MODE_TOOLTIP_PREFIX.into();
     };
 
-    format!("{keybinding} or {AGENT_MODE_TOOLTIP_PREFIX}")
+    light_i18n::tr!("{} or {}", keybinding, AGENT_MODE_TOOLTIP_PREFIX)
 }
 
 fn terminal_mode_tooltip_subtext(terminal_keybindings: &TerminalKeybindings) -> String {
@@ -1073,7 +1072,7 @@ fn terminal_mode_tooltip_subtext(terminal_keybindings: &TerminalKeybindings) -> 
         return TERMINAL_MODE_TOOLTIP_PREFIX.into();
     };
 
-    format!("{keybinding} or {TERMINAL_MODE_TOOLTIP_PREFIX}")
+    light_i18n::tr!("{} or {}", keybinding, TERMINAL_MODE_TOOLTIP_PREFIX)
 }
 
 fn tooltip_config(

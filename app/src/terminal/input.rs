@@ -26,6 +26,7 @@ mod terminal_message_bar;
 mod universal;
 pub mod user_query;
 
+use light_i18n::tr;
 use std::any::Any;
 use std::borrow::Cow;
 use std::collections::HashMap;
@@ -305,7 +306,7 @@ use crate::terminal::input::prompts::{InlinePromptsMenuEvent, InlinePromptsMenuV
 use crate::terminal::input::repos::{InlineReposMenuEvent, InlineReposMenuView};
 use crate::terminal::input::rewind::{RewindMenuEvent, RewindMenuView};
 use crate::terminal::input::skills::{
-    InlineSkillSelectorEvent, InlineSkillSelectorView, LOCAL_SKILLS_REMOTE_EXECUTION_ERROR_MESSAGE,
+    InlineSkillSelectorEvent, InlineSkillSelectorView,
 };
 use crate::terminal::input::slash_command_model::{SlashCommandEntryState, SlashCommandModel};
 use crate::terminal::input::slash_commands::{
@@ -397,7 +398,6 @@ pub const DEBOUNCE_AI_QUERY_PREDICTION_PERIOD: Duration = Duration::from_millis(
 pub(super) const CLI_AGENT_RICH_INPUT_EDITOR_MAX_HEIGHT: f32 = 236.;
 pub(super) const CLI_AGENT_RICH_INPUT_EDITOR_TOP_PADDING: f32 = 10.;
 pub(super) const CLI_AGENT_RICH_INPUT_EDITOR_BOTTOM_PADDING: f32 = 8.;
-pub(super) const CLI_AGENT_RICH_INPUT_HINT_TEXT: &str = "Tell the agent what to build...";
 
 const CLOUD_MODE_V2_HINT_TEXT: &str = "Kick off a cloud agent";
 const SHORT_CIRCUIT_HIGHLIGHTING_ACTIONS: [Option<PlainTextEditorViewAction>; 7] = [
@@ -446,40 +446,41 @@ pub const OPEN_COMPLETIONS_KEYBINDING_NAME: &str = "input:open_completion_sugges
 pub(crate) const EXTERNAL_ALT_C_BINDING_CONTEXT: &str = "ExternalAltCDirectorySearch";
 pub const INPUT_A11Y_LABEL: &str = "Command Input.";
 pub const INPUT_A11Y_HELPER: &str = "Input your shell command, press enter to execute. Press cmd-up to navigate to output of previously executed commands. Press cmd-l to re-focus command input.";
-pub const AI_COMMAND_SEARCH_HINT_TEXT: &str = "Type '#' for AI command suggestions";
 
-const AGENT_MODE_AI_DISABLED_AUTODETECTION_DISABLED_HINT_TEXT: &str = "Run commands";
 
 // Rotating hint text options for new Agent Mode conversations
-const AGENT_MODE_HINT_OPTIONS: &[&str] = &[
-    "Warp anything e.g. Deploy my React app to Vercel and set up environment variables",
-    "Warp anything e.g. Help me debug why my Python tests are failing in CI",
-    "Warp anything e.g. Set up a new microservice with Docker and create the deployment pipeline",
-    "Warp anything e.g. Find and fix the memory leak in my Node.js application",
-    "Warp anything e.g. Create a backup script for my PostgreSQL database and schedule it",
-    "Warp anything e.g. Help me migrate my data from MySQL to PostgreSQL",
-    "Warp anything e.g. Set up monitoring and alerts for my AWS infrastructure",
-    "Warp anything e.g. Build a REST API for my mobile app using FastAPI",
-    "Warp anything e.g. Help me optimize my SQL queries that are running slowly",
-    "Warp anything e.g. Create a GitHub Actions workflow to automatically deploy on merge",
-    "Warp anything e.g. Set up Redis caching for my web application",
-    "Warp anything e.g. Help me troubleshoot why my Kubernetes pods keep crashing",
-    "Warp anything e.g. Build a data pipeline to process CSV files and load them into BigQuery",
-    "Warp anything e.g. Set up SSL certificates and configure HTTPS for my domain",
-    "Warp anything e.g. Help me refactor this legacy code to use modern design patterns",
-    "Warp anything e.g. Create unit tests for my authentication service",
-    "Warp anything e.g. Set up log aggregation with ELK stack for my distributed system",
-    "Warp anything e.g. Help me implement OAuth2 authentication in my Express.js app",
-    "Warp anything e.g. Optimize my Docker images to reduce build times and size",
-    "Warp anything e.g. Set up A/B testing infrastructure for my web application",
-];
+fn agent_mode_hint_options() -> [&'static str; 20] {
+    [
+        tr("Warp anything e.g. Deploy my React app to Vercel and set up environment variables"),
+        tr("Warp anything e.g. Help me debug why my Python tests are failing in CI"),
+        tr("Warp anything e.g. Set up a new microservice with Docker and create the deployment pipeline"),
+        tr("Warp anything e.g. Find and fix the memory leak in my Node.js application"),
+        tr("Warp anything e.g. Create a backup script for my PostgreSQL database and schedule it"),
+        tr("Warp anything e.g. Help me migrate my data from MySQL to PostgreSQL"),
+        tr("Warp anything e.g. Set up monitoring and alerts for my AWS infrastructure"),
+        tr("Warp anything e.g. Build a REST API for my mobile app using FastAPI"),
+        tr("Warp anything e.g. Help me optimize my SQL queries that are running slowly"),
+        tr("Warp anything e.g. Create a GitHub Actions workflow to automatically deploy on merge"),
+        tr("Warp anything e.g. Set up Redis caching for my web application"),
+        tr("Warp anything e.g. Help me troubleshoot why my Kubernetes pods keep crashing"),
+        tr("Warp anything e.g. Build a data pipeline to process CSV files and load them into BigQuery"),
+        tr("Warp anything e.g. Set up SSL certificates and configure HTTPS for my domain"),
+        tr("Warp anything e.g. Help me refactor this legacy code to use modern design patterns"),
+        tr("Warp anything e.g. Create unit tests for my authentication service"),
+        tr("Warp anything e.g. Set up log aggregation with ELK stack for my distributed system"),
+        tr("Warp anything e.g. Help me implement OAuth2 authentication in my Express.js app"),
+        tr("Warp anything e.g. Optimize my Docker images to reduce build times and size"),
+        tr("Warp anything e.g. Set up A/B testing infrastructure for my web application"),
+    ]
+}
 
 fn get_agent_mode_new_conversation_hint_text() -> &'static str {
     use std::sync::atomic::{AtomicUsize, Ordering};
     static HINT_INDEX: AtomicUsize = AtomicUsize::new(0);
 
-    let index = HINT_INDEX.fetch_add(1, Ordering::Relaxed) % AGENT_MODE_HINT_OPTIONS.len();
-    AGENT_MODE_HINT_OPTIONS[index]
+    let options = agent_mode_hint_options();
+    let index = HINT_INDEX.fetch_add(1, Ordering::Relaxed) % options.len();
+    options[index]
 }
 
 fn get_stable_agent_mode_hint_text(cached_hint: &mut Option<&'static str>) -> &'static str {
@@ -491,16 +492,6 @@ fn get_stable_agent_mode_hint_text(cached_hint: &mut Option<&'static str>) -> &'
         new_hint
     }
 }
-
-const AGENT_MODE_AI_ENABLED_STEER_HINT_TEXT_UDI: &str = "Steer the running agent";
-const AGENT_MODE_AI_ENABLED_STEER_HINT_TEXT_CLASSIC: &str =
-    "Steer the running agent, or backspace to exit";
-const AGENT_MODE_AI_ENABLED_QUEUE_HINT_TEXT_UDI: &str = "Queue a follow up for the running agent";
-const AGENT_MODE_AI_ENABLED_QUEUE_HINT_TEXT_CLASSIC: &str =
-    "Queue a follow up for the running agent, or backspace to exit";
-const AGENT_MODE_AI_ENABLED_FOLLOW_UP_HINT_TEXT_UDI: &str = "Ask a follow up";
-const AGENT_MODE_AI_ENABLED_FOLLOW_UP_HINT_TEXT_CLASSIC: &str =
-    "Ask a follow up, or backspace to exit";
 
 /// Action name for setting input mode to agent mode
 pub const SET_INPUT_MODE_AGENT_ACTION_NAME: &str = "input:set_mode_agent";
@@ -544,11 +535,6 @@ enum InputPrefixMode {
 
 const VIM_STATUS_BAR_BOTTOM_PADDING: f32 = 20.;
 
-const DYNAMIC_ENUM_GENERATE_MESSAGE: &str = "Run the following command to generate variants:";
-const DYNAMIC_ENUM_RUN_MESSAGE: &str = "Run command";
-const DYNAMIC_ENUM_PENDING_MESSAGE: &str = "Command pending...";
-const DYNAMIC_ENUM_FAILURE_MESSAGE: &str = "Command failed";
-const DYNAMIC_ENUM_NO_RESULTS_MESSAGE: &str = "Command returned no results";
 const DYNAMIC_ENUM_MENU_PADDING: f32 = 10.;
 const DYNAMIC_ENUM_MENU_HEIGHT_OFFSET: f32 = 25.;
 const DYNAMIC_ENUM_HORIZONTAL_TEXT_PADDING: f32 = 5.;
@@ -822,21 +808,21 @@ impl InputSuggestionsMode {
             InputSuggestionsMode::UserQueryMenu {
                 action: UserQueryMenuAction::ForkFrom,
                 ..
-            } => Some("Search queries"),
+            } => Some(tr("Search queries")),
             InputSuggestionsMode::UserQueryMenu {
                 action: UserQueryMenuAction::Rewind,
                 ..
-            } => Some("Search queries to rewind to"),
-            InputSuggestionsMode::ConversationMenu => Some("Search conversations"),
-            InputSuggestionsMode::SkillMenu => Some("Search skills"),
-            InputSuggestionsMode::ModelSelector => Some("Search models"),
-            InputSuggestionsMode::ProfileSelector => Some("Search profiles"),
+            } => Some(tr("Search queries to rewind to")),
+            InputSuggestionsMode::ConversationMenu => Some(tr("Search conversations")),
+            InputSuggestionsMode::SkillMenu => Some(tr("Search skills")),
+            InputSuggestionsMode::ModelSelector => Some(tr("Search models")),
+            InputSuggestionsMode::ProfileSelector => Some(tr("Search profiles")),
             InputSuggestionsMode::SlashCommands if FeatureFlag::AgentView.is_enabled() => {
-                Some("Search commands")
+                Some(tr("Search commands"))
             }
-            InputSuggestionsMode::PromptsMenu => Some("Search prompts"),
-            InputSuggestionsMode::IndexedReposMenu => Some("Search indexed repos"),
-            InputSuggestionsMode::PlanMenu { .. } => Some("Search plans"),
+            InputSuggestionsMode::PromptsMenu => Some(tr("Search prompts")),
+            InputSuggestionsMode::IndexedReposMenu => Some(tr("Search indexed repos")),
+            InputSuggestionsMode::PlanMenu { .. } => Some(tr("Search plans")),
             _ => None,
         }
     }
@@ -2139,7 +2125,7 @@ pub fn init(app: &mut AppContext) {
         FixedBinding::custom(
             CustomAction::History,
             InputAction::Up,
-            "Show History",
+            tr("Show History"),
             // We need to ensure the workflow info box is not open as the "up" arrow
             // key is used to navigate the environment variables dropdown.
             // Same goes with the LLM menu.
@@ -2157,14 +2143,14 @@ pub fn init(app: &mut AppContext) {
 
     app.register_editable_bindings([EditableBinding::new(
         "input:insert_network_logging_workflow",
-        "Show Warp network log",
+        tr("Show Warp network log"),
         WorkspaceAction::OpenNetworkLogPane,
     )
     .with_enabled(|| ContextFlag::NetworkLogConsole.is_enabled())]);
 
     app.register_editable_bindings([EditableBinding::new(
         "input:clear_screen",
-        "Clear screen",
+        tr("Clear screen"),
         InputAction::ClearScreen,
     )
     .with_context_predicate(id!("Input"))
@@ -2173,14 +2159,14 @@ pub fn init(app: &mut AppContext) {
     app.register_editable_bindings([
         EditableBinding::new(
             "terminal:scroll_up_one_page",
-            "Scroll terminal output up one page",
+            tr("Scroll terminal output up one page"),
             InputAction::PageUp,
         )
         .with_context_predicate(id!("Input") & !id!("IMEOpen"))
         .with_key_binding("pageup"),
         EditableBinding::new(
             "terminal:scroll_down_one_page",
-            "Scroll terminal output down one page",
+            tr("Scroll terminal output down one page"),
             InputAction::PageDown,
         )
         .with_context_predicate(id!("Input") & !id!("IMEOpen"))
@@ -2189,8 +2175,8 @@ pub fn init(app: &mut AppContext) {
 
     app.register_editable_bindings([EditableBinding::new(
         "workspace:edit_prompt",
-        BindingDescription::new("Edit Prompt")
-            .with_custom_description(bindings::MAC_MENUS_CONTEXT, "Edit Prompt"),
+        BindingDescription::new(tr("Edit Prompt"))
+            .with_custom_description(bindings::MAC_MENUS_CONTEXT, tr("Edit Prompt")),
         WorkspaceAction::OpenPromptEditor {
             open_source: PromptEditorOpenSource::CommandPalette,
         },
@@ -2209,7 +2195,7 @@ pub fn init(app: &mut AppContext) {
     {
         app.register_editable_bindings([EditableBinding::new(
             "input:toggle_classic_completions_mode",
-            "(Experimental) Toggle classic completions mode",
+            tr("(Experimental) Toggle classic completions mode"),
             InputAction::ToggleClassicCompletionsMode,
         )
         .with_context_predicate(id!("Input"))]);
@@ -2219,7 +2205,7 @@ pub fn init(app: &mut AppContext) {
     app.register_editable_bindings([
         EditableBinding::new(
             "workspace:show_command_search",
-            "Command Search",
+            tr("Command Search"),
             WorkspaceAction::ShowCommandSearch(Default::default()),
         )
         // Only show command search if none of the input-related panels are open, and if we aren't
@@ -2234,7 +2220,7 @@ pub fn init(app: &mut AppContext) {
         .with_custom_action(CustomAction::CommandSearch),
         EditableBinding::new(
             "input:search_command_history",
-            "History Search",
+            tr("History Search"),
             WorkspaceAction::ShowCommandSearch(CommandSearchOptions {
                 filter: Some(QueryFilter::History),
                 init_content: Default::default(),
@@ -2244,14 +2230,14 @@ pub fn init(app: &mut AppContext) {
         .with_custom_action(CustomAction::HistorySearch),
         EditableBinding::new(
             OPEN_COMPLETIONS_KEYBINDING_NAME,
-            "Open completions menu",
+            tr("Open completions menu"),
             InputAction::MaybeOpenCompletionSuggestions,
         )
         .with_context_predicate(id!("Input"))
         .with_key_binding("tab"),
         EditableBinding::new(
             "workspace:trigger_external_ctrl_t_file_search",
-            "External File Search",
+            tr("External File Search"),
             WorkspaceAction::TriggerExternalCtrlTFileSearch,
         )
         .with_enabled(|| FeatureFlag::ShellWidgetHandoff.is_enabled())
@@ -2259,7 +2245,7 @@ pub fn init(app: &mut AppContext) {
         .with_key_binding("ctrl-t"),
         EditableBinding::new(
             "workspace:trigger_external_alt_c_directory_search",
-            "External Directory Search",
+            tr("External Directory Search"),
             WorkspaceAction::TriggerExternalAltCDirectorySearch,
         )
         .with_enabled(|| FeatureFlag::ShellWidgetHandoff.is_enabled())
@@ -2270,7 +2256,7 @@ pub fn init(app: &mut AppContext) {
     if let Some(custom_action) = workflows::CategoriesView::custom_action() {
         app.register_editable_bindings([EditableBinding::new(
             "input:toggle_workflows",
-            "Workflows",
+            tr("Workflows"),
             InputAction::SelectAndRefreshVoltron(VoltronItem::Workflows),
         )
         .with_context_predicate(id!("Input"))
@@ -2293,7 +2279,7 @@ pub fn init(app: &mut AppContext) {
     app.register_editable_bindings([
         EditableBinding::new(
             "input:toggle_natural_language_command_search",
-            "Open AI Command Suggestions",
+            tr("Open AI Command Suggestions"),
             InputAction::ShowAiCommandSearch,
         )
         .with_context_predicate(
@@ -2306,7 +2292,7 @@ pub fn init(app: &mut AppContext) {
         .with_custom_action(CustomAction::AISearch),
         EditableBinding::new(
             START_NEW_CONVERSATION_KEYBINDING_NAME,
-            "New agent conversation",
+            tr("New agent conversation"),
             InputAction::StartNewAgentConversation {
                 origin: AgentViewEntryOrigin::Input {
                     was_prompt_autodetected: false,
@@ -2322,7 +2308,7 @@ pub fn init(app: &mut AppContext) {
         .with_linux_or_windows_key_binding("ctrl-alt-shift-N"),
         EditableBinding::new(
             "input:enable_auto_detection",
-            "Trigger Auto Detection",
+            tr("Trigger Auto Detection"),
             InputAction::EnableAutoDetection,
         )
         .with_enabled(|| FeatureFlag::AgentMode.is_enabled())
@@ -2336,7 +2322,7 @@ pub fn init(app: &mut AppContext) {
         .with_key_binding("alt-shift-I"),
         EditableBinding::new(
             "input:clear_and_reset_ai_context_menu_query",
-            "Clear and reset AI context menu query",
+            tr("Clear and reset AI context menu query"),
             InputAction::ClearAndResetAIContextMenuQuery,
         )
         .with_context_predicate(id!("Input") & id!("AIContextMenuOpen") & !id!("IMEOpen"))
@@ -3782,7 +3768,7 @@ impl Input {
                     ToastStack::handle(ctx).update(ctx, |ts, ctx| {
                         ts.add_ephemeral_toast(
                             DismissibleToast::error(
-                                "Attached images were removed — the selected model does not support images.".to_string(),
+                                tr("Attached images were removed — the selected model does not support images.").to_string(),
                             ),
                             window_id,
                             ctx,
@@ -4928,12 +4914,12 @@ impl Input {
         if !skipped_files.is_empty() {
             let window_id = ctx.window_id();
             let message = if skipped_files.len() == 1 {
-                format!(
+                tr!(
                     "{} was not attached — exceeds 10MB limit.",
                     skipped_files[0]
                 )
             } else {
-                format!(
+                tr!(
                     "{} files were not attached — exceed 10MB limit.",
                     skipped_files.len()
                 )
@@ -5391,7 +5377,7 @@ impl Input {
                     }
                     _ => {
                         ctx.emit(Event::ShowToast {
-                            message: "Couldn't navigate to conversation.".to_string(),
+                            message: tr("Couldn't navigate to conversation.").to_string(),
                             flavor: ToastFlavor::Error,
                         });
                     }
@@ -6286,7 +6272,7 @@ impl Input {
             ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
                 toast_stack.add_ephemeral_toast(
                     DismissibleToast::default(
-                        LOCAL_SKILLS_REMOTE_EXECUTION_ERROR_MESSAGE.to_owned(),
+                        tr("Local skills cannot run on a remote machine. Try forking the conversation locally and running the skill.").to_owned(),
                     ),
                     window_id,
                     ctx,
@@ -6366,7 +6352,7 @@ impl Input {
             let window_id = ctx.window_id();
             ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
                 let toast =
-                    DismissibleToast::default(String::from("No active conversation to export"));
+                    DismissibleToast::default(String::from(tr("No active conversation to export")));
                 toast_stack.add_ephemeral_toast(toast, window_id, ctx);
             });
             return;
@@ -6391,13 +6377,15 @@ impl Input {
                 let display_path = export.path().display().to_string();
                 ToastStack::handle(ctx).update(ctx, move |toast_stack, ctx| {
                     if export.overwrote_existing() {
-                        let toast = DismissibleToast::default(format!(
-                            "File {display_path} already exists and will be overwritten"
+                        let toast = DismissibleToast::default(tr!(
+                            "File {} already exists and will be overwritten",
+                            display_path
                         ));
                         toast_stack.add_ephemeral_toast(toast, window_id, ctx);
                     }
-                    let toast = DismissibleToast::default(format!(
-                        "Conversation exported to {display_path}"
+                    let toast = DismissibleToast::default(tr!(
+                        "Conversation exported to {}",
+                        display_path
                     ));
                     toast_stack.add_ephemeral_toast(toast, window_id, ctx);
                 });
@@ -6451,9 +6439,9 @@ impl Input {
             let window_id = ctx.window_id();
 
             let message = if images_removed == 1 {
-                "1 image was removed - limit is 20 per conversation.".into()
+                tr("1 image was removed - limit is 20 per conversation.").into()
             } else {
-                format!("{images_removed} images were removed - limit is 20 per conversation.")
+                tr!("{} images were removed - limit is 20 per conversation.", images_removed)
             };
 
             ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
@@ -6898,7 +6886,7 @@ impl Input {
             input_model.should_run_input_autodetection(app),
         ) {
             (InputType::Shell, false) => {
-                AGENT_MODE_AI_DISABLED_AUTODETECTION_DISABLED_HINT_TEXT.to_owned()
+                tr("Run commands").to_owned()
             }
             (InputType::Shell, true) => {
                 // Ensure hint text is cached for new conversations
@@ -6912,11 +6900,11 @@ impl Input {
                     let agent_name = conversation.agent_name().unwrap_or("child");
                     if conversation.status().is_in_progress() {
                         if is_queue_next_prompt_enabled {
-                            return format!("Queue a follow up for the {agent_name} agent");
+                            return tr!("Queue a follow up for the {} agent", agent_name);
                         }
-                        return format!("Steer the {agent_name} agent");
+                        return tr!("Steer the {} agent", agent_name);
                     }
-                    return format!("Ask the {agent_name} agent a follow up");
+                    return tr!("Ask the {} agent a follow up", agent_name);
                 }
 
                 // Follow the `agent_indicator` pattern (see `app/src/tab.rs`):
@@ -6931,21 +6919,21 @@ impl Input {
                     Some(status) if status.is_in_progress() => {
                         if is_queue_next_prompt_enabled {
                             if is_udi_enabled {
-                                AGENT_MODE_AI_ENABLED_QUEUE_HINT_TEXT_UDI.to_owned()
+                                tr("Queue a follow up for the running agent").to_owned()
                             } else {
-                                AGENT_MODE_AI_ENABLED_QUEUE_HINT_TEXT_CLASSIC.to_owned()
+                                tr("Queue a follow up for the running agent, or backspace to exit").to_owned()
                             }
                         } else if is_udi_enabled {
-                            AGENT_MODE_AI_ENABLED_STEER_HINT_TEXT_UDI.to_owned()
+                            tr("Steer the running agent").to_owned()
                         } else {
-                            AGENT_MODE_AI_ENABLED_STEER_HINT_TEXT_CLASSIC.to_owned()
+                            tr("Steer the running agent, or backspace to exit").to_owned()
                         }
                     }
                     Some(_) => {
                         if is_udi_enabled {
-                            AGENT_MODE_AI_ENABLED_FOLLOW_UP_HINT_TEXT_UDI.to_owned()
+                            tr("Ask a follow up").to_owned()
                         } else {
-                            AGENT_MODE_AI_ENABLED_FOLLOW_UP_HINT_TEXT_CLASSIC.to_owned()
+                            tr("Ask a follow up, or backspace to exit").to_owned()
                         }
                     }
                     None => {
@@ -7396,19 +7384,19 @@ impl Input {
     }
     fn cli_agent_rich_input_hint_text(&self, ctx: &ViewContext<Self>) -> Cow<'static, str> {
         if self.is_locked_in_shell_mode(ctx) {
-            return Cow::Borrowed(AGENT_MODE_AI_DISABLED_AUTODETECTION_DISABLED_HINT_TEXT);
+            return Cow::Borrowed(tr("Run commands"));
         }
 
         CLIAgentSessionsModel::as_ref(ctx)
             .session(self.terminal_view_id)
             .map(|session| match session.agent {
-                CLIAgent::Unknown => Cow::Borrowed(CLI_AGENT_RICH_INPUT_HINT_TEXT),
-                _ => Cow::Owned(format!(
+                CLIAgent::Unknown => Cow::Borrowed(tr("Tell the agent what to build...")),
+                _ => Cow::Owned(tr!(
                     "Enter prompt for {}...",
                     session.agent.display_name()
                 )),
             })
-            .unwrap_or(Cow::Borrowed(CLI_AGENT_RICH_INPUT_HINT_TEXT))
+            .unwrap_or(Cow::Borrowed(tr("Tell the agent what to build...")))
     }
 
     pub fn set_zero_state_hint_text(&mut self, ctx: &mut ViewContext<Self>) {
@@ -7514,7 +7502,7 @@ impl Input {
                 });
             } else if *InputSettings::as_ref(ctx).enable_ai_command_search_hash_trigger {
                 self.editor.update(ctx, |editor, ctx| {
-                    editor.set_placeholder_text(AI_COMMAND_SEARCH_HINT_TEXT, ctx);
+                    editor.set_placeholder_text(tr("Type '#' for AI command suggestions"), ctx);
                 });
             } else {
                 // Don't advertise the '#' shorthand when the user has disabled it;
@@ -7990,8 +7978,9 @@ impl Input {
                 let window_id = ctx.window_id();
                 ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
                     toast_stack.add_ephemeral_toast(
-                        DismissibleToast::error(format!(
-                            "Cannot run `{truncated_command}` (command already running)."
+                        DismissibleToast::error(tr!(
+                            "Cannot run `{}` (command already running).",
+                            truncated_command
                         )),
                         window_id,
                         ctx,
@@ -8746,13 +8735,13 @@ impl Input {
         // Emit the a11y content as the last step so that it overwrites any of the a11y content
         // emitted by the editor (if multiple `AccessibilityContent`s are emitted within the same
         // event loop, the last one wins).
-        let mut accessibility_text = format!("Workflow command {} inserted.", &command_to_insert);
+        let mut accessibility_text = tr!("Workflow command {} inserted.", &command_to_insert);
         if let Some(a11y_content) = self.selected_workflow_a11y_text(ctx) {
             let _ = write!(accessibility_text, " {a11y_content}");
         }
         ctx.emit_a11y_content(AccessibilityContent::new(
             accessibility_text,
-            "Press shift-tab to select the next workflow argument",
+            tr("Press shift-tab to select the next workflow argument"),
             WarpA11yRole::UserAction,
         ));
 
@@ -8852,7 +8841,7 @@ impl Input {
             .and_then(|selected_workflow_state| {
                 selected_workflow_state.more_info_view.read(ctx, |view, _| {
                     view.selected_argument()
-                        .map(|argument| format!("Selected Workflow argument {}", argument.name()))
+                        .map(|argument| tr!("Selected Workflow argument {}", argument.name()))
                 })
             })
     }
@@ -9104,7 +9093,7 @@ impl Input {
                 self.try_execute_command(&command, ctx);
 
                 ctx.emit_a11y_content(AccessibilityContent::new_without_help(
-                    format!("Executed: {command}"),
+                    tr!("Executed: {}", command),
                     WarpA11yRole::UserAction,
                 ));
             }
@@ -11712,9 +11701,9 @@ impl Input {
                     // Show voice status as placeholder when the buffer is empty.
                     if self.editor.as_ref(ctx).is_empty(ctx) {
                         let placeholder = if *is_listening {
-                            "Listening..."
+                            tr("Listening...")
                         } else {
-                            "Transcribing..."
+                            tr("Transcribing...")
                         };
                         self.editor.update(ctx, |editor, ctx| {
                             editor.set_placeholder_text(placeholder, ctx);
@@ -12191,16 +12180,19 @@ impl Input {
         // Show toast for excess images if any
         if excess_images > 0 {
             let (limit_name, limit_value) = if available_per_query < available_per_conversation {
-                ("per query", MAX_IMAGE_COUNT_FOR_QUERY)
+                (tr("per query"), MAX_IMAGE_COUNT_FOR_QUERY)
             } else {
-                ("per conversation", MAX_IMAGES_PER_CONVERSATION)
+                (tr("per conversation"), MAX_IMAGES_PER_CONVERSATION)
             };
 
             let message = if excess_images == 1 {
-                format!("1 image wasn't attached - limit is {limit_value} images {limit_name}.")
+                tr!("1 image wasn't attached - limit is {} images {}.", limit_value, limit_name)
             } else {
-                format!(
-                    "{excess_images} images weren't attached - limit is {limit_value} images {limit_name}."
+                tr!(
+                    "{} images weren't attached - limit is {} images {}.",
+                    excess_images,
+                    limit_value,
+                    limit_name
                 )
             };
             self.show_image_paste_error(ctx, message);
@@ -16964,7 +16956,7 @@ impl TypedActionView for Input {
                     ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
                         toast_stack.add_ephemeral_toast(
                             DismissibleToast::error(
-                                "Cannot start a new conversation while agent is monitoring a command.".to_string()
+                                tr("Cannot start a new conversation while agent is monitoring a command.").to_string()
                             ),
                             window_id,
                             ctx,

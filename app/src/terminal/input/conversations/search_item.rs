@@ -1,5 +1,6 @@
 //! SearchItem implementation for conversation menu items.
 
+use light_i18n::tr;
 use fuzzy_match::FuzzyMatchResult;
 use ordered_float::OrderedFloat;
 use warp_core::ui::theme::Fill;
@@ -77,7 +78,7 @@ impl SearchItem for ConversationSearchItem {
         let primary_text_color = inline_styles::primary_text_color(theme, background_color.into());
         let secondary_text_color = theme.disabled_text_color(background_color.into());
 
-        let secondary_suffix = " open in different pane";
+        let secondary_suffix = tr(" open in different pane");
         let title = &self.entry.display.title;
         let full_text = if self.is_open_elsewhere {
             format!("{title}{secondary_suffix}")
@@ -164,6 +165,6 @@ impl SearchItem for ConversationSearchItem {
     }
 
     fn accessibility_label(&self) -> String {
-        format!("Conversation: {}", self.entry.display.title)
+        tr!("Conversation: {}", self.entry.display.title)
     }
 }

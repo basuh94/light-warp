@@ -185,7 +185,7 @@ impl CliAgentPluginManager for CodexPluginManager {
         if still_outdated {
             log.push_str("Post-update version check: plugin is still outdated\n");
             return Err(PluginInstallError {
-                message: "Plugin update did not take effect".to_owned(),
+                message: light_i18n::tr("Plugin update did not take effect").to_owned(),
                 log,
             });
         }
@@ -193,11 +193,11 @@ impl CliAgentPluginManager for CodexPluginManager {
     }
 
     fn install_success_message(&self) -> &'static str {
-        "Warp plugin installed. Please restart Codex to activate."
+        light_i18n::tr("Warp plugin installed. Please restart Codex to activate.")
     }
 
     fn update_success_message(&self) -> &'static str {
-        "Warp plugin updated. Please restart Codex to activate."
+        light_i18n::tr("Warp plugin updated. Please restart Codex to activate.")
     }
 
     fn install_instructions(&self) -> &'static PluginInstructions {
@@ -236,7 +236,7 @@ impl CliAgentPluginManager for CodexPluginManager {
         if !updated {
             log.push_str("Post-install version check: platform plugin is still outdated\n");
             return Err(PluginInstallError {
-                message: "Platform plugin installation did not take effect".to_owned(),
+                message: light_i18n::tr("Platform plugin installation did not take effect").to_owned(),
                 log,
             });
         }
@@ -263,7 +263,7 @@ impl CliAgentPluginManager for CodexPluginManager {
         if !updated {
             log.push_str("Post-update version check: platform plugin is still outdated\n");
             return Err(PluginInstallError {
-                message: "Platform plugin update did not take effect".to_owned(),
+                message: light_i18n::tr("Platform plugin update did not take effect").to_owned(),
                 log,
             });
         }
@@ -273,44 +273,44 @@ impl CliAgentPluginManager for CodexPluginManager {
 
 static PLUGIN_INSTALL_INSTRUCTIONS: LazyLock<PluginInstructions> =
     LazyLock::new(|| PluginInstructions {
-        title: "Install Warp Plugin for Codex",
-        subtitle: "Run the following commands, then restart Codex.",
-        steps: &[
+        title: light_i18n::tr("Install Warp Plugin for Codex"),
+        subtitle: light_i18n::tr("Run the following commands, then restart Codex."),
+        steps: Vec::leak(vec![
             PluginInstructionStep {
-                description: "Add the Warp plugin marketplace repository",
+                description: light_i18n::tr("Add the Warp plugin marketplace repository"),
                 command: "codex plugin marketplace add warpdotdev/codex-warp",
                 executable: true,
                 link: None,
             },
             PluginInstructionStep {
-                description: "Install the Warp plugin",
+                description: light_i18n::tr("Install the Warp plugin"),
                 command: "codex plugin add warp@codex-warp",
                 executable: true,
                 link: None,
             },
-        ],
-        post_install_notes: &["Restart Codex to activate the plugin."],
+        ]),
+        post_install_notes: Vec::leak(vec![light_i18n::tr("Restart Codex to activate the plugin.")]),
     });
 
 static NATIVE_INSTALL_INSTRUCTIONS: LazyLock<PluginInstructions> = LazyLock::new(|| {
     PluginInstructions {
-        title: "Enable Warp Notifications for Codex",
-        subtitle: "Update Codex to the latest version, then enable in-focus notifications so Warp can display them while you work.",
-        steps: &[
+        title: light_i18n::tr("Enable Warp Notifications for Codex"),
+        subtitle: light_i18n::tr("Update Codex to the latest version, then enable in-focus notifications so Warp can display them while you work."),
+        steps: Vec::leak(vec![
             PluginInstructionStep {
-                description: "Update Codex to the latest version.",
+                description: light_i18n::tr("Update Codex to the latest version."),
                 command: "",
                 executable: false,
                 link: Some("https://developers.openai.com/codex/cli#upgrade"),
             },
             PluginInstructionStep {
-                description: "Set the notification condition to \"always\" in your Codex config. Open or create ~/.codex/config.toml and add:",
+                description: light_i18n::tr("Set the notification condition to \"always\" in your Codex config. Open or create ~/.codex/config.toml and add:"),
                 command: "[tui]\nnotification_condition = \"always\"",
                 executable: false,
                 link: None,
             },
-        ],
-        post_install_notes: &["Restart Codex to apply the changes."],
+        ]),
+        post_install_notes: Vec::leak(vec![light_i18n::tr("Restart Codex to apply the changes.")]),
     }
 });
 
@@ -323,26 +323,26 @@ static EMPTY_INSTRUCTIONS: LazyLock<PluginInstructions> = LazyLock::new(|| Plugi
 
 static PLUGIN_UPDATE_INSTRUCTIONS: LazyLock<PluginInstructions> = LazyLock::new(|| {
     PluginInstructions {
-        title: "Update Warp Plugin for Codex",
-        subtitle: "Run the following commands, then restart Codex.",
-        steps: &[
+        title: light_i18n::tr("Update Warp Plugin for Codex"),
+        subtitle: light_i18n::tr("Run the following commands, then restart Codex."),
+        steps: Vec::leak(vec![
             PluginInstructionStep {
-                description: "Upgrade the marketplace",
+                description: light_i18n::tr("Upgrade the marketplace"),
                 command: "codex plugin marketplace upgrade codex-warp",
                 executable: true,
                 link: None,
             },
             PluginInstructionStep {
-                description: "Reinstall the Warp plugin",
+                description: light_i18n::tr("Reinstall the Warp plugin"),
                 command: "codex plugin add warp@codex-warp",
                 executable: true,
                 link: None,
             },
-        ],
-        post_install_notes: &[
-            "Restart Codex to activate the update.",
-            "If this fails because codex-warp is not configured as a Git marketplace, remove and re-add the marketplace.",
-        ],
+        ]),
+        post_install_notes: Vec::leak(vec![
+            light_i18n::tr("Restart Codex to activate the update."),
+            light_i18n::tr("If this fails because codex-warp is not configured as a Git marketplace, remove and re-add the marketplace."),
+        ]),
     }
 });
 

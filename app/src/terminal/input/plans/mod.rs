@@ -3,6 +3,7 @@ mod data_source;
 mod search_item;
 mod view;
 
+use light_i18n::tr;
 use ai::document::AIDocumentId;
 pub use view::{InlinePlanMenuEvent, InlinePlanMenuView};
 use warpui::keymap::Keystroke;
@@ -39,7 +40,7 @@ impl InlineMenuAction for AcceptPlan {
                         key: "enter".to_owned(),
                         ..Default::default()
                     }),
-                    MessageItem::text(" open plan"),
+                    MessageItem::text(tr(" open plan")),
                 ],
                 move |ctx| {
                     ctx.dispatch_typed_action(InlineMenuRowAction::Accept {

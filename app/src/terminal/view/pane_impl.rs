@@ -825,9 +825,9 @@ impl TerminalView {
         button
             .with_tooltip(move || {
                 let tooltip_text = if is_open {
-                    "Hide details"
+                    light_i18n::tr("Hide details")
                 } else {
-                    "Show details"
+                    light_i18n::tr("Show details")
                 };
                 ui_builder
                     .tool_tip(tooltip_text.to_string())
@@ -881,9 +881,9 @@ impl TerminalView {
         )
         .with_tooltip(move || {
             let tooltip_text = if is_open {
-                "Hide details"
+                light_i18n::tr("Hide details")
             } else {
-                "Show details"
+                light_i18n::tr("Show details")
             };
             ui_builder
                 .tool_tip(tooltip_text.to_string())
@@ -1172,6 +1172,6 @@ fn default_agent_conversation_title(is_ambient_agent: bool) -> String {
     if is_ambient_agent {
         "New cloud agent".to_owned()
     } else {
-        "New agent conversation".to_owned()
+        light_i18n::tr("New agent conversation").to_owned()
     }
 }

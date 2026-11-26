@@ -1,6 +1,7 @@
 //! SearchItem implementation for rewind menu items.
 //! Renders two lines: query text and code changes summary.
 
+use light_i18n::tr;
 use fuzzy_match::FuzzyMatchResult;
 use ordered_float::OrderedFloat;
 use warp_core::ui::Icon;
@@ -43,7 +44,7 @@ impl RewindSearchItem {
     pub fn new_current() -> Self {
         Self {
             exchange_id: None,
-            query_text: "Current".to_string(),
+            query_text: tr("Current").to_string(),
             file_changes: FileChangesInfo::default(),
             query_match_result: None,
             score: OrderedFloat(0.0),
@@ -141,7 +142,7 @@ impl SearchItem for RewindSearchItem {
         let changes_element: Box<dyn Element> = if self.is_current {
             // "Current" item shows "No code to be restored"
             Text::new_inline(
-                "No code to be restored".to_string(),
+                tr("No code to be restored").to_string(),
                 appearance.ui_font_family(),
                 secondary_font_size,
             )
@@ -174,7 +175,7 @@ impl SearchItem for RewindSearchItem {
             row.finish()
         } else {
             Text::new_inline(
-                "No code to be restored".to_string(),
+                tr("No code to be restored").to_string(),
                 appearance.ui_font_family(),
                 secondary_font_size,
             )
@@ -218,14 +219,14 @@ impl SearchItem for RewindSearchItem {
 
     fn accessibility_label(&self) -> String {
         if self.is_current {
-            "Current state (no rewind)".to_string()
+            tr("Current state (no rewind)").to_string()
         } else if self.has_code_changes() {
-            format!(
+            tr!(
                 "Rewind to: {} (+{} -{})",
                 self.query_text, self.file_changes.lines_added, self.file_changes.lines_removed
             )
         } else {
-            format!("Rewind to: {} (no code changes)", self.query_text)
+            tr!("Rewind to: {} (no code changes)", self.query_text)
         }
     }
 }

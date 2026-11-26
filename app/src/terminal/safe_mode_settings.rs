@@ -54,9 +54,9 @@ impl SecretDisplayMode {
     /// Display name for UI
     pub fn display_name(self) -> &'static str {
         match self {
-            SecretDisplayMode::Asterisks => "Asterisks",
-            SecretDisplayMode::Strikethrough => "Strikethrough",
-            SecretDisplayMode::AlwaysShow => "Always show secrets",
+            SecretDisplayMode::Asterisks => light_i18n::tr("Asterisks"),
+            SecretDisplayMode::Strikethrough => light_i18n::tr("Strikethrough"),
+            SecretDisplayMode::AlwaysShow => light_i18n::tr("Always show secrets"),
         }
     }
 

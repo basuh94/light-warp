@@ -1,3 +1,4 @@
+use light_i18n::tr;
 use settings::Setting;
 use warp_core::ui::Icon;
 use warp_errors::report_if_error;
@@ -160,7 +161,7 @@ impl View for TerminalViewZeroStateBlock {
             )
             .with_child(
                 Text::new(
-                    "New terminal session",
+                    tr("New terminal session"),
                     appearance.ui_font_family(),
                     title_font_size,
                 )
@@ -184,7 +185,7 @@ impl View for TerminalViewZeroStateBlock {
                 Message::new(vec![MessageItem::clickable(
                     vec![
                         MessageItem::keystroke(ENTER_AGENT_VIEW_NEW_CONVERSATION_KEYSTROKE.clone()),
-                        MessageItem::text("start a new agent conversation"),
+                        MessageItem::text(tr("start a new agent conversation")),
                     ],
                     |ctx| {
                         ctx.dispatch_typed_action(TerminalAction::StartNewAgentConversation {
@@ -203,7 +204,7 @@ impl View for TerminalViewZeroStateBlock {
                         MessageItem::keystroke(
                             ENTER_CLOUD_AGENT_VIEW_NEW_CONVERSATION_KEYSTROKE.clone(),
                         ),
-                        MessageItem::text("start a new cloud agent conversation"),
+                        MessageItem::text(tr("start a new cloud agent conversation")),
                     ],
                     |ctx| {
                         ctx.dispatch_typed_action(TerminalAction::EnterCloudAgentView);
@@ -219,7 +220,7 @@ impl View for TerminalViewZeroStateBlock {
                             key: "up".to_owned(),
                             ..Default::default()
                         }),
-                        MessageItem::text("cycle past commands and conversations"),
+                        MessageItem::text(tr("cycle past commands and conversations")),
                     ],
                     |ctx| {
                         ctx.dispatch_typed_action(TerminalAction::OpenInlineHistoryMenu);
@@ -238,7 +239,7 @@ impl View for TerminalViewZeroStateBlock {
                 Message::new(vec![MessageItem::clickable(
                     vec![
                         MessageItem::keystroke(keystroke),
-                        MessageItem::text("open code review"),
+                        MessageItem::text(tr("open code review")),
                     ],
                     |ctx| {
                         ctx.dispatch_typed_action(WorkspaceAction::ToggleRightPanel);
@@ -276,7 +277,7 @@ impl View for TerminalViewZeroStateBlock {
                         Shrinkable::new(
                             1.,
                             render_standard_message(
-                                Message::from_text("autodetect agent prompts in terminal sessions"),
+                                Message::from_text(tr("autodetect agent prompts in terminal sessions")),
                                 app,
                             ),
                         )
@@ -293,7 +294,7 @@ impl View for TerminalViewZeroStateBlock {
                 theme.disabled_text_color(theme.background())
             };
             Text::new(
-                "Don't show again",
+                tr("Don't show again"),
                 appearance.ui_font_family(),
                 appearance.monospace_font_size() - 4.,
             )

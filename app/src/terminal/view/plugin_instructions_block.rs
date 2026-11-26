@@ -1,3 +1,4 @@
+use light_i18n::tr;
 use std::iter;
 
 use markdown_parser::{FormattedText, FormattedTextFragment, FormattedTextLine};
@@ -101,7 +102,7 @@ impl PluginInstructionsBlock {
         let desc_element: Box<dyn Element> = if let Some(url) = link {
             let fragments = vec![
                 FormattedTextFragment::plain_text(format!("{description} ")),
-                FormattedTextFragment::hyperlink("Learn more", url),
+                FormattedTextFragment::hyperlink(tr("Learn more"), url),
             ];
             let formatted = FormattedText::new(vec![FormattedTextLine::Line(fragments)]);
             FormattedTextElement::new(
@@ -196,7 +197,7 @@ impl View for PluginInstructionsBlock {
         .finish();
 
         let subtitle_text = if self.is_remote_session {
-            format!(
+            tr!(
                 "{} Be sure to run these commands on your remote machine.",
                 self.instructions.subtitle
             )
@@ -293,7 +294,7 @@ impl TypedActionView for PluginInstructionsBlock {
                     let window_id = ctx.window_id();
                     ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
                         toast_stack.add_ephemeral_toast(
-                            DismissibleToast::success("Copied to clipboard".to_owned()),
+                            DismissibleToast::success(tr("Copied to clipboard").to_owned()),
                             window_id,
                             ctx,
                         );

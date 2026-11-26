@@ -16,6 +16,7 @@
 //!
 //! Dismissing the block (on click of either option, or when the session is
 //! deregistered) is the parent's responsibility.
+use light_i18n::tr;
 use settings::Setting;
 use warp_core::ui::theme::color::internal_colors;
 use warp_errors::report_error;
@@ -75,10 +76,9 @@ impl SshRemoteServerChoiceView {
         let buttons = ctx.add_typed_action_view(|_| {
             KeyboardNavigableButtons::new(vec![
                 rich_navigation_button(
-                    "Install Warp's SSH extension".to_string(),
+                    tr("Install Warp's SSH extension").to_string(),
                     Some(
-                        "Install Warp's extension to enable agent features like file browsing, \
-                         code review, and intelligent command completions in this session."
+                        tr("Install Warp's extension to enable agent features like file browsing, code review, and intelligent command completions in this session.")
                             .to_string(),
                     ),
                     /* recommended */ true,
@@ -86,10 +86,9 @@ impl SshRemoteServerChoiceView {
                     SshRemoteServerChoiceViewAction::Install,
                 ),
                 rich_navigation_button(
-                    "Continue without installing".to_string(),
+                    tr("Continue without installing").to_string(),
                     Some(
-                        "You'll still get a Warpified experience just without the coding \
-                         features."
+                        tr("You'll still get a Warpified experience just without the coding features.")
                             .to_string(),
                     ),
                     /* recommended */ false,
@@ -121,7 +120,7 @@ impl SshRemoteServerChoiceView {
         // Match the Figma design: a plain title row, no icon / chevron /
         // action buttons. `HeaderConfig` without an `interaction_mode` set
         // renders exactly that.
-        HeaderConfig::new("Choose your experience for this remote session:", app)
+        HeaderConfig::new(tr("Choose your experience for this remote session:"), app)
             .with_corner_radius_override(CornerRadius::with_top(Radius::Pixels(
                 PROMPT_BORDER_RADIUS,
             )))
@@ -156,7 +155,7 @@ impl SshRemoteServerChoiceView {
 
         let checkbox_label =
             Hoverable::new(self.do_not_ask_again_label_mouse_state.clone(), move |_| {
-                Text::new("Don't ask me this again", ui_font_family, footer_font_size)
+                Text::new(tr("Don't ask me this again"), ui_font_family, footer_font_size)
                     .with_color(muted_color)
                     .finish()
             })
@@ -176,7 +175,7 @@ impl SshRemoteServerChoiceView {
         let manage_settings_link = appearance
             .ui_builder()
             .link(
-                "Manage Warpify settings".into(),
+                tr("Manage Warpify settings").into(),
                 None,
                 Some(Box::new(|ctx| {
                     ctx.dispatch_typed_action(SshRemoteServerChoiceViewAction::OpenWarpifySettings);

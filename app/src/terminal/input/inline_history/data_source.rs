@@ -6,6 +6,7 @@
 //! - Commands are deduplicated, keeping the most recent occurrence
 //! - The result is that current session items appear at the bottom (closer to input)
 
+use light_i18n::tr;
 use chrono::{DateTime, Local};
 use fuzzy_match::FuzzyMatchResult;
 use ordered_float::OrderedFloat;
@@ -158,7 +159,7 @@ impl InlineHistoryMenuDataSource {
             };
             let title = conversation
                 .title()
-                .unwrap_or_else(|| "Untitled conversation".to_string());
+                .unwrap_or_else(|| tr("Untitled conversation").to_string());
             let match_result = if trimmed_query.is_empty() {
                 None
             } else {

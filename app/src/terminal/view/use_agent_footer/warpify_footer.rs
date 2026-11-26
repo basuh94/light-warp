@@ -1,3 +1,4 @@
+use light_i18n::tr;
 use std::sync::Arc;
 
 use parking_lot::FairMutex;
@@ -30,10 +31,10 @@ impl WarpifyFooterView {
         let button_size = ButtonSize::XSmall;
 
         let warpify_button = ctx.add_typed_action_view(|_ctx| {
-            ActionButton::new("Warpify subshell", AgentFooterButtonTheme::new(None))
+            ActionButton::new(tr("Warpify subshell"), AgentFooterButtonTheme::new(None))
                 .with_icon(Icon::Warp)
                 .with_size(button_size)
-                .with_tooltip("Enable Warp shell integration in this session")
+                .with_tooltip(tr("Enable Warp shell integration in this session"))
                 .with_tooltip_alignment(TooltipAlignment::Left)
                 .on_click(|ctx| {
                     ctx.dispatch_typed_action(WarpifyFooterViewAction::Warpify);
@@ -41,11 +42,11 @@ impl WarpifyFooterView {
         });
 
         let use_agent_button = ctx.add_typed_action_view(|ctx| {
-            ActionButton::new("Use agent", AgentFooterButtonTheme::new(None))
+            ActionButton::new(tr("Use agent"), AgentFooterButtonTheme::new(None))
                 .with_icon(Icon::Agent)
                 .with_keybinding(KeystrokeSource::Fixed(USE_AGENT_KEYSTROKE.clone()), ctx)
                 .with_size(button_size)
-                .with_tooltip("Ask the Warp agent to assist")
+                .with_tooltip(tr("Ask the Warp agent to assist"))
                 .with_tooltip_alignment(TooltipAlignment::Left)
                 .on_click(|ctx| {
                     ctx.dispatch_typed_action(WarpifyFooterViewAction::UseAgent);
@@ -53,7 +54,7 @@ impl WarpifyFooterView {
         });
 
         let dismiss_button = ctx.add_typed_action_view(|_ctx| {
-            ActionButton::new("Dismiss", AgentFooterButtonTheme::new(None))
+            ActionButton::new(tr("Dismiss"), AgentFooterButtonTheme::new(None))
                 .with_size(button_size)
                 .on_click(|ctx| {
                     ctx.dispatch_typed_action(WarpifyFooterViewAction::Dismiss);

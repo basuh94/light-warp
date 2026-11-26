@@ -98,7 +98,7 @@ impl CliAgentPluginManager for GeminiPluginManager {
         if still_outdated {
             log.push_str("Post-update version check: plugin is still outdated\n");
             return Err(PluginInstallError {
-                message: "Plugin update did not take effect".to_owned(),
+                message: light_i18n::tr("Plugin update did not take effect").to_owned(),
                 log,
             });
         }
@@ -106,11 +106,11 @@ impl CliAgentPluginManager for GeminiPluginManager {
     }
 
     fn install_success_message(&self) -> &'static str {
-        "Warp plugin installed. Please restart Gemini CLI to activate."
+        light_i18n::tr("Warp plugin installed. Please restart Gemini CLI to activate.")
     }
 
     fn update_success_message(&self) -> &'static str {
-        "Warp plugin updated. Please restart Gemini CLI to activate."
+        light_i18n::tr("Warp plugin updated. Please restart Gemini CLI to activate.")
     }
 
     fn install_instructions(&self) -> &'static PluginInstructions {
@@ -123,27 +123,27 @@ impl CliAgentPluginManager for GeminiPluginManager {
 }
 
 static INSTALL_INSTRUCTIONS: LazyLock<PluginInstructions> = LazyLock::new(|| PluginInstructions {
-    title: "Install Warp Plugin for Gemini CLI",
-    subtitle: "Run the following command, then restart Gemini CLI.",
-    steps: &[PluginInstructionStep {
-        description: "Install the Warp extension",
+    title: light_i18n::tr("Install Warp Plugin for Gemini CLI"),
+    subtitle: light_i18n::tr("Run the following command, then restart Gemini CLI."),
+    steps: Vec::leak(vec![PluginInstructionStep {
+        description: light_i18n::tr("Install the Warp extension"),
         command: "gemini extensions install https://github.com/warpdotdev/gemini-cli-warp --consent",
         executable: true,
         link: None,
-    }],
-    post_install_notes: &["Restart Gemini CLI to activate the plugin."],
+    }]),
+    post_install_notes: Vec::leak(vec![light_i18n::tr("Restart Gemini CLI to activate the plugin.")]),
 });
 
 static UPDATE_INSTRUCTIONS: LazyLock<PluginInstructions> = LazyLock::new(|| PluginInstructions {
-    title: "Update Warp Plugin for Gemini CLI",
-    subtitle: "Run the following command, then restart Gemini CLI.",
-    steps: &[PluginInstructionStep {
-        description: "Update the Warp extension",
+    title: light_i18n::tr("Update Warp Plugin for Gemini CLI"),
+    subtitle: light_i18n::tr("Run the following command, then restart Gemini CLI."),
+    steps: Vec::leak(vec![PluginInstructionStep {
+        description: light_i18n::tr("Update the Warp extension"),
         command: "gemini extensions update gemini-warp",
         executable: true,
         link: None,
-    }],
-    post_install_notes: &["Restart Gemini CLI to activate the update."],
+    }]),
+    post_install_notes: Vec::leak(vec![light_i18n::tr("Restart Gemini CLI to activate the update.")]),
 });
 
 fn check_installed(extensions_dir: &Path) -> bool {

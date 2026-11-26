@@ -1,3 +1,4 @@
+use light_i18n::tr;
 use fuzzy_match::{FuzzyMatchResult, match_indices_case_insensitive};
 use itertools::Itertools;
 use markdown_parser::{FormattedText, FormattedTextFragment, FormattedTextLine};
@@ -21,8 +22,8 @@ use warpui::{
 };
 
 use super::model_spec_scores::{
-    CUSTOM_MODEL_ROUTER_DESCRIPTION, CUSTOM_MODEL_ROUTER_TITLE, CostRow, MODEL_SPECS_DESCRIPTION,
-    MODEL_SPECS_TITLE, ModelSpecScoresLayout, REASONING_LEVEL_DESCRIPTION, REASONING_LEVEL_TITLE,
+    CostRow, ModelSpecScoresLayout, custom_model_router_description, custom_model_router_title,
+    model_specs_description, model_specs_title, reasoning_level_description, reasoning_level_title,
     render_model_spec_header, render_model_spec_scores,
 };
 use crate::ai::agent::conversation::AIConversation;
@@ -52,7 +53,9 @@ use crate::workspaces::user_workspaces::{TeamContextResolver, TeamScope, UserWor
 
 /// Auto models pick their concrete model server-side, so the cost line names the
 /// class of inference rather than a host the request may never reach.
-const AUTO_HOSTED_INFERENCE_LABEL: &str = "Inference may use your hosted inference";
+fn auto_hosted_inference_label() -> &'static str {
+    tr("Inference may use your hosted inference")
+}
 
 #[derive(Clone, Debug)]
 pub struct AcceptModel {
@@ -72,7 +75,7 @@ impl InlineMenuAction for AcceptModel {
                 key: "enter".to_owned(),
                 ..Default::default()
             }),
-            MessageItem::text(" to select"),
+            MessageItem::text(tr(" to select")),
             MessageItem::keystroke(if OperatingSystem::get().is_mac() {
                 Keystroke {
                     key: "enter".to_owned(),
@@ -87,7 +90,7 @@ impl InlineMenuAction for AcceptModel {
                     ..Default::default()
                 }
             }),
-            MessageItem::text(" select and save to profile"),
+            MessageItem::text(tr(" select and save to profile")),
         ];
 
         if args.inline_menu_model.tab_configs().len() > 1 {
@@ -96,7 +99,7 @@ impl InlineMenuAction for AcceptModel {
                 shift: true,
                 ..Default::default()
             }));
-            items.push(MessageItem::text(" to cycle tabs"));
+            items.push(MessageItem::text(tr(" to cycle tabs")));
         }
 
         items.push(MessageItem::clickable(
@@ -105,7 +108,7 @@ impl InlineMenuAction for AcceptModel {
                     key: "escape".to_owned(),
                     ..Default::default()
                 }),
-                MessageItem::text(" to dismiss"),
+                MessageItem::text(tr(" to dismiss")),
             ],
             |ctx| {
                 ctx.dispatch_typed_action(
@@ -516,7 +519,7 @@ impl SearchItem for ModelSearchItem {
         }
 
         if self.is_selected {
-            let selected_label = "(selected)";
+            let selected_label = tr("(selected)");
             let selected_text = Text::new_inline(
                 selected_label.to_string(),
                 appearance.ui_font_family(),
@@ -535,7 +538,7 @@ impl SearchItem for ModelSearchItem {
         }
 
         if self.is_disabled() {
-            let disabled_label = "(disabled)";
+            let disabled_label = tr("(disabled)");
             let disabled_text = Text::new_inline(
                 disabled_label.to_string(),
                 appearance.ui_font_family(),
@@ -598,8 +601,8 @@ impl SearchItem for ModelSearchItem {
         // Custom auto models get an informational blurb instead of spec bars.
         if self.is_custom_router {
             let header = render_model_spec_header(
-                CUSTOM_MODEL_ROUTER_TITLE,
-                CUSTOM_MODEL_ROUTER_DESCRIPTION,
+                custom_model_router_title(),
+                custom_model_router_description(),
                 app,
             );
             let source_text = Text::new(
@@ -621,9 +624,9 @@ impl SearchItem for ModelSearchItem {
         }
 
         let (title, description) = if self.reasoning_level.is_some() {
-            (REASONING_LEVEL_TITLE, REASONING_LEVEL_DESCRIPTION)
+            (reasoning_level_title(), reasoning_level_description())
         } else {
-            (MODEL_SPECS_TITLE, MODEL_SPECS_DESCRIPTION)
+            (model_specs_title(), model_specs_description())
         };
         let header = render_model_spec_header(title, description, app);
 
@@ -641,7 +644,7 @@ impl SearchItem for ModelSearchItem {
             .to_string();
             let manage_label = self
                 .byo_key_source
-                .map_or("Manage", ByoKeySource::manage_button_label);
+                .map_or(tr("Manage"), ByoKeySource::manage_button_label);
             let manage_url = self.byo_key_source.and_then(ByoKeySource::manage_url);
             let manage_button = appearance
                 .ui_builder()
@@ -677,15 +680,15 @@ impl SearchItem for ModelSearchItem {
                 label: if self.is_auto
                     && (self.is_using_bedrock || self.is_using_gemini_enterprise_agent_platform)
                 {
-                    AUTO_HOSTED_INFERENCE_LABEL
+                    auto_hosted_inference_label()
                 } else if self.is_using_bedrock {
-                    "Inference via Bedrock"
+                    tr("Inference via Bedrock")
                 } else if self.is_using_gemini_enterprise_agent_platform {
-                    "Inference via Gemini Enterprise Agent Platform"
+                    tr("Inference via Gemini Enterprise Agent Platform")
                 } else if let Some(source) = self.byo_key_source {
                     source.inference_label()
                 } else {
-                    "Inference via API key"
+                    tr("Inference via API key")
                 },
                 manage_button: Container::new(manage_button).finish(),
             }
@@ -803,12 +806,12 @@ impl SearchItem for ModelSearchItem {
     }
 
     fn accessibility_label(&self) -> String {
-        let mut label = format!("Model: {}", self.display_text);
+        let mut label = tr!("Model: {}", self.display_text);
         if self.is_selected {
-            label.push_str(" (selected)");
+            label.push_str(tr(" (selected)"));
         }
         if self.is_disabled() {
-            label.push_str(" (disabled)");
+            label.push_str(tr(" (disabled)"));
         }
         label
     }

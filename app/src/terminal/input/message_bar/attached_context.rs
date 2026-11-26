@@ -1,5 +1,6 @@
 //! Shared message producers for displaying attached blocks/text context.
 
+use light_i18n::tr;
 use warp_core::features::FeatureFlag;
 use warpui::keymap::Keystroke;
 
@@ -58,14 +59,14 @@ impl<Args: AttachedContextArgs + Copy> MessageProvider<Args> for AttachedBlocksM
             .map(|cmd| truncated_command_for_block(&cmd))?;
 
         let message_text = if context_block_ids.len() == 1 {
-            format!("`{}` attached as context", block_command)
+            tr!("`{}` attached as context", block_command)
         } else if context_block_ids.len() == 2 {
-            format!(
+            tr!(
                 "`{}` and 1 other command attached as context",
                 block_command
             )
         } else {
-            format!(
+            tr!(
                 "`{}` and {} other commands attached as context",
                 block_command,
                 context_block_ids.len().saturating_sub(1)
@@ -83,7 +84,7 @@ impl<Args: AttachedContextArgs + Copy> MessageProvider<Args> for AttachedBlocksM
                         key: "escape".to_owned(),
                         ..Default::default()
                     }),
-                    MessageItem::text(" to remove"),
+                    MessageItem::text(tr(" to remove")),
                 ],
                 |ctx| {
                     ctx.dispatch_typed_action(InputAction::ClearAttachedContext);
@@ -120,7 +121,7 @@ impl<Args: AttachedContextArgs + Copy> MessageProvider<Args>
 
         let _ = args.context_model().pending_context_selected_text()?;
 
-        let mut items = vec![MessageItem::text("selected text attached as context")];
+        let mut items = vec![MessageItem::text(tr("selected text attached as context"))];
 
         // Always show ESC hint in agent view, make it clickable
         if args.agent_view_controller().is_active() {
@@ -131,7 +132,7 @@ impl<Args: AttachedContextArgs + Copy> MessageProvider<Args>
                         key: "escape".to_owned(),
                         ..Default::default()
                     }),
-                    MessageItem::text(" to remove"),
+                    MessageItem::text(tr(" to remove")),
                 ],
                 |ctx| {
                     ctx.dispatch_typed_action(InputAction::ClearAttachedContext);

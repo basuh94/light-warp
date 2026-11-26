@@ -4,6 +4,7 @@ mod data_source;
 mod search_item;
 mod view;
 
+use light_i18n::tr;
 use std::path::PathBuf;
 
 pub use view::{InlineReposMenuEvent, InlineReposMenuView};
@@ -51,7 +52,7 @@ impl InlineMenuAction for AcceptRepo {
                         background_color: bg_color_override_for_shortcuts_and_commands,
                     },
                     MessageItem::Text {
-                        content: " cd to repo".into(),
+                        content: tr(" cd to repo").into(),
                         color: color_override_for_shortcuts_and_commands,
                     },
                 ],

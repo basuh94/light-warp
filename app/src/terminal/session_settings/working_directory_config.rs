@@ -43,9 +43,9 @@ impl WorkingDirectoryMode {
     /// values in the settings view.
     pub fn dropdown_item_label(&self) -> &'static str {
         match self {
-            WorkingDirectoryMode::HomeDir => "Home directory",
-            WorkingDirectoryMode::PreviousDir => "Previous session's directory",
-            WorkingDirectoryMode::CustomDir => "Custom directory",
+            WorkingDirectoryMode::HomeDir => light_i18n::tr("Home directory"),
+            WorkingDirectoryMode::PreviousDir => light_i18n::tr("Previous session's directory"),
+            WorkingDirectoryMode::CustomDir => light_i18n::tr("Custom directory"),
         }
     }
 }

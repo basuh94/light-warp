@@ -93,12 +93,6 @@ const MAX_PROFILE_NAME_WIDTH_SCALE_FACTOR: f32 = 10.0;
 
 const PROFILE_SELECTOR_POSITION_ID: &str = "profile_selector";
 
-const PROFILE_PICKER_TOOLTIP: &str = "Choose an AI execution profile";
-const MODEL_PICKER_TOOLTIP: &str = "Choose an agent model";
-const MODEL_USES_CHATGPT_SUBSCRIPTION_TOOLTIP: &str =
-    "Requests for this model use your ChatGPT plan";
-const MODEL_LOCKED_FOR_FOLLOWUP_TOOLTIP: &str = "Follow-ups use the original run's model";
-const MODEL_REQUIRES_EDIT_ACCESS_TOOLTIP: &str = "Request edit access to change model";
 const HARNESS_DEFAULT_MODEL_LABEL: &str = "default";
 
 pub fn calculate_scaled_font_size(appearance: &warp_core::ui::appearance::Appearance) -> f32 {
@@ -283,7 +277,7 @@ impl ProfileModelSelector {
                 ),
                 is_blurred: false,
             })
-            .with_tooltip(PROFILE_PICKER_TOOLTIP)
+            .with_tooltip(light_i18n::tr("Choose an AI execution profile"))
             .with_size(ButtonSize::UDIButton)
             .with_icon(Icon::Psychology)
         });
@@ -311,14 +305,14 @@ impl ProfileModelSelector {
                 ),
                 is_blurred: false,
             })
-            .with_tooltip(MODEL_PICKER_TOOLTIP)
+            .with_tooltip(light_i18n::tr("Choose an agent model"))
             .with_size(ButtonSize::UDIButton)
         });
 
         let profile_compact_button = ctx.add_typed_action_view(|_| {
             ActionButton::new("", PromptIconButtonTheme::new(false))
                 .with_icon(Icon::Psychology)
-                .with_tooltip(PROFILE_PICKER_TOOLTIP)
+                .with_tooltip(light_i18n::tr("Choose an AI execution profile"))
                 .with_size(ButtonSize::UDIButton)
                 .on_click(|ctx| {
                     ctx.dispatch_typed_action(ProfileModelSelectorAction::ToggleProfileMenu);
@@ -328,7 +322,7 @@ impl ProfileModelSelector {
         let model_compact_button = ctx.add_typed_action_view(|_| {
             ActionButton::new("", PromptIconButtonTheme::new(false))
                 .with_icon(Icon::Neurology)
-                .with_tooltip(MODEL_PICKER_TOOLTIP)
+                .with_tooltip(light_i18n::tr("Choose an agent model"))
                 .with_size(ButtonSize::UDIButton)
                 .on_click(|ctx| {
                     ctx.dispatch_typed_action(ProfileModelSelectorAction::ToggleModelMenu);
@@ -365,7 +359,7 @@ impl ProfileModelSelector {
                         .iter()
                         .map(|name| {
                             if *name == "auto" {
-                                "auto-select the best model for the task"
+                                light_i18n::tr("auto-select the best model for the task")
                             } else {
                                 name
                             }
@@ -377,7 +371,7 @@ impl ProfileModelSelector {
                     }
                     label
                 } else {
-                    "New models available".to_string()
+                    light_i18n::tr("New models available").to_string()
                 }
             })))
         });
@@ -561,8 +555,8 @@ impl ProfileModelSelector {
         );
 
         let manage_api_key_button = ctx.add_typed_action_view(|_ctx| {
-            ActionButton::new("Manage", SecondaryTheme)
-                .with_tooltip("Manage API keys")
+            ActionButton::new(light_i18n::tr("Manage"), SecondaryTheme)
+                .with_tooltip(light_i18n::tr("Manage API keys"))
                 .with_size(ButtonSize::XSmall)
                 .on_click(|ctx| {
                     ctx.dispatch_typed_action(WorkspaceAction::ShowSettingsPageWithSearch {
@@ -575,7 +569,7 @@ impl ProfileModelSelector {
         let manage_chatgpt_usage_button = ctx.add_typed_action_view(|_ctx| {
             let source = ByoKeySource::ChatGPTSubscription;
             ActionButton::new(source.manage_button_label(), SecondaryTheme)
-                .with_tooltip("Manage ChatGPT usage")
+                .with_tooltip(light_i18n::tr("Manage ChatGPT usage"))
                 .with_size(ButtonSize::XSmall)
                 .on_click(move |ctx| {
                     if let Some(url) = source.manage_url() {
@@ -791,11 +785,11 @@ impl ProfileModelSelector {
         // Non-Oz runs lock silently: the harness owns model selection, and the
         // user already knows that, so no tooltip is shown.
         let model_tooltip: Option<&str> = if self.is_locked_for_cloud_followup(ctx) {
-            Some(MODEL_LOCKED_FOR_FOLLOWUP_TOOLTIP)
+            Some(light_i18n::tr("Follow-ups use the original run's model"))
         } else if self.is_locked_for_non_oz_run(ctx) {
             None
         } else {
-            Some(MODEL_PICKER_TOOLTIP)
+            Some(light_i18n::tr("Choose an agent model"))
         };
         let locked = self.is_model_locked(ctx);
         self.model_button.update(ctx, |button, ctx| {
@@ -897,7 +891,7 @@ impl ProfileModelSelector {
         let appearance = Appearance::as_ref(ctx);
         let mut menu_items = vec![
             MenuItem::Header {
-                fields: MenuItemFields::new("Profiles").with_override_text_color(
+                fields: MenuItemFields::new(light_i18n::tr("Profiles")).with_override_text_color(
                     appearance
                         .theme()
                         .sub_text_color(appearance.theme().background())
@@ -928,7 +922,7 @@ impl ProfileModelSelector {
 
         menu_items.push(MenuItem::Separator);
         menu_items.push(MenuItem::Item(
-            MenuItemFields::new("Manage profiles")
+            MenuItemFields::new(light_i18n::tr("Manage profiles"))
                 .with_icon(Icon::Gear)
                 .with_on_select_action(ProfileModelSelectorAction::ManageProfiles),
         ));
@@ -1152,7 +1146,7 @@ impl ProfileModelSelector {
                 items.push(MenuItem::Separator);
             }
             items.push(MenuItem::Header {
-                fields: MenuItemFields::new("Custom models").with_override_text_color(
+                fields: MenuItemFields::new(light_i18n::tr("Custom models")).with_override_text_color(
                     appearance
                         .theme()
                         .sub_text_color(appearance.theme().background())
@@ -1722,7 +1716,7 @@ impl ProfileModelSelector {
 
                 let tooltip = appearance
                     .ui_builder()
-                    .tool_tip(PROFILE_PICKER_TOOLTIP.to_owned());
+                    .tool_tip(light_i18n::tr("Choose an AI execution profile").to_owned());
                 let mut stack = Stack::new();
                 stack.add_child(button_with_hover);
                 stack.add_positioned_overlay_child(
@@ -1872,9 +1866,9 @@ impl ProfileModelSelector {
         let is_locked = is_locked_for_followup || is_locked_for_non_oz;
         let can_interact = has_edit_access && !is_locked;
         let interactive_tooltip = if is_using_chatgpt_subscription {
-            MODEL_USES_CHATGPT_SUBSCRIPTION_TOOLTIP
+            light_i18n::tr("Requests for this model use your ChatGPT plan")
         } else {
-            MODEL_PICKER_TOOLTIP
+            light_i18n::tr("Choose an agent model")
         };
 
         let hoverable = Hoverable::new(self.model_mouse_state.clone(), move |state| {
@@ -1904,11 +1898,11 @@ impl ProfileModelSelector {
             } else if state.is_hovered() {
                 // Non-Oz runs lock silently — skip the tooltip entirely.
                 let tooltip_text: Option<&str> = if is_locked_for_followup {
-                    Some(MODEL_LOCKED_FOR_FOLLOWUP_TOOLTIP)
+                    Some(light_i18n::tr("Follow-ups use the original run's model"))
                 } else if is_locked_for_non_oz {
                     None
                 } else {
-                    Some(MODEL_REQUIRES_EDIT_ACCESS_TOOLTIP)
+                    Some(light_i18n::tr("Request edit access to change model"))
                 };
 
                 if let Some(text) = tooltip_text {
@@ -2080,7 +2074,7 @@ impl ProfileModelSelector {
             Flex::row()
                 .with_main_axis_size(MainAxisSize::Max)
                 .with_cross_axis_alignment(CrossAxisAlignment::Center)
-                .with_child(self.render_model_spec_value_label("Cost".to_string(), app))
+                .with_child(self.render_model_spec_value_label(light_i18n::tr("Cost").to_string(), app))
                 .with_child(
                     Expanded::new(
                         1.,
@@ -2125,18 +2119,18 @@ impl ProfileModelSelector {
     ) -> Box<dyn Element> {
         let mut spec_values = vec![
             self.render_model_spec_value(
-                "Intelligence".to_string(),
+                light_i18n::tr("Intelligence").to_string(),
                 spec.quality,
                 bg_bar_color,
                 app,
             ),
-            self.render_model_spec_value("Speed".to_string(), spec.speed, bg_bar_color, app),
+            self.render_model_spec_value(light_i18n::tr("Speed").to_string(), spec.speed, bg_bar_color, app),
         ];
         if let Some(byo_key_source) = byo_key_source {
             spec_values.push(self.render_model_spec_api_key(byo_key_source, app));
         } else {
             spec_values.push(self.render_model_spec_value(
-                "Cost".to_string(),
+                light_i18n::tr("Cost").to_string(),
                 spec.cost,
                 bg_bar_color,
                 app,
@@ -2155,8 +2149,8 @@ impl ProfileModelSelector {
         let appearance = Appearance::as_ref(app);
         let theme = appearance.theme();
         let header = self.render_model_spec_header(
-            "Model Specs".to_string(),
-            "Warp’s benchmarks for how well a model performs in our harness, the rate at which it consumes credits, and task speed.".to_string(),
+            light_i18n::tr("Model Specs").to_string(),
+            light_i18n::tr("Warp’s benchmarks for how well a model performs in our harness, the rate at which it consumes credits, and task speed.").to_string(),
             app,
         );
         let spec = self.render_all_model_spec_values(
@@ -2195,12 +2189,12 @@ impl ProfileModelSelector {
 
         let (title, description) = match kind {
             ModelSpecSidecarKind::Auto => (
-                "Auto mode",
-                "Auto will select the best model for the task. Cost-efficiency optimizes for cost, Responsiveness optimizes for response speed.",
+                light_i18n::tr("Auto mode"),
+                light_i18n::tr("Auto will select the best model for the task. Cost-efficiency optimizes for cost, Responsiveness optimizes for response speed."),
             ),
             ModelSpecSidecarKind::Reasoning => (
-                "Reasoning level",
-                "Increased reasoning levels consume more credits and have higher latency, but higher performance for complicated tasks.",
+                light_i18n::tr("Reasoning level"),
+                light_i18n::tr("Increased reasoning levels consume more credits and have higher latency, but higher performance for complicated tasks."),
             ),
         };
 

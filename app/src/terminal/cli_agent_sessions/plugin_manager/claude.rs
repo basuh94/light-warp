@@ -137,7 +137,7 @@ impl CliAgentPluginManager for ClaudeCodePluginManager {
         if still_outdated {
             log.push_str("Post-update version check: plugin is still outdated\n");
             return Err(PluginInstallError {
-                message: "Plugin update did not take effect".to_owned(),
+                message: light_i18n::tr("Plugin update did not take effect").to_owned(),
                 log,
             });
         }
@@ -145,11 +145,11 @@ impl CliAgentPluginManager for ClaudeCodePluginManager {
     }
 
     fn install_success_message(&self) -> &'static str {
-        "Warp plugin installed. Please run /reload-plugins to activate."
+        light_i18n::tr("Warp plugin installed. Please run /reload-plugins to activate.")
     }
 
     fn update_success_message(&self) -> &'static str {
-        "Warp plugin updated. Please run /reload-plugins to activate."
+        light_i18n::tr("Warp plugin updated. Please run /reload-plugins to activate.")
     }
 
     fn install_instructions(&self) -> &'static PluginInstructions {
@@ -201,7 +201,7 @@ impl CliAgentPluginManager for ClaudeCodePluginManager {
         if still_outdated {
             log.push_str("Post-update version check: platform plugin is still outdated\n");
             return Err(PluginInstallError {
-                message: "Platform plugin update did not take effect".to_owned(),
+                message: light_i18n::tr("Platform plugin update did not take effect").to_owned(),
                 log,
             });
         }
@@ -210,53 +210,53 @@ impl CliAgentPluginManager for ClaudeCodePluginManager {
 }
 
 static INSTALL_INSTRUCTIONS: LazyLock<PluginInstructions> = LazyLock::new(|| PluginInstructions {
-    title: "Install Warp Plugin for Claude Code",
-    subtitle: "Ensure that jq is installed on your machine. Then, run these commands.",
-    steps: &[
+    title: light_i18n::tr("Install Warp Plugin for Claude Code"),
+    subtitle: light_i18n::tr("Ensure that jq is installed on your machine. Then, run these commands."),
+    steps: Vec::leak(vec![
         PluginInstructionStep {
-            description: "Add the Warp plugin marketplace repository",
+            description: light_i18n::tr("Add the Warp plugin marketplace repository"),
             command: "claude plugin marketplace add warpdotdev/claude-code-warp",
             executable: true,
             link: None,
         },
         PluginInstructionStep {
-            description: "Install the Warp plugin",
+            description: light_i18n::tr("Install the Warp plugin"),
             command: "claude plugin install warp@claude-code-warp",
             executable: true,
             link: None,
         },
-    ],
-    post_install_notes: &[
-        "Restart Claude Code to activate the plugin.",
-        "There are some known issues with Claude Code's plugin system. \
-             If the plugin is not found after step 1, you can try manually adding an \"extraKnownMarketplaces\" entry to ~/.claude/settings.json.",
-    ],
+    ]),
+    post_install_notes: Vec::leak(vec![
+        light_i18n::tr("Restart Claude Code to activate the plugin."),
+        light_i18n::tr("There are some known issues with Claude Code's plugin system. \
+             If the plugin is not found after step 1, you can try manually adding an \"extraKnownMarketplaces\" entry to ~/.claude/settings.json."),
+    ]),
 });
 
 static UPDATE_INSTRUCTIONS: LazyLock<PluginInstructions> = LazyLock::new(|| PluginInstructions {
-    title: "Update Warp Plugin for Claude Code",
-    subtitle: "Run the following commands.",
-    steps: &[
+    title: light_i18n::tr("Update Warp Plugin for Claude Code"),
+    subtitle: light_i18n::tr("Run the following commands."),
+    steps: Vec::leak(vec![
         PluginInstructionStep {
-            description: "Remove the existing marketplace (if present)",
+            description: light_i18n::tr("Remove the existing marketplace (if present)"),
             command: "claude plugin marketplace remove claude-code-warp",
             executable: true,
             link: None,
         },
         PluginInstructionStep {
-            description: "Re-add the marketplace",
+            description: light_i18n::tr("Re-add the marketplace"),
             command: "claude plugin marketplace add warpdotdev/claude-code-warp",
             executable: true,
             link: None,
         },
         PluginInstructionStep {
-            description: "Install the latest plugin version",
+            description: light_i18n::tr("Install the latest plugin version"),
             command: "claude plugin install warp@claude-code-warp",
             executable: true,
             link: None,
         },
-    ],
-    post_install_notes: &["Restart Claude Code to activate the update."],
+    ]),
+    post_install_notes: Vec::leak(vec![light_i18n::tr("Restart Claude Code to activate the update.")]),
 });
 
 fn check_installed(claude_dir: &Path) -> bool {

@@ -1,3 +1,4 @@
+use light_i18n::tr;
 use warp_core::features::FeatureFlag;
 use warpui::{SingletonEntity, ViewContext};
 
@@ -39,7 +40,7 @@ impl TerminalView {
         let auth_state = AuthStateProvider::as_ref(ctx).get().clone();
         let user_display_name = auth_state
             .username_for_display()
-            .unwrap_or_else(|| "User".to_owned());
+            .unwrap_or_else(|| tr("User").to_owned());
         let profile_image_path = auth_state.user_photo_url();
 
         let prompt_for_send_now = prompt.clone();

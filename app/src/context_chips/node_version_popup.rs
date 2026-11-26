@@ -73,7 +73,7 @@ impl NodeVersionPopupView {
         ctx: &mut ViewContext<Self>,
     ) -> Self {
         let install_button = ctx.add_typed_action_view(|_ctx| {
-            ActionButton::new("Install nvm", SecondaryTheme)
+            ActionButton::new(light_i18n::tr("Install nvm"), SecondaryTheme)
                 .with_icon(icons::Icon::Terminal)
                 .on_click(|ctx| {
                     ctx.dispatch_typed_action(NodeVersionPopupAction::InstallNvm);
@@ -177,7 +177,7 @@ impl NodeVersionPopupView {
 
         col.add_child(
             Text::new(
-                "Install nvm to enable version switching",
+                light_i18n::tr("Install nvm to enable version switching"),
                 styles.ui_font_family,
                 styles.detail_font_size + 2.,
             )
@@ -189,7 +189,7 @@ impl NodeVersionPopupView {
         col.add_child(
             Container::new(
                 Text::new(
-                    "This menu helps you switch between Node.js versions — but it requires nvm to be installed.",
+                    light_i18n::tr("This menu helps you switch between Node.js versions — but it requires nvm to be installed."),
                     styles.ui_font_family,
                     styles.detail_font_size,
                 )
@@ -238,7 +238,7 @@ impl NodeVersionPopupView {
         // Heading
         col.add_child(
             Text::new(
-                "No node versions installed",
+                light_i18n::tr("No node versions installed"),
                 styles.ui_font_family,
                 styles.detail_font_size + 2.,
             )
@@ -251,7 +251,7 @@ impl NodeVersionPopupView {
         col.add_child(
             Container::new(
                 Text::new(
-                    "Try installing versions with nvm",
+                    light_i18n::tr("Try installing versions with nvm"),
                     styles.ui_font_family,
                     styles.detail_font_size,
                 )
@@ -282,7 +282,7 @@ impl NodeVersionPopupView {
 
         col.add_child(
             Container::new(
-                Text::new("Installed", styles.ui_font_family, styles.detail_font_size)
+                Text::new(light_i18n::tr("Installed"), styles.ui_font_family, styles.detail_font_size)
                     .with_style(Properties::default())
                     .with_color(styles.secondary_text_color)
                     .finish(),

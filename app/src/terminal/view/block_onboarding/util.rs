@@ -1,3 +1,4 @@
+use light_i18n::tr;
 use pathfinder_color::ColorU;
 use warp_core::ui::theme::Fill;
 use warpui::elements::{
@@ -42,7 +43,7 @@ pub fn render_skip_button<A: Action + Clone>(
             background: Some(appearance.theme().outline().into()),
             ..Default::default()
         })
-        .with_centered_text_label("Skip".to_owned())
+        .with_centered_text_label(tr("Skip").to_owned())
         .build()
         .with_cursor(Cursor::PointingHand)
         .on_click(move |ctx, _, _| ctx.dispatch_typed_action(action.clone()))

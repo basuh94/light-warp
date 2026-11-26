@@ -1,3 +1,4 @@
+use light_i18n::tr;
 use fuzzy_match::FuzzyMatchResult;
 use ordered_float::OrderedFloat;
 use warp_core::ui::Icon;
@@ -14,7 +15,9 @@ use crate::search::{ItemHighlightState, SearchItem};
 use crate::terminal::input::inline_menu::styles as inline_styles;
 use crate::terminal::input::profiles::data_source::SelectProfileMenuItem;
 
-const MANAGE_PROFILES_LABEL: &str = "Manage profiles";
+fn manage_profiles_label() -> &'static str {
+    tr("Manage profiles")
+}
 
 #[derive(Debug, Clone)]
 enum ProfileSearchItemKind {
@@ -108,7 +111,7 @@ impl SearchItem for ProfileSearchItem {
                 is_selected,
                 ..
             } => (profile_name.clone(), *is_selected),
-            ProfileSearchItemKind::ManageProfiles => (MANAGE_PROFILES_LABEL.to_owned(), false),
+            ProfileSearchItemKind::ManageProfiles => (manage_profiles_label().to_owned(), false),
         };
 
         let mut label = Text::new_inline(label_text, appearance.ui_font_family(), font_size)
@@ -132,7 +135,7 @@ impl SearchItem for ProfileSearchItem {
             .with_child(label.finish());
 
         if is_selected {
-            let selected_label = "(selected)";
+            let selected_label = tr("(selected)");
             let selected_text = Text::new_inline(
                 selected_label.to_string(),
                 appearance.ui_font_family(),
@@ -181,9 +184,9 @@ impl SearchItem for ProfileSearchItem {
     fn accessibility_label(&self) -> String {
         match &self.kind {
             ProfileSearchItemKind::Profile { profile_name, .. } => {
-                format!("Profile: {profile_name}")
+                tr!("Profile: {}", profile_name)
             }
-            ProfileSearchItemKind::ManageProfiles => MANAGE_PROFILES_LABEL.to_string(),
+            ProfileSearchItemKind::ManageProfiles => manage_profiles_label().to_string(),
         }
     }
 }

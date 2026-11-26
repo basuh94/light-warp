@@ -41,7 +41,7 @@ pub fn render_rich_history(entry: &HistoryEntry, ctx: &AppContext) -> Box<dyn El
         flex_column.add_child(
             Container::new(render_row_with_icon_and_paragraph(
                 icon.into(),
-                format!("Exit code {}", exit_code.value()),
+                light_i18n::tr!("Exit code {}", exit_code.value()),
                 appearance,
             ))
             .with_margin_top(DETAILS_PARAGRAPH_SPACING)
@@ -77,7 +77,7 @@ pub fn render_rich_history(entry: &HistoryEntry, ctx: &AppContext) -> Box<dyn El
         flex_column.add_child(
             Container::new(
                 ui_builder
-                    .paragraph(format!(
+                    .paragraph(light_i18n::tr!(
                         "Finished in {}",
                         human_readable_precise_duration((completed_ts).sub(start_ts))
                     ))
@@ -93,7 +93,7 @@ pub fn render_rich_history(entry: &HistoryEntry, ctx: &AppContext) -> Box<dyn El
         flex_column.add_child(
             Container::new(
                 ui_builder
-                    .paragraph(format!(
+                    .paragraph(light_i18n::tr!(
                         "Last ran {}",
                         format_approx_duration_from_now(start_ts)
                     ))

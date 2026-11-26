@@ -1,5 +1,6 @@
 //! SearchItem implementation for repo menu items.
 
+use light_i18n::tr;
 use std::path::{Path, PathBuf};
 
 use fuzzy_match::FuzzyMatchResult;
@@ -191,6 +192,6 @@ impl SearchItem for RepoSearchItem {
     }
 
     fn accessibility_label(&self) -> String {
-        format!("Indexed repository: {}", self.display_name)
+        tr!("Indexed repository: {}", self.display_name)
     }
 }

@@ -6,6 +6,7 @@
 //! [`BlocklistAIHistoryModel::active_conversation_id`]. Tracks panel-only UI state (collapse,
 //! hover, drag) locally. Emits high-level events for immediate submission, deletion, and edit
 //! completion, which the host uses to submit or update the input editor.
+use light_i18n::tr;
 use std::collections::HashMap;
 
 use pathfinder_color::ColorU;
@@ -58,16 +59,7 @@ const PROMPT_PREVIEW_MAX_CHARS: usize = 500;
 const INITIAL_CLOUD_MODE_PROMPT_TOOLTIP: &str = "The first cloud-mode prompt cannot be changed.";
 const SEND_NOW_DURING_CLOUD_SETUP_TOOLTIP: &str =
     "Prompts cannot be sent until environment setup is complete.";
-const SEND_NOW_PENDING_LRC_TOOLTIP: &str =
-    "Prompts cannot be sent until the full terminal use agent is initialized.";
-const SEND_NOW_TO_FULL_TERMINAL_USE_AGENT_TOOLTIP: &str = "Send to full terminal use agent";
 const SEND_NOW_AS_READ_ONLY_VIEWER_TOOLTIP: &str = "Read-only viewers cannot send prompts.";
-/// Suffix on rows auto-queued during an agent-requested long-running command, which fire
-/// when that command completes rather than at the end of the full response.
-const LRC_AUTO_QUEUE_ROW_SUFFIX: &str = "(queued until the command finishes)";
-/// Suffix on rows filed in `Steer` mode, which fire at the agent's next request boundary rather
-/// than at the end of the full response.
-const LOCAL_STEERING_ROW_SUFFIX: &str = "(next turn)";
 
 /// Returns the position-cache id used to look up a row's bounding rect during a drag.
 /// Indexed by the row's current visual index so swaps maintain stable lookups.
@@ -87,13 +79,13 @@ fn build_row_state(
     let edit_tooltip = if is_initial_cloud_mode_prompt {
         INITIAL_CLOUD_MODE_PROMPT_TOOLTIP
     } else {
-        "Edit"
+        tr("Edit")
     };
 
     let send_now_button = ctx.add_typed_action_view(move |_| {
         ActionButton::new("", NakedTheme)
             .with_icon(TerminalIcon::ArrowUp)
-            .with_tooltip("Send now")
+            .with_tooltip(tr("Send now"))
             .with_size(ButtonSize::XSmall)
             .with_disabled_theme(NakedTheme)
             .on_click(move |ctx| {
@@ -113,7 +105,7 @@ fn build_row_state(
     let delete_button = ctx.add_typed_action_view(move |_| {
         ActionButton::new("", NakedTheme)
             .with_icon(TerminalIcon::Trash)
-            .with_tooltip("Delete")
+            .with_tooltip(tr("Delete"))
             .with_size(ButtonSize::XSmall)
             .with_disabled_theme(NakedTheme)
             .on_click(move |ctx| {
@@ -124,7 +116,7 @@ fn build_row_state(
         ctx.add_typed_action_view(move |_| {
             ActionButton::new("", NakedTheme)
                 .with_icon(TerminalIcon::Copy)
-                .with_tooltip("Copy")
+                .with_tooltip(tr("Copy"))
                 .with_size(ButtonSize::XSmall)
                 .with_disabled_theme(NakedTheme)
                 .on_click(move |ctx| {
@@ -447,17 +439,17 @@ impl QueuedPromptsPanelView {
                 || !self.can_send_prompt
                 || !ready;
             let tooltip = if disabled_for_pending_lrc {
-                SEND_NOW_PENDING_LRC_TOOLTIP
+                tr("Prompts cannot be sent until the full terminal use agent is initialized.")
             } else if disabled_for_cloud_setup {
                 SEND_NOW_DURING_CLOUD_SETUP_TOOLTIP
             } else if !self.can_send_prompt {
                 SEND_NOW_AS_READ_ONLY_VIEWER_TOOLTIP
             } else if !ready {
-                "Downloading attachments"
+                tr("Downloading attachments")
             } else if lrc_subagent_in_progress {
-                SEND_NOW_TO_FULL_TERMINAL_USE_AGENT_TOOLTIP
+                tr("Send to full terminal use agent")
             } else {
-                "Send now"
+                tr("Send now")
             };
             send_now_button.update(ctx, |button, ctx| {
                 button.set_disabled(disabled, ctx);
@@ -1094,7 +1086,7 @@ fn render_header(
             );
             row.add_child(Container::new(keycap).with_margin_left(4.).finish());
             row.add_child(
-                Text::new("to send", ui_font_family, ui_font_size)
+                Text::new(tr("to send"), ui_font_family, ui_font_size)
                     .with_style(Properties {
                         style: Style::Normal,
                         weight: Weight::Normal,
@@ -1238,9 +1230,9 @@ fn render_row(props: RenderRowProps<'_>, app: &AppContext) -> Box<dyn Element> {
         };
         let suffix = match origin {
             QueuedQueryOrigin::LrcAutoQueue | QueuedQueryOrigin::PendingLrcAutoQueue => {
-                Some(LRC_AUTO_QUEUE_ROW_SUFFIX)
+                Some(tr("(queued until the command finishes)"))
             }
-            QueuedQueryOrigin::LocalSteering => Some(LOCAL_STEERING_ROW_SUFFIX),
+            QueuedQueryOrigin::LocalSteering => Some(tr("(next turn)")),
             QueuedQueryOrigin::InitialCloudMode
             | QueuedQueryOrigin::SharedSessionInjection
             | QueuedQueryOrigin::QueueSlashCommand
@@ -1387,5 +1379,5 @@ fn render_row(props: RenderRowProps<'_>, app: &AppContext) -> Box<dyn Element> {
 
 /// Returns the user-visible header label for `count` queued prompts.
 fn header_label_text(count: usize) -> String {
-    format!("{count} queued")
+    tr!("{} queued", count)
 }

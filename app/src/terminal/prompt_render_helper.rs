@@ -249,28 +249,28 @@ impl PromptRenderHelper {
             && let Some(state) = sessions.remote_server_setup_state(pending_session_id)
         {
             return match state {
-                RemoteServerSetupState::Checking => "Starting shell...".to_string(),
+                RemoteServerSetupState::Checking => light_i18n::tr("Starting shell...").to_string(),
                 RemoteServerSetupState::Installing {
                     progress_percent: Some(p),
-                } => format!("Installing Warp SSH Extension... ({p}%)"),
+                } => light_i18n::tr!("Installing Warp SSH Extension... ({}%)", p),
                 RemoteServerSetupState::Installing {
                     progress_percent: None,
-                } => "Installing Warp SSH Extension...".to_string(),
-                RemoteServerSetupState::Updating => "Updating Warp SSH Extension...".to_string(),
-                RemoteServerSetupState::Initializing => "Initializing...".to_string(),
-                RemoteServerSetupState::Ready => "Starting shell...".to_string(),
+                } => light_i18n::tr("Installing Warp SSH Extension...").to_string(),
+                RemoteServerSetupState::Updating => light_i18n::tr("Updating Warp SSH Extension...").to_string(),
+                RemoteServerSetupState::Initializing => light_i18n::tr("Initializing...").to_string(),
+                RemoteServerSetupState::Ready => light_i18n::tr("Starting shell...").to_string(),
                 // Failed and Unsupported both fall back to the wrapper-only SSH
                 // flow, so we render the same generic prompt as a normal
                 // SSH session that doesn't have the remote-server extension.
                 RemoteServerSetupState::Failed { .. }
-                | RemoteServerSetupState::Unsupported { .. } => "Starting shell...".to_string(),
+                | RemoteServerSetupState::Unsupported { .. } => light_i18n::tr("Starting shell...").to_string(),
             };
         }
 
         if !sessions.is_empty() {
-            "Starting shell...".to_string()
+            light_i18n::tr("Starting shell...").to_string()
         } else {
-            format!("Starting {}...", model.shell_launch_state().display_name())
+            light_i18n::tr!("Starting {}...", model.shell_launch_state().display_name())
         }
     }
 
@@ -429,7 +429,7 @@ impl PromptRenderHelper {
             let prompt = PromptAndPadding {
                 element: PromptAndPaddingElement::Text(Box::new(
                     Text::new_inline(
-                        "Loading prompt...",
+                        light_i18n::tr("Loading prompt..."),
                         appearance.monospace_font_family(),
                         appearance.monospace_font_size(),
                     )

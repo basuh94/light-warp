@@ -1,5 +1,6 @@
 //! SearchItem implementation for user query menu items.
 
+use light_i18n::tr;
 use fuzzy_match::FuzzyMatchResult;
 use ordered_float::OrderedFloat;
 use warp_core::ui::Icon;
@@ -132,6 +133,6 @@ impl SearchItem for UserQuerySearchItem {
     }
 
     fn accessibility_label(&self) -> String {
-        format!("Query: {}", self.query_text)
+        tr!("Query: {}", self.query_text)
     }
 }

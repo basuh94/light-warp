@@ -1,5 +1,6 @@
 //! SearchItem implementation for plan menu items.
 
+use light_i18n::tr;
 use ai::document::AIDocumentId;
 use fuzzy_match::FuzzyMatchResult;
 use ordered_float::OrderedFloat;
@@ -160,6 +161,6 @@ impl SearchItem for PlanSearchItem {
     }
 
     fn accessibility_label(&self) -> String {
-        format!("Plan: {}", self.title)
+        tr!("Plan: {}", self.title)
     }
 }

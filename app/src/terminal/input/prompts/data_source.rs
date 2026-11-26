@@ -1,3 +1,4 @@
+use light_i18n::tr;
 use fuzzy_match::FuzzyMatchResult;
 use ordered_float::OrderedFloat;
 use warp_core::ui::icons::Icon;
@@ -243,7 +244,7 @@ impl SearchItem for PromptSearchItem {
     }
 
     fn accessibility_label(&self) -> String {
-        format!("Prompt: {}", self.name)
+        tr!("Prompt: {}", self.name)
     }
 }
 

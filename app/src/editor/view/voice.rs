@@ -63,7 +63,7 @@ impl EditorView {
     ) -> ViewHandle<FeaturePopup> {
         let voice_new_feature_popup = ctx.add_typed_action_view(|_| {
             FeaturePopup::new_feature(NewFeaturePopupLabel::FromString(
-                "Try Voice Input".to_string(),
+                light_i18n::tr("Try Voice Input").to_string(),
             ))
         });
 
@@ -269,7 +269,7 @@ impl EditorView {
                     .as_ref(ctx)
                     .can_request_voice()
                 {
-                    self.voice_error_toast(super::VOICE_LIMIT_HIT_TOAST_TEXT, ctx);
+                    self.voice_error_toast(light_i18n::tr("You have hit the limit for Voice requests. Your limit will be refreshed as a part of your next cycle."), ctx);
                     return false;
                 }
 
@@ -336,7 +336,7 @@ impl EditorView {
                             if let Some(toggle_key) = settings.maybe_setup_first_time_voice(ctx) {
                                 ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
                                     let toast = crate::view_components::DismissibleToast::success(
-                                        format!(
+                                        light_i18n::tr!(
                                             "Voice input is enabled. You can also press and hold the `{}` key to activate voice input (configure in Settings > AI > Voice)",
                                             toggle_key.display_name()
                                         )
@@ -367,7 +367,7 @@ impl EditorView {
         let active_window_id = ctx.window_id();
         ToastStack::handle(ctx).update(ctx, move |toast_stack, ctx| {
             let mut toast = crate::view_components::DismissibleToast::error(String::from(
-                "Failed to start voice input (you may need to enable Microphone access)",
+                light_i18n::tr("Failed to start voice input (you may need to enable Microphone access)"),
             ));
             // Set an id so the toast is shown at most once.
             toast = toast.with_object_id(MICROPHONE_ACCESS_ERROR_ID.to_string());
@@ -531,13 +531,13 @@ impl EditorView {
             }
             Err(e) => match e {
                 TranscribeError::QuotaLimit => {
-                    self.voice_error_toast(super::VOICE_LIMIT_HIT_TOAST_TEXT, ctx)
+                    self.voice_error_toast(light_i18n::tr("You have hit the limit for Voice requests. Your limit will be refreshed as a part of your next cycle."), ctx)
                 }
                 _ => {
                     report_error!(
                         anyhow::Error::new(e).context("Failed to transcribe voice input")
                     );
-                    self.voice_error_toast(super::VOICE_ERROR_TOAST_TEXT, ctx)
+                    self.voice_error_toast(light_i18n::tr("An error occurred while processing your voice input."), ctx)
                 }
             },
         }
@@ -565,11 +565,11 @@ impl EditorView {
 
         let modifier_key = AISettings::handle(app).as_ref(app).voice_input_toggle_key;
         let tooltip_text = if mic_access_denied {
-            "Voice transcription is disabled because Microphone access was not granted.".to_string()
+            light_i18n::tr("Voice transcription is disabled because Microphone access was not granted.").to_string()
         } else if modifier_key == VoiceInputToggleKey::None {
-            "Voice transcription".to_string()
+            light_i18n::tr("Voice transcription").to_string()
         } else {
-            format!(
+            light_i18n::tr!(
                 "Voice transcription (hold `{}` key)",
                 modifier_key.display_name().to_lowercase()
             )
