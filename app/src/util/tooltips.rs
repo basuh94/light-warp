@@ -135,18 +135,18 @@ where
                 redaction,
                 TooltipRedaction::SecretNotSentToLLMMessaging { .. }
             ) {
-                "This wasn't included in the AI conversation."
+                light_i18n::tr("This wasn't included in the AI conversation.")
             } else {
-                "This won't be included in any AI conversations or shared blocks."
+                light_i18n::tr("This won't be included in any AI conversations or shared blocks.")
             };
 
             // Generate the appropriate message based on secret level
             let secret_message = match secret_level {
                 Some(SecretLevel::Enterprise) => {
-                    "Pattern matched your organization's secret redaction regex list."
+                    light_i18n::tr("Pattern matched your organization's secret redaction regex list.")
                 }
-                Some(SecretLevel::User) => "Pattern matched your secret redaction regex list.",
-                None => "Pattern matched the secret redaction regex list.",
+                Some(SecretLevel::User) => light_i18n::tr("Pattern matched your secret redaction regex list."),
+                None => light_i18n::tr("Pattern matched the secret redaction regex list."),
             };
 
             tooltip.add_child(
@@ -201,7 +201,7 @@ where
             .with_child(
                 appearance
                     .ui_builder()
-                    .span("*Secrets are not sent to Warp's server.")
+                    .span(light_i18n::tr("*Secrets are not sent to Warp's server."))
                     .with_style(UiComponentStyles {
                         font_size: Some(12.),
                         margin: Some(Coords::default().top(4.)),

@@ -45,9 +45,6 @@ pub const REGEX_TOGGLE_TOOLTIP: &str = "Regex toggle";
 pub const CASE_SENSITIVE_LABEL: &str = "Aa";
 pub const CASE_SENSITIVE_TOOLTIP: &str = "Case sensitive search";
 
-pub const FIND_WITHIN_BLOCK_TOOLTIP: &str = "Find in selected block";
-pub const FIND_PLACEHOLDER_TEXT: &str = "Find";
-
 // Moving FindEvent, FindModel implementations away from terminal/.
 pub enum FindEvent {
     /// Emitted a find run has been executed.
@@ -134,7 +131,7 @@ pub fn init(app: &mut AppContext) {
     app.register_editable_bindings([
         EditableBinding::new(
             "find:find_next_occurrence",
-            "Find the next occurrence of your search query",
+            light_i18n::tr("Find the next occurrence of your search query"),
             FindAction::CmdG,
         )
         .with_context_predicate(id!("Find"))
@@ -144,7 +141,7 @@ pub fn init(app: &mut AppContext) {
         .with_linux_or_windows_key_binding("f3"),
         EditableBinding::new(
             "find:find_prev_occurrence",
-            "Find the previous occurrence of your search query",
+            light_i18n::tr("Find the previous occurrence of your search query"),
             FindAction::CmdShiftG,
         )
         .with_context_predicate(id!("Find"))
@@ -168,7 +165,7 @@ impl<T: FindModel + Entity<Event = FindEvent> + 'static> Find<T> {
                 },
                 ctx,
             );
-            editor.set_placeholder_text(FIND_PLACEHOLDER_TEXT, ctx);
+            editor.set_placeholder_text(light_i18n::tr("Find"), ctx);
             editor
         });
 
@@ -265,7 +262,7 @@ impl<T: FindModel + Entity<Event = FindEvent> + 'static> Find<T> {
                 WarpA11yRole::UserAction,
             )
         } else {
-            AccessibilityContent::new_without_help("No results.", WarpA11yRole::UserAction)
+            AccessibilityContent::new_without_help(light_i18n::tr("No results."), WarpA11yRole::UserAction)
         };
         ctx.emit_a11y_content(content);
     }
@@ -520,7 +517,7 @@ impl<T: FindModel + Entity<Event = FindEvent> + 'static> View for Find<T> {
 
     fn accessibility_contents(&self, _: &AppContext) -> Option<AccessibilityContent> {
         Some(AccessibilityContent::new(
-            "Type searched phrase.",
+            light_i18n::tr("Type searched phrase."),
             "Press escape to quit, use enter and shift-enter to navigate between matches",
             WarpA11yRole::TextareaRole,
         ))
@@ -552,7 +549,7 @@ impl<T: FindModel + Entity<Event = FindEvent> + 'static> View for Find<T> {
             self.button_mouse_states.toggle_regex_search.clone(),
             FindAction::ToggleRegexSearch,
             editor_height,
-            Some(REGEX_TOGGLE_TOOLTIP),
+            Some(light_i18n::tr("Regex toggle")),
             ICON_PADDING,
         );
         let case_sensitive_icon = Container::new(
@@ -564,7 +561,7 @@ impl<T: FindModel + Entity<Event = FindEvent> + 'static> View for Find<T> {
                     self.button_mouse_states.toggle_case_sensitivity.clone(),
                     FindAction::ToggleCaseSensitivity,
                     editor_height,
-                    Some(CASE_SENSITIVE_TOOLTIP),
+                    Some(light_i18n::tr("Case sensitive search")),
                     ICON_PADDING,
                 ),
                 "case_sensitive_button",
@@ -581,7 +578,7 @@ impl<T: FindModel + Entity<Event = FindEvent> + 'static> View for Find<T> {
                     self.button_mouse_states.toggle_find_in_block.clone(),
                     FindAction::ToggleFindInBlock,
                     editor_height,
-                    Some(FIND_WITHIN_BLOCK_TOOLTIP),
+                    Some(light_i18n::tr("Find in selected block")),
                     0.,
                 ),
                 "find_in_block_button",

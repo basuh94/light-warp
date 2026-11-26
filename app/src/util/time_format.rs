@@ -3,7 +3,7 @@ use std::time::Duration as StdDuration;
 
 use chrono::{DateTime, Duration, Local, Utc};
 pub fn format_message_timestamp(datetime: &DateTime<Local>) -> String {
-    datetime.format("%-m/%-d at %-I:%M %p").to_string()
+    datetime.format(light_i18n::tr("%-m/%-d at %-I:%M %p")).to_string()
 }
 
 pub fn is_trustworthy_message_timestamp(datetime: &DateTime<Local>) -> bool {
@@ -43,15 +43,15 @@ pub fn human_readable_precise_duration(duration: Duration) -> String {
     let ms = duration.num_milliseconds() as f64;
     let weeks = ms / WEEK_TO_MS;
     if weeks >= 1. {
-        return String::from(">1 week");
+        return String::from(light_i18n::tr(">1 week"));
     }
     let days = ms / DAY_TO_MS;
     if days >= 1. {
-        return format!("{} days", format_sigfigs(days, 3));
+        return light_i18n::tr!("{} days", format_sigfigs(days, 3));
     }
     let hours = ms / HOUR_TO_MS;
     if hours >= 1. {
-        return format!("{} hours", format_sigfigs(hours, 3));
+        return light_i18n::tr!("{} hours", format_sigfigs(hours, 3));
     }
     let minutes = ms / MIN_TO_MS;
     if minutes >= 1. {
@@ -59,7 +59,7 @@ pub fn human_readable_precise_duration(duration: Duration) -> String {
     }
     let seconds = ms / SEC_TO_MS;
     if seconds >= 1. {
-        return format!("{} sec", format_sigfigs(seconds, 3));
+        return light_i18n::tr!("{} sec", format_sigfigs(seconds, 3));
     }
     format!("{} ms", duration.num_milliseconds())
 }
@@ -106,12 +106,12 @@ pub fn human_readable_approx_duration(duration: Duration, sentence_case: bool) -
     // Minutes and seconds are both abbreviated, so skip pluralization.
     let minutes = ms / MIN_TO_MS;
     if minutes >= 1. {
-        return format!("{} min ago", minutes as i32);
+        return light_i18n::tr!("{} min ago", minutes as i32);
     }
     if sentence_case {
-        "Just now".to_owned()
+        light_i18n::tr("Just now").to_owned()
     } else {
-        "just now".to_owned()
+        light_i18n::tr("just now").to_owned()
     }
 }
 
@@ -119,10 +119,20 @@ pub fn human_readable_approx_duration(duration: Duration, sentence_case: bool) -
 /// unit pluralized if the value is not 1.
 fn truncated_quantity_with_unit(num: f64, unit: &str) -> String {
     let truncated_int = num as i32;
-    if truncated_int == 1 {
-        format!("{truncated_int} {unit} ago")
-    } else {
-        format!("{truncated_int} {unit}s ago")
+    let one = truncated_int == 1;
+    match unit {
+        "year" if one => light_i18n::tr!("{} year ago", truncated_int),
+        "year" => light_i18n::tr!("{} years ago", truncated_int),
+        "month" if one => light_i18n::tr!("{} month ago", truncated_int),
+        "month" => light_i18n::tr!("{} months ago", truncated_int),
+        "week" if one => light_i18n::tr!("{} week ago", truncated_int),
+        "week" => light_i18n::tr!("{} weeks ago", truncated_int),
+        "day" if one => light_i18n::tr!("{} day ago", truncated_int),
+        "day" => light_i18n::tr!("{} days ago", truncated_int),
+        "hour" if one => light_i18n::tr!("{} hour ago", truncated_int),
+        "hour" => light_i18n::tr!("{} hours ago", truncated_int),
+        _ if one => format!("{truncated_int} {unit} ago"),
+        _ => format!("{truncated_int} {unit}s ago"),
     }
 }
 
@@ -131,9 +141,9 @@ fn truncated_quantity_with_unit(num: f64, unit: &str) -> String {
 pub fn format_elapsed_seconds(elapsed: StdDuration) -> String {
     let total_seconds = elapsed.as_secs();
     if total_seconds == 1 {
-        "1 second".to_owned()
+        light_i18n::tr("1 second").to_owned()
     } else {
-        format!("{total_seconds} seconds")
+        light_i18n::tr!("{} seconds", total_seconds)
     }
 }
 
@@ -143,27 +153,27 @@ pub fn format_elapsed_since(created_at: instant::Instant) -> String {
     let secs = created_at.elapsed().as_secs();
 
     if secs < 60 {
-        "Just now".to_string()
+        light_i18n::tr("Just now").to_string()
     } else if secs < 3600 {
         let mins = secs / 60;
         if mins == 1 {
-            "1 minute ago".to_string()
+            light_i18n::tr("1 minute ago").to_string()
         } else {
-            format!("{mins} minutes ago")
+            light_i18n::tr!("{} minutes ago", mins)
         }
     } else if secs < 86400 {
         let hours = secs / 3600;
         if hours == 1 {
-            "1 hour ago".to_string()
+            light_i18n::tr("1 hour ago").to_string()
         } else {
-            format!("{hours} hours ago")
+            light_i18n::tr!("{} hours ago", hours)
         }
     } else {
         let days = secs / 86400;
         if days == 1 {
-            "1 day ago".to_string()
+            light_i18n::tr("1 day ago").to_string()
         } else {
-            format!("{days} days ago")
+            light_i18n::tr!("{} days ago", days)
         }
     }
 }

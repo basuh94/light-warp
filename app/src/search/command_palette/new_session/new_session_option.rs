@@ -83,13 +83,16 @@ impl NewSessionOption {
 impl NewSessionOption {
     pub(super) fn new(id: NewSessionOptionId, config: NewSessionConfig) -> Self {
         let description = match &config {
-            NewSessionConfig::NewTab(shell) => format!("Create New Tab: {}", shell.short_name()),
+            NewSessionConfig::NewTab(shell) => light_i18n::tr!("Create New Tab: {}", shell.short_name()),
             NewSessionConfig::NewWindow(shell) => {
-                format!("Create New Window: {}", shell.short_name())
+                light_i18n::tr!("Create New Window: {}", shell.short_name())
             }
-            NewSessionConfig::Split(direction, shell) => {
-                format!("Split Pane {direction}: {}", shell.short_name())
-            }
+            NewSessionConfig::Split(direction, shell) => match direction {
+                Direction::Down => light_i18n::tr!("Split Pane Down: {}", shell.short_name()),
+                Direction::Right => light_i18n::tr!("Split Pane Right: {}", shell.short_name()),
+                Direction::Up => light_i18n::tr!("Split Pane Up: {}", shell.short_name()),
+                Direction::Left => light_i18n::tr!("Split Pane Left: {}", shell.short_name()),
+            },
         };
         Self {
             id,

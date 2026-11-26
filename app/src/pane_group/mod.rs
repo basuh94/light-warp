@@ -351,14 +351,14 @@ pub fn init(app: &mut AppContext) {
     app.register_editable_bindings([
         EditableBinding::new(
             "pane_group:close_current_session",
-            "Close Current Session",
+            light_i18n::tr("Close Current Session"),
             PaneGroupAction::RemoveActive,
         )
         .with_custom_action(CustomAction::CloseCurrentSession)
         .with_context_predicate(id!("PaneGroup")),
         EditableBinding::new(
             "pane_group:add_left",
-            "Split pane left",
+            light_i18n::tr("Split pane left"),
             PaneGroupAction::Add(Direction::Left),
         )
         .with_context_predicate(id!("PaneGroup") & !id!("PaneGroup_PaneDragging"))
@@ -366,7 +366,7 @@ pub fn init(app: &mut AppContext) {
         .with_enabled(|| ContextFlag::CreateNewSession.is_enabled()),
         EditableBinding::new(
             "pane_group:add_up",
-            "Split pane up",
+            light_i18n::tr("Split pane up"),
             PaneGroupAction::Add(Direction::Up),
         )
         .with_context_predicate(id!("PaneGroup") & !id!("PaneGroup_PaneDragging"))
@@ -374,7 +374,7 @@ pub fn init(app: &mut AppContext) {
         .with_enabled(|| ContextFlag::CreateNewSession.is_enabled()),
         EditableBinding::new(
             "pane_group:navigate_left",
-            "Switch panes left",
+            light_i18n::tr("Switch panes left"),
             PaneGroupAction::NavigateLeft,
         )
         .with_context_predicate(
@@ -383,7 +383,7 @@ pub fn init(app: &mut AppContext) {
         .with_key_binding("cmdorctrl-alt-left"),
         EditableBinding::new(
             "pane_group:navigate_right",
-            "Switch panes right",
+            light_i18n::tr("Switch panes right"),
             PaneGroupAction::NavigateRight,
         )
         .with_context_predicate(
@@ -392,7 +392,7 @@ pub fn init(app: &mut AppContext) {
         .with_key_binding("cmdorctrl-alt-right"),
         EditableBinding::new(
             "pane_group:navigate_up",
-            "Switch panes up",
+            light_i18n::tr("Switch panes up"),
             PaneGroupAction::NavigateUp,
         )
         .with_context_predicate(
@@ -401,7 +401,7 @@ pub fn init(app: &mut AppContext) {
         .with_key_binding("cmdorctrl-alt-up"),
         EditableBinding::new(
             "pane_group:navigate_down",
-            "Switch panes down",
+            light_i18n::tr("Switch panes down"),
             PaneGroupAction::NavigateDown,
         )
         .with_context_predicate(
@@ -416,7 +416,7 @@ pub fn init(app: &mut AppContext) {
     app.register_editable_bindings([
         EditableBinding::new(
             "pane_group:resize_left",
-            "Resize pane > Move divider left",
+            light_i18n::tr("Resize pane > Move divider left"),
             PaneGroupAction::ResizeLeft,
         )
         .with_context_predicate(
@@ -425,7 +425,7 @@ pub fn init(app: &mut AppContext) {
         .with_mac_key_binding("cmd-ctrl-left"),
         EditableBinding::new(
             "pane_group:resize_right",
-            "Resize pane > Move divider right",
+            light_i18n::tr("Resize pane > Move divider right"),
             PaneGroupAction::ResizeRight,
         )
         .with_context_predicate(
@@ -434,7 +434,7 @@ pub fn init(app: &mut AppContext) {
         .with_mac_key_binding("cmd-ctrl-right"),
         EditableBinding::new(
             "pane_group:resize_up",
-            "Resize pane > Move divider up",
+            light_i18n::tr("Resize pane > Move divider up"),
             PaneGroupAction::ResizeUp,
         )
         .with_context_predicate(
@@ -443,7 +443,7 @@ pub fn init(app: &mut AppContext) {
         .with_mac_key_binding("cmd-ctrl-up"),
         EditableBinding::new(
             "pane_group:resize_down",
-            "Resize pane > Move divider down",
+            light_i18n::tr("Resize pane > Move divider down"),
             PaneGroupAction::ResizeDown,
         )
         .with_context_predicate(
@@ -455,7 +455,7 @@ pub fn init(app: &mut AppContext) {
     app.register_editable_bindings([
         EditableBinding::new(
             "pane_group:add_down",
-            "Split pane down",
+            light_i18n::tr("Split pane down"),
             PaneGroupAction::Add(Direction::Down),
         )
         .with_context_predicate(id!("PaneGroup") & !id!("PaneGroup_PaneDragging"))
@@ -463,7 +463,7 @@ pub fn init(app: &mut AppContext) {
         .with_enabled(|| ContextFlag::CreateNewSession.is_enabled()),
         EditableBinding::new(
             "pane_group:add_right",
-            "Split pane right",
+            light_i18n::tr("Split pane right"),
             PaneGroupAction::Add(Direction::Right),
         )
         .with_context_predicate(id!("PaneGroup") & !id!("PaneGroup_PaneDragging"))
@@ -471,7 +471,7 @@ pub fn init(app: &mut AppContext) {
         .with_enabled(|| ContextFlag::CreateNewSession.is_enabled()),
         EditableBinding::new(
             TOGGLE_MAXIMIZE_PANE_BINDING_NAME,
-            "Toggle Maximize Active Pane",
+            light_i18n::tr("Toggle Maximize Active Pane"),
             PaneGroupAction::ToggleMaximizePane,
         )
         .with_context_predicate(id!("PaneGroup") & !id!("PaneGroup_PaneDragging"))

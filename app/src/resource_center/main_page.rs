@@ -429,7 +429,7 @@ impl ResourceCenterMainView {
 
                     appearance
                         .ui_builder()
-                        .wrappable_text("Mark all as read", false)
+                        .wrappable_text(light_i18n::tr("Mark all as read"), false)
                         .with_style(style)
                         .build()
                         .finish()

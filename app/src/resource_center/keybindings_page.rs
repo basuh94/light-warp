@@ -346,7 +346,7 @@ impl KeybindingsView {
                         .build()
                         .finish(),
                 )
-                .with_child(self.render_text("To toggle this panel".into(), None, appearance))
+                .with_child(self.render_text(light_i18n::tr("To toggle this panel").into(), None, appearance))
                 .with_cross_axis_alignment(CrossAxisAlignment::Center)
                 .finish();
 
@@ -384,7 +384,7 @@ impl KeybindingsView {
         Container::new(
             column
                 .with_child(self.render_text(
-                    "Go to settings > keyboard shortcuts to configure custom keybindings".into(),
+                    light_i18n::tr("Go to settings > keyboard shortcuts to configure custom keybindings").into(),
                     None,
                     appearance,
                 ))
@@ -412,11 +412,11 @@ impl KeybindingsView {
             Flex::column().with_cross_axis_alignment(CrossAxisAlignment::Stretch);
 
         let title = match section {
-            KeybindingSection::Essentials => "Essentials",
-            KeybindingSection::Blocks => "Blocks",
-            KeybindingSection::InputEditor => "Input Editor",
-            KeybindingSection::Terminal => "Terminal",
-            KeybindingSection::Fundamentals => "Fundamentals",
+            KeybindingSection::Essentials => light_i18n::tr("Essentials"),
+            KeybindingSection::Blocks => light_i18n::tr("Blocks"),
+            KeybindingSection::InputEditor => light_i18n::tr("Input Editor"),
+            KeybindingSection::Terminal => light_i18n::tr("Terminal"),
+            KeybindingSection::Fundamentals => light_i18n::tr("Fundamentals"),
         };
 
         let mut section_header = self.render_text(

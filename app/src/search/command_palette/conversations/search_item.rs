@@ -68,7 +68,7 @@ impl ConversationSearchItem {
         Flex::row()
             .with_child(
                 Text::new_inline(
-                    "New conversation",
+                    light_i18n::tr("New conversation"),
                     appearance.ui_font_family(),
                     appearance.monospace_font_size(),
                 )
@@ -89,7 +89,7 @@ impl ConversationSearchItem {
         let appearance = Appearance::as_ref(app);
 
         let action_title = Text::new_inline(
-            "Fork current conversation",
+            light_i18n::tr("Fork current conversation"),
             appearance.ui_font_family(),
             appearance.monospace_font_size(),
         )
@@ -244,7 +244,7 @@ impl ConversationSearchItem {
 
             let fork_button_tool_tip = appearance
                 .ui_builder()
-                .tool_tip("Fork conversation".to_string())
+                .tool_tip(light_i18n::tr("Fork conversation").to_string())
                 .build();
 
             let fork_button_inner = icon_button(
@@ -424,7 +424,7 @@ impl SearchItem for ConversationSearchItem {
             ConversationAction::Fork { title, .. } => {
                 format!("Fork current conversation ({title})")
             }
-            ConversationAction::New => "New conversation".to_string(),
+            ConversationAction::New => light_i18n::tr("New conversation").to_string(),
         }
     }
 
@@ -435,9 +435,9 @@ impl SearchItem for ConversationSearchItem {
                 matched_conversation.as_ref().conversation.title()
             )),
             ConversationAction::Fork { .. } => {
-                Some("Press enter to fork the current conversation into a new conversation.".into())
+                Some(light_i18n::tr("Press enter to fork the current conversation into a new conversation.").into())
             }
-            ConversationAction::New => Some("Press enter to create a new conversation.".into()),
+            ConversationAction::New => Some(light_i18n::tr("Press enter to create a new conversation.").into()),
         }
     }
 }

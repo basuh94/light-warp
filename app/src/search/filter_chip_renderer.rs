@@ -80,7 +80,7 @@ impl FilterChipRenderer for QueryFilter {
             }
 
             flex.add_child(
-                Text::new_inline(self.display_name(), appearance.ui_font_family(), font_size)
+                Text::new_inline(light_i18n::tr_dynamic(self.display_name()), appearance.ui_font_family(), font_size)
                     .with_color(
                         appearance
                             .theme()

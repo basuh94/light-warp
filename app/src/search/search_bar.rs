@@ -690,7 +690,7 @@ impl<T: Action + Clone> SearchBar<T> {
         if let Some(loading_filters) = self.mixer.as_ref(ctx).loading_query_filters() {
             for loading_filter in loading_filters.into_iter() {
                 ctx.emit_a11y_content(AccessibilityContent::new_without_help(
-                    format!("Loading {} suggestions", loading_filter.display_name()),
+                    light_i18n::tr!("Loading {} suggestions", light_i18n::tr_dynamic(loading_filter.display_name())),
                     WarpA11yRole::MenuItemRole,
                 ));
             }
@@ -700,7 +700,7 @@ impl<T: Action + Clone> SearchBar<T> {
 
         if let Some((.., data_source_err)) = self.mixer.as_ref(ctx).first_data_source_error() {
             ctx.emit_a11y_content(AccessibilityContent::new(
-                "Error finding results",
+                light_i18n::tr("Error finding results"),
                 data_source_err.user_facing_error(),
                 WarpA11yRole::MenuItemRole,
             ));
@@ -774,7 +774,7 @@ impl<T: Action + Clone> SearchBar<T> {
                 // Set the appropriate placeholder text if the editor buffer is empty.
                 match self.state.as_ref(ctx).query_filter {
                     Some(filter) => {
-                        editor.set_placeholder_text(filter.placeholder_text(), ctx);
+                        editor.set_placeholder_text(light_i18n::tr_dynamic(filter.placeholder_text()), ctx);
                     }
                     None => {
                         editor.set_placeholder_text(self.placeholder_text, ctx);

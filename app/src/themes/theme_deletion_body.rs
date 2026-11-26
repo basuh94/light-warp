@@ -25,9 +25,6 @@ const BUTTON_FONT_SIZE: f32 = 14.;
 const BUTTON_BORDER_RADIUS: f32 = 4.;
 const BORDER_WIDTH: f32 = 1.;
 
-const MODAL_SUBHEADER: &str = "This will permanently delete the theme.";
-const CANCEL_BUTTON_TEXT: &str = "Cancel";
-const DELETE_BUTTON_TEXT: &str = "Delete theme";
 
 #[derive(Default)]
 struct MouseStateHandles {
@@ -109,7 +106,7 @@ impl ThemeDeletionBody {
             }
         }
         if errored {
-            self.send_error_toast("Something went wrong", ctx);
+            self.send_error_toast(light_i18n::tr("Something went wrong"), ctx);
         }
     }
 
@@ -198,7 +195,7 @@ impl View for ThemeDeletionBody {
                 Some(cancel_hovered_styles),
                 Some(disabled_styles),
             )
-            .with_centered_text_label(CANCEL_BUTTON_TEXT.into());
+            .with_centered_text_label(light_i18n::tr("Cancel").into());
 
         let create_button = appearance
             .ui_builder()
@@ -210,13 +207,13 @@ impl View for ThemeDeletionBody {
                 Some(create_hovered_styles),
                 Some(disabled_styles),
             )
-            .with_centered_text_label(DELETE_BUTTON_TEXT.into());
+            .with_centered_text_label(light_i18n::tr("Delete theme").into());
 
         Flex::column()
             .with_cross_axis_alignment(CrossAxisAlignment::Stretch)
             .with_child(
                 Container::new(
-                    Text::new_inline(MODAL_SUBHEADER, appearance.ui_font_family(), 14.)
+                    Text::new_inline(light_i18n::tr("This will permanently delete the theme."), appearance.ui_font_family(), 14.)
                         .with_color(appearance.theme().active_ui_text_color().into())
                         .finish(),
                 )

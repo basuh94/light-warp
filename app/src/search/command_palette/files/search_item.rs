@@ -105,9 +105,9 @@ impl SearchItem for FileSearchItem {
 
     fn accessibility_help_message(&self) -> Option<String> {
         Some(if self.is_directory {
-            "Press Enter to navigate to this directory".to_string()
+            light_i18n::tr("Press Enter to navigate to this directory").to_string()
         } else {
-            "Press Enter to open this file".to_string()
+            light_i18n::tr("Press Enter to open this file").to_string()
         })
     }
 
@@ -161,7 +161,7 @@ impl SearchItem for CreateFileSearchItem {
         let text_color = highlight_state.sub_text_fill(appearance).into_solid();
 
         let label = Text::new_inline(
-            format!("Create a file named {}…", &self.file_name),
+            light_i18n::tr!("Create a file named {}…", &self.file_name),
             appearance.ui_font_family(),
             appearance.monospace_font_size(),
         )
