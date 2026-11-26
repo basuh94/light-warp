@@ -107,7 +107,7 @@ pub fn accept_disabled_reason_with_auth(
         }
     }
     if auth_secret_selection_required(state, ctx) {
-        return Some("Select an API key for this harness to continue.".to_string());
+        return Some(light_i18n::tr("Select an API key for this harness to continue.").to_string());
     }
     None
 }

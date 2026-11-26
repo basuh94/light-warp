@@ -23,8 +23,8 @@ use warpui::{
 use super::cli_controller::{CLISubagentController, CLISubagentEvent, UserTakeOverReason};
 use super::model::{AIBlockModel, AIBlockModelImpl, AIBlockOutputStatus};
 use super::view_impl::common::{
-    AutoExecuteButtonProps, ButtonProps, ForceRefreshButtonProps, LOAD_OUTPUT_MESSAGE,
-    MaybeShimmeringText, STATUS_MESSAGE_ELLIPSIS, WAITING_FOR_USER_INPUT_MESSAGE,
+    AutoExecuteButtonProps, ButtonProps, ForceRefreshButtonProps, MaybeShimmeringText,
+    STATUS_MESSAGE_ELLIPSIS,
     WarpingIndicatorProps, WarpingProps, render_switch_control_to_user_button,
     render_warping_indicator, render_warping_indicator_base, status_message_naming_model,
 };
@@ -835,7 +835,7 @@ impl BlocklistAIStatusBar {
         let model_warping_message =
             resolve_warping_model_message(current_model_in_use, model.as_ref(), app);
         let default_warping_text = model_warping_message.as_ref().map_or_else(
-            || LOAD_OUTPUT_MESSAGE.to_owned(),
+            || light_i18n::tr("Warping...").to_owned(),
             |message| message.text.clone(),
         );
         let model_in_use_name = model_warping_message
@@ -1059,7 +1059,7 @@ fn render_agent_tip(tip: &AgentTip, app: &AppContext) -> Box<dyn Element> {
         _ => {
             if let Some(link_target) = tip.link.clone() {
                 fragments.push(FormattedTextFragment::plain_text(" "));
-                fragments.push(FormattedTextFragment::hyperlink("Learn more", link_target));
+                fragments.push(FormattedTextFragment::hyperlink(light_i18n::tr("Learn more"), link_target));
             }
         }
     }
@@ -1121,9 +1121,9 @@ fn render_fallback_explanation<V: View>(
         .map(|info| info.base_model_name.as_str());
     let text = match primary_name {
         Some(primary) => {
-            format!("The primary model ({primary}) failed. Retrying with the fallback model.")
+            light_i18n::tr!("The primary model ({}) failed. Retrying with the fallback model.", primary)
         }
-        None => "The primary model failed. Retrying with the fallback model.".to_owned(),
+        None => light_i18n::tr("The primary model failed. Retrying with the fallback model.").to_owned(),
     };
     let appearance = Appearance::as_ref(app);
     Text::new_inline(
@@ -1159,6 +1159,8 @@ struct WarpingModelInputs {
     is_new_user_query: bool,
 }
 
+// Shown translated at its use site; the English text remains for tests.
+#[allow(dead_code)]
 const UNNAMED_FALLBACK_MODEL_WARPING_TEXT: &str = "Warping with another model.";
 
 /// The fallback message's copy. It shipped before model naming existed and keeps
@@ -1169,10 +1171,11 @@ const UNNAMED_FALLBACK_MODEL_WARPING_TEXT: &str = "Warping with another model.";
 /// live. Cleaning the flag up in the "treat as false" direction would silently
 /// flip every fallback message to the ellipsis copy and drop its explanation line.
 fn fallback_warping_text(display_name: &str) -> String {
-    let stem = LOAD_OUTPUT_MESSAGE
+    let warping = light_i18n::tr("Warping...");
+    let stem = warping
         .strip_suffix(STATUS_MESSAGE_ELLIPSIS)
-        .unwrap_or(LOAD_OUTPUT_MESSAGE);
-    format!("{stem} with {display_name}.")
+        .unwrap_or(warping);
+    format!("{}.", light_i18n::tr!("{} with {}", stem, display_name))
 }
 
 /// Warping text for the model a response is running on, e.g. "Warping with Claude
@@ -1215,9 +1218,9 @@ fn warping_model_message(inputs: WarpingModelInputs) -> Option<WarpingModelMessa
     let text = match (model_in_use.display_name.as_deref(), is_fallback_message) {
         (Some(display_name), true) => fallback_warping_text(display_name),
         // An unnamed fallback still has something to say.
-        (None, true) => UNNAMED_FALLBACK_MODEL_WARPING_TEXT.to_owned(),
+        (None, true) => light_i18n::tr("Warping with another model.").to_owned(),
         (Some(display_name), false) => {
-            status_message_naming_model(LOAD_OUTPUT_MESSAGE, display_name)
+            status_message_naming_model(light_i18n::tr("Warping..."), display_name)
         }
         // No name, and no fallback message to fall back on: keep the generic copy.
         (None, false) => return None,
@@ -1300,7 +1303,7 @@ impl View for BlocklistAIStatusBar {
                         WarpingIndicatorProps {
                             icon: None,
                             warping_indicator_text: MaybeShimmeringText::Shimmering {
-                                text: "Setting up environment".into(),
+                                text: light_i18n::tr("Setting up environment").into(),
                                 shimmering_text_handle: self.shimmering_text_handle.clone(),
                             },
                             non_shimmering_text: None,
@@ -1327,13 +1330,13 @@ impl View for BlocklistAIStatusBar {
                         WarpingIndicatorProps {
                             icon: Some(icons::gray_clock_icon(appearance).finish()),
                             warping_indicator_text: MaybeShimmeringText::Static(
-                                WAITING_FOR_USER_INPUT_MESSAGE.into(),
+                                light_i18n::tr("Agent waiting for instructions...").into(),
                             ),
                             non_shimmering_text: None,
                             non_shimmering_suffix: None,
                             buttons: Some(render_switch_control_to_user_button(
-                                "Exit",
-                                "Exit agent input",
+                                light_i18n::tr("Exit"),
+                                light_i18n::tr("Exit agent input"),
                                 ButtonProps {
                                     button_handle: &self.state_handles.take_over_button,
                                     keystroke: self.set_terminal_input_keystroke.as_ref(),

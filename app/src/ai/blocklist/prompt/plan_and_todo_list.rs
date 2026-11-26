@@ -255,9 +255,9 @@ impl PlanAndTodoListView {
                 chip_content.finish(),
                 self.plan_button_mouse_state.clone(),
                 if is_agent_unaware_of_plan_edits {
-                    "Agent is unaware of recent plan edits".to_string()
+                    light_i18n::tr("Agent is unaware of recent plan edits").to_string()
                 } else {
-                    "View plan".to_string()
+                    light_i18n::tr("View plan").to_string()
                 },
                 corner_radius,
                 appearance,
@@ -412,7 +412,7 @@ impl PlanAndTodoListView {
             .render_chip_button(
                 content,
                 self.todo_button_mouse_state.clone(),
-                "View todo list".to_string(),
+                light_i18n::tr("View todo list").to_string(),
                 corner_radius,
                 appearance,
             )

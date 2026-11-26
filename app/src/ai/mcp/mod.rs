@@ -525,7 +525,7 @@ impl MCPProvider {
             MCPProvider::Warp => "Warp",
             MCPProvider::Claude => "Claude",
             MCPProvider::Codex => "Codex",
-            MCPProvider::Agents => "Other Agents",
+            MCPProvider::Agents => light_i18n::tr("Other Agents"),
         }
     }
 

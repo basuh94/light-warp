@@ -109,8 +109,8 @@ impl CustomModelRouter {
         let id = local_id_from_path(source_path, &name);
         let config_key = format!("{LOCAL_CUSTOM_ROUTER_PREFIX}{id}");
         let routing_kind = match &routing {
-            CustomModelRouting::Complexity(_) => "Routes by task complexity",
-            CustomModelRouting::Prompt(_) => "Routes by prompt content",
+            CustomModelRouting::Complexity(_) => light_i18n::tr("Routes by task complexity"),
+            CustomModelRouting::Prompt(_) => light_i18n::tr("Routes by prompt content"),
         };
         let description = match source_path {
             Some(path) => {

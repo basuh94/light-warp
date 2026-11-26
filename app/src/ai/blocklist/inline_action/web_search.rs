@@ -54,9 +54,9 @@ impl WebSearchView {
         let loading_icon = yellow_running_icon(appearance);
 
         let text = if let Some(q) = query {
-            format!("Searching the web for \"{q}\"")
+            light_i18n::tr!("Searching the web for \"{}\"", q)
         } else {
-            "Searching the web".to_string()
+            light_i18n::tr("Searching the web").to_string()
         };
 
         super::search_results_common::render_status_header(text, loading_icon, app)
@@ -69,9 +69,9 @@ impl WebSearchView {
         app: &AppContext,
     ) -> Box<dyn Element> {
         let title_text = if query.is_empty() {
-            "Searched the web".to_string()
+            light_i18n::tr("Searched the web").to_string()
         } else {
-            format!("Searched the web for \"{query}\"")
+            light_i18n::tr!("Searched the web for \"{}\"", query)
         };
 
         let body = if self.collapsible.is_expanded {
@@ -83,7 +83,7 @@ impl WebSearchView {
         render_collapsible_search_results(
             title_text,
             pages.len(),
-            "URLs",
+            light_i18n::tr("URLs"),
             &self.collapsible,
             body,
             |ctx| {
@@ -122,7 +122,7 @@ impl WebSearchView {
 
         if pages.is_empty() {
             let no_results = Text::new_inline(
-                "No URLs found".to_string(),
+                light_i18n::tr("No URLs found").to_string(),
                 appearance.ui_font_family(),
                 appearance.monospace_font_size(),
             )
@@ -175,9 +175,9 @@ impl View for WebSearchView {
             WebSearchStatus::Error { query } => {
                 let appearance = Appearance::as_ref(app);
                 let text = if query.is_empty() {
-                    "Web search failed".to_string()
+                    light_i18n::tr("Web search failed").to_string()
                 } else {
-                    format!("Web search failed for \"{query}\"")
+                    light_i18n::tr!("Web search failed for \"{}\"", query)
                 };
                 super::search_results_common::render_status_header(
                     text,

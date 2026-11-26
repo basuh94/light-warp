@@ -101,16 +101,16 @@ pub const CHATGPT_USAGE_URL: &str = "https://chatgpt.com/settings/usage";
 impl ByoKeySource {
     pub fn inference_label(self) -> &'static str {
         match self {
-            ByoKeySource::UserProvided => "Inference via User-provided API key",
-            ByoKeySource::TeamProvided => "Inference via Team-provided API key",
-            ByoKeySource::ChatGPTSubscription => "Using ChatGPT plan",
+            ByoKeySource::UserProvided => light_i18n::tr("Inference via User-provided API key"),
+            ByoKeySource::TeamProvided => light_i18n::tr("Inference via Team-provided API key"),
+            ByoKeySource::ChatGPTSubscription => light_i18n::tr("Using ChatGPT plan"),
         }
     }
 
     pub fn manage_button_label(self) -> &'static str {
         match self {
-            ByoKeySource::UserProvided | ByoKeySource::TeamProvided => "Manage",
-            ByoKeySource::ChatGPTSubscription => "Manage usage",
+            ByoKeySource::UserProvided | ByoKeySource::TeamProvided => light_i18n::tr("Manage"),
+            ByoKeySource::ChatGPTSubscription => light_i18n::tr("Manage usage"),
         }
     }
 
@@ -283,7 +283,7 @@ pub fn model_leading_icon(llm: &LLMInfo, flags: ModelIconFlags) -> Icon {
 /// Note: this key used to store a single [`AvailableLLMs`]
 /// but was migrated to store a full [`ModelsByFeature`].
 pub const MODELS_BY_FEATURE_CACHE_KEY: &str = "AvailableLLMs";
-const CUSTOM_ENDPOINT_USAGE_FALLBACK_LABEL: &str = "Custom endpoint";
+
 const CLOUD_FALLBACK_OZ_MODEL_ID: &str = "auto";
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -305,13 +305,19 @@ impl DisableReason {
     /// Returns a user-facing tooltip explaining why the model is disabled.
     pub fn tooltip_text(&self) -> &'static str {
         match self {
-            DisableReason::AdminDisabled => "This model has been disabled by your team admin.",
-            DisableReason::OutOfRequests => "Please upgrade your plan to make more requests.",
-            DisableReason::ProviderOutage => {
-                "This model is temporarily unavailable due to a provider outage."
+            DisableReason::AdminDisabled => {
+                light_i18n::tr("This model has been disabled by your team admin.")
             }
-            DisableReason::RequiresUpgrade => "Please upgrade your plan to access this model.",
-            DisableReason::Unavailable => "This model is unavailable.",
+            DisableReason::OutOfRequests => {
+                light_i18n::tr("Please upgrade your plan to make more requests.")
+            }
+            DisableReason::ProviderOutage => {
+                light_i18n::tr("This model is temporarily unavailable due to a provider outage.")
+            }
+            DisableReason::RequiresUpgrade => {
+                light_i18n::tr("Please upgrade your plan to access this model.")
+            }
+            DisableReason::Unavailable => light_i18n::tr("This model is unavailable."),
         }
     }
 
@@ -1419,7 +1425,7 @@ impl LLMPreferences {
         self.custom_llm_info_for_id(&config_key)
             .map(|info| info.display_name.as_str())
             .map(str::to_string)
-            .unwrap_or_else(|| CUSTOM_ENDPOINT_USAGE_FALLBACK_LABEL.to_string())
+            .unwrap_or_else(|| light_i18n::tr("Custom endpoint").to_string())
     }
 
     fn custom_llm_info_for_id_if_enabled(&self, id: &LLMId, app: &AppContext) -> Option<&LLMInfo> {
@@ -2481,7 +2487,7 @@ fn custom_llm_info_from(endpoint: &CustomEndpoint, model: &CustomEndpointModel) 
             request_multiplier: 1,
             credit_multiplier: None,
         },
-        description: Some(format!("Custom · {}", endpoint.name)),
+        description: Some(light_i18n::tr!("Custom · {}", endpoint.name)),
         disable_reason: None,
         vision_supported: true,
         spec: None,

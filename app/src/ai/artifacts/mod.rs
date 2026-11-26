@@ -433,7 +433,7 @@ fn screenshot_lightbox_image_from_download_result(
             log::warn!("Failed to load screenshot artifact {index}: {e}");
             Some(LightboxImage {
                 source: LightboxImageSource::Loading,
-                description: Some("Failed to load".to_string()),
+                description: Some(light_i18n::tr("Failed to load").to_string()),
             })
         }
     }
@@ -459,7 +459,7 @@ pub fn download_file_artifact<V: warpui::View>(
                 log::warn!("Failed to load file artifact {artifact_uid}: {error}");
                 show_file_download_toast(
                     &artifact_uid,
-                    DismissibleToast::error("Failed to prepare file download.".to_string()),
+                    DismissibleToast::error(light_i18n::tr("Failed to prepare file download.").to_string()),
                     ctx,
                 );
             }
@@ -528,8 +528,9 @@ fn open_file_download_picker<V: warpui::View>(
                         log::warn!("Failed to download file artifact {artifact_uid}: {error}");
                         show_file_download_toast(
                             &artifact_uid,
-                            DismissibleToast::error(format!(
-                                "Failed to download {toast_filename}."
+                            DismissibleToast::error(light_i18n::tr!(
+                                "Failed to download {}.",
+                                toast_filename
                             )),
                             ctx,
                         );
@@ -568,15 +569,15 @@ fn download_toast_filename(path: &Path) -> String {
 fn reveal_in_file_manager_label() -> &'static str {
     #[cfg(target_os = "macos")]
     {
-        "View in Finder"
+        light_i18n::tr("View in Finder")
     }
     #[cfg(target_os = "windows")]
     {
-        "Show in Explorer"
+        light_i18n::tr("Show in Explorer")
     }
     #[cfg(not(any(target_os = "macos", target_os = "windows")))]
     {
-        "Open folder"
+        light_i18n::tr("Open folder")
     }
 }
 
@@ -584,7 +585,7 @@ fn reveal_in_file_manager_label() -> &'static str {
 /// including the directory the file landed in.
 #[cfg(feature = "local_fs")]
 fn download_success_message(filename: &str, directory: &Path) -> String {
-    format!("{filename} was downloaded to {}.", directory.display())
+    light_i18n::tr!("{} was downloaded to {}.", filename, directory.display())
 }
 
 /// Builds the success toast for a completed file-artifact download. When the
@@ -597,7 +598,7 @@ fn file_download_success_toast(
     file_path: &Path,
 ) -> DismissibleToast<WorkspaceAction> {
     let Some(directory) = file_path.parent() else {
-        return DismissibleToast::success(format!("Downloaded {filename}."));
+        return DismissibleToast::success(light_i18n::tr!("Downloaded {}.", filename));
     };
     DismissibleToast::success(download_success_message(filename, directory)).with_link(
         ToastLink::new(reveal_in_file_manager_label().to_string()).with_onclick_action(

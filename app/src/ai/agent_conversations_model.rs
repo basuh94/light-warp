@@ -469,7 +469,7 @@ impl AgentRunDisplayStatus {
                     .status_message
                     .as_ref()
                     .map(|m| m.message.clone())
-                    .unwrap_or_else(|| "Task blocked".to_string()),
+                    .unwrap_or_else(|| light_i18n::tr("Task blocked").to_string()),
             },
             AmbientAgentTaskState::Cancelled => Self::TaskCancelled,
             AmbientAgentTaskState::Unknown => Self::TaskUnknown,
@@ -572,24 +572,28 @@ impl AgentRunDisplayStatus {
 impl std::fmt::Display for AgentRunDisplayStatus {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            AgentRunDisplayStatus::TaskQueued => write!(f, "Queued"),
-            AgentRunDisplayStatus::TaskPending => write!(f, "Pending"),
-            AgentRunDisplayStatus::TaskClaimed => write!(f, "Claimed"),
+            AgentRunDisplayStatus::TaskQueued => write!(f, "{}", light_i18n::tr("Queued")),
+            AgentRunDisplayStatus::TaskPending => write!(f, "{}", light_i18n::tr("Pending")),
+            AgentRunDisplayStatus::TaskClaimed => write!(f, "{}", light_i18n::tr("Claimed")),
             AgentRunDisplayStatus::TaskInProgress
-            | AgentRunDisplayStatus::ConversationInProgress => write!(f, "In progress"),
-            AgentRunDisplayStatus::TaskSucceeded | AgentRunDisplayStatus::ConversationSucceeded => {
-                write!(f, "Done")
+            | AgentRunDisplayStatus::ConversationInProgress => {
+                write!(f, "{}", light_i18n::tr("In progress"))
             }
-            AgentRunDisplayStatus::TaskFailed => write!(f, "Failed"),
+            AgentRunDisplayStatus::TaskSucceeded | AgentRunDisplayStatus::ConversationSucceeded => {
+                write!(f, "{}", light_i18n::tr("Done"))
+            }
+            AgentRunDisplayStatus::TaskFailed => write!(f, "{}", light_i18n::tr("Failed")),
             AgentRunDisplayStatus::TaskError | AgentRunDisplayStatus::ConversationError => {
-                write!(f, "Error")
+                write!(f, "{}", light_i18n::tr("Error"))
             }
             AgentRunDisplayStatus::TaskBlocked { .. }
-            | AgentRunDisplayStatus::ConversationBlocked { .. } => write!(f, "Blocked"),
-            AgentRunDisplayStatus::TaskCancelled | AgentRunDisplayStatus::ConversationCancelled => {
-                write!(f, "Cancelled")
+            | AgentRunDisplayStatus::ConversationBlocked { .. } => {
+                write!(f, "{}", light_i18n::tr("Blocked"))
             }
-            AgentRunDisplayStatus::TaskUnknown => write!(f, "Failed"),
+            AgentRunDisplayStatus::TaskCancelled | AgentRunDisplayStatus::ConversationCancelled => {
+                write!(f, "{}", light_i18n::tr("Cancelled"))
+            }
+            AgentRunDisplayStatus::TaskUnknown => write!(f, "{}", light_i18n::tr("Failed")),
         }
     }
 }

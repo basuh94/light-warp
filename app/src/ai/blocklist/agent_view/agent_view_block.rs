@@ -216,7 +216,7 @@ fn render_deleted_state(
         .with_main_axis_size(MainAxisSize::Max)
         .with_child(
             Text::new(
-                cached_title.unwrap_or_else(|| "Deleted conversation".to_string()),
+                cached_title.unwrap_or_else(|| light_i18n::tr("Deleted conversation").to_string()),
                 appearance.ui_font_family(),
                 appearance.monospace_font_size(),
             )
@@ -227,7 +227,7 @@ fn render_deleted_state(
             })
             .finish(),
         )
-        .with_child(render_subtext("Deleted".to_string(), appearance))
+        .with_child(render_subtext(light_i18n::tr("Deleted").to_string(), appearance))
         .finish();
 
     render_block_container(
@@ -292,9 +292,9 @@ impl View for AgentViewEntryBlock {
         let is_open_elsewhere = is_active && !is_active_in_this_pane;
 
         let subtext = if is_open_elsewhere {
-            Some("Open in different pane")
+            Some(light_i18n::tr("Open in different pane"))
         } else if self.is_restored {
-            Some("Restored")
+            Some(light_i18n::tr("Restored"))
         } else if !self.is_new
             && !matches!(
                 &self.origin,
@@ -302,7 +302,7 @@ impl View for AgentViewEntryBlock {
                     | AgentViewEntryOrigin::AgentRequestedNewConversation
             )
         {
-            Some("Continued")
+            Some(light_i18n::tr("Continued"))
         } else {
             None
         };
@@ -316,7 +316,7 @@ impl View for AgentViewEntryBlock {
                     Text::new(
                         conversation
                             .title()
-                            .unwrap_or("Untitled conversation".to_string()),
+                            .unwrap_or(light_i18n::tr("Untitled conversation").to_string()),
                         appearance.ui_font_family(),
                         appearance.monospace_font_size(),
                     )
@@ -486,7 +486,7 @@ impl TypedActionView for AgentViewEntryBlock {
                         ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
                             toast_stack.add_ephemeral_toast(
                                 DismissibleToast::error(
-                                    "Couldn't navigate to conversation.".to_string(),
+                                    light_i18n::tr("Couldn't navigate to conversation.").to_string(),
                                 ),
                                 window_id,
                                 ctx,

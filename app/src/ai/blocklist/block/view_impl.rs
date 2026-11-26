@@ -655,7 +655,7 @@ pub fn render_citation(
                 .to_warp_drive_item(appearance)?;
             (
                 item.icon(appearance, Some(theme.active_ui_text_color())),
-                item.display_name().unwrap_or(String::from("Untitled")),
+                item.display_name().unwrap_or(String::from(light_i18n::tr("Untitled"))),
             )
         }
         AIAgentCitation::WarpDocumentation { .. } => {
@@ -673,7 +673,7 @@ pub fn render_citation(
         AIAgentCitation::AgentMemory { content, .. } => {
             let icon = Icon::Cognition.to_warpui_icon(theme.foreground()).finish();
             let name = if content.is_empty() {
-                String::from("Memory")
+                String::from(light_i18n::tr("Memory"))
             } else {
                 content.clone()
             };
@@ -767,7 +767,7 @@ where
                         appearance
                             .ui_builder()
                             .link(
-                                "Manage AI Autonomy permissions".into(),
+                                light_i18n::tr("Manage AI Autonomy permissions").into(),
                                 None,
                                 Some(Box::new(move |ctx| {
                                     ctx.dispatch_typed_action(
@@ -842,7 +842,7 @@ pub fn render_autonomy_checkbox_setting_speedbump_footer(
                     appearance
                         .ui_builder()
                         .link(
-                            "Manage AI Autonomy permissions".into(),
+                            light_i18n::tr("Manage AI Autonomy permissions").into(),
                             None,
                             Some(Box::new(move |ctx| {
                                 ctx.dispatch_typed_action(

@@ -362,7 +362,7 @@ impl ConversationDetailsData {
             },
             title: conversation
                 .title()
-                .unwrap_or_else(|| "Conversation".to_string()),
+                .unwrap_or_else(|| light_i18n::tr("Conversation").to_string()),
             creator,
             executor: None,
             created_at,
@@ -677,7 +677,7 @@ pub fn init(app: &mut AppContext) {
     app.register_fixed_bindings([FixedBinding::custom(
         CustomAction::Copy,
         ConversationDetailsPanelAction::CopySelectedText,
-        "Copy",
+        light_i18n::tr("Copy"),
         id!(ConversationDetailsPanel::ui_name()) & !id!("IMEOpen"),
     )]);
 }
@@ -949,7 +949,7 @@ impl ConversationDetailsPanel {
 
                 let window_id = ctx.window_id();
                 ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
-                    let toast = DismissibleToast::default("Copied branch name".to_string());
+                    let toast = DismissibleToast::default(light_i18n::tr("Copied branch name").to_string());
                     toast_stack.add_ephemeral_toast(toast, window_id, ctx);
                 });
             }
@@ -1167,7 +1167,7 @@ impl ConversationDetailsPanel {
         .finish();
 
         let created_text = Text::new(
-            format!(
+            light_i18n::tr!(
                 "Created by {} • {}",
                 creator.display_name,
                 format_approx_duration_from_now(created_at)
@@ -1213,7 +1213,7 @@ impl ConversationDetailsPanel {
         let ui_font_size = appearance.ui_font_size();
 
         let label_text = Text::new(
-            "Agent".to_string(),
+            light_i18n::tr("Agent").to_string(),
             appearance.ui_font_family(),
             ui_font_size,
         )
@@ -1270,7 +1270,7 @@ impl ConversationDetailsPanel {
         let ui_font_size = appearance.ui_font_size();
 
         let label_text = Text::new(
-            "Error".to_string(),
+            light_i18n::tr("Error").to_string(),
             appearance.ui_font_family(),
             ui_font_size,
         )
@@ -1401,7 +1401,7 @@ impl ConversationDetailsPanel {
 
         // Section header
         let header = Text::new(
-            "Status".to_string(),
+            light_i18n::tr("Status").to_string(),
             appearance.ui_font_family(),
             ui_font_size,
         )
@@ -1653,7 +1653,7 @@ impl ConversationDetailsPanel {
         let ui_font_size = appearance.ui_font_size();
 
         let label_text = Text::new(
-            "Initial query".to_string(),
+            light_i18n::tr("Initial query").to_string(),
             appearance.ui_font_family(),
             ui_font_size,
         )
@@ -1695,7 +1695,7 @@ impl ConversationDetailsPanel {
         let ui_font_size = appearance.ui_font_size();
 
         let label_text = Text::new(
-            "Artifacts".to_string(),
+            light_i18n::tr("Artifacts").to_string(),
             appearance.ui_font_family(),
             ui_font_size,
         )
@@ -2230,7 +2230,7 @@ impl View for ConversationDetailsPanel {
                 if let Some(directory) = directory {
                     content.add_child(
                         Container::new(self.render_field_with_copy(
-                            "Directory",
+                            light_i18n::tr("Directory"),
                             directory,
                             ConversationDetailsPanelAction::CopyDirectory,
                             CopyButtonKind::Directory,
@@ -2245,7 +2245,7 @@ impl View for ConversationDetailsPanel {
                 if let Some(id) = conversation_id {
                     content.add_child(
                         Container::new(self.render_field_with_copy(
-                            "Conversation ID",
+                            light_i18n::tr("Conversation ID"),
                             id,
                             ConversationDetailsPanelAction::CopyConversationId,
                             CopyButtonKind::ConversationId,
@@ -2263,7 +2263,7 @@ impl View for ConversationDetailsPanel {
                 if let Some(directory) = directory {
                     content.add_child(
                         Container::new(self.render_field_with_copy(
-                            "Directory",
+                            light_i18n::tr("Directory"),
                             directory,
                             ConversationDetailsPanelAction::CopyDirectory,
                             CopyButtonKind::Directory,
@@ -2277,7 +2277,7 @@ impl View for ConversationDetailsPanel {
                 if let Some(task_id) = task_id {
                     content.add_child(
                         Container::new(self.render_field_with_copy(
-                            "Run ID",
+                            light_i18n::tr("Run ID"),
                             &task_id.to_string(),
                             ConversationDetailsPanelAction::CopyRunId,
                             CopyButtonKind::RunId,
@@ -2310,7 +2310,7 @@ impl View for ConversationDetailsPanel {
         if let Some(duration) = self.data.run_time {
             let formatted = human_readable_precise_duration(duration);
             content.add_child(
-                Container::new(self.render_simple_field("Run time", &formatted, appearance))
+                Container::new(self.render_simple_field(light_i18n::tr("Run time"), &formatted, appearance))
                     .with_margin_bottom(FIELD_SPACING)
                     .finish(),
             );
@@ -2319,7 +2319,7 @@ impl View for ConversationDetailsPanel {
         if let Some(created_at) = self.data.created_at {
             let formatted = created_at.format("%I:%M %p on %-m/%-d/%Y").to_string();
             content.add_child(
-                Container::new(self.render_simple_field("Created on", &formatted, appearance))
+                Container::new(self.render_simple_field(light_i18n::tr("Created on"), &formatted, appearance))
                     .with_margin_bottom(FIELD_SPACING)
                     .finish(),
             );

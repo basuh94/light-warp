@@ -860,7 +860,7 @@ async fn parse_mcp_config_file(
                 config_path: file_path.to_path_buf(),
                 provider,
                 kind: FileMCPConfigDiagnosticKind::Read,
-                message: format!("Failed to read MCP config: {err}"),
+                message: light_i18n::tr!("Failed to read MCP config: {}", err),
             });
         }
     };
@@ -884,7 +884,7 @@ async fn parse_mcp_config_file(
                     config_path: file_path.to_path_buf(),
                     provider,
                     kind: FileMCPConfigDiagnosticKind::Parse,
-                    message: format!("Failed to parse MCP config: {err:#}"),
+                    message: light_i18n::tr!("Failed to parse MCP config: {}", format!("{err:#}")),
                 });
             }
         },
@@ -932,7 +932,7 @@ async fn parse_mcp_config_file(
                 config_path: file_path.to_path_buf(),
                 provider,
                 kind: FileMCPConfigDiagnosticKind::Parse,
-                message: format!("Failed to parse MCP servers: {err:#}"),
+                message: light_i18n::tr!("Failed to parse MCP servers: {}", format!("{err:#}")),
             })
         }
     }

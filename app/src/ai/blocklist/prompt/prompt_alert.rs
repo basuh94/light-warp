@@ -26,7 +26,6 @@ use crate::workspaces::workspace::Workspace;
 
 const ANONYMOUS_USER_REQUEST_LIMIT_SOFT_GATE_PERCENTAGE: f32 = 0.5;
 
-const NO_CONNECTION_PRIMARY_TEXT: &str = "No internet connection";
 const ANONYMOUS_USER_REQUEST_LIMIT_SOFT_GATE_PRIMARY_TEXT: &str = "";
 const ANONYMOUS_USER_REQUEST_LIMIT_HARD_GATE_PRIMARY_TEXT: &str = "At Limit -";
 const DELINQUENT_DUE_TO_PAYMENT_ISSUE_PRIMARY_TEXT: &str = "Restricted due to payment issue";
@@ -166,7 +165,7 @@ pub enum PromptAlertState {
 impl PromptAlertState {
     fn primary_text(&self) -> &'static str {
         match self {
-            Self::NoConnection => NO_CONNECTION_PRIMARY_TEXT,
+            Self::NoConnection => light_i18n::tr("No internet connection"),
             Self::AnonymousUserRequestLimitSoftGate => {
                 ANONYMOUS_USER_REQUEST_LIMIT_SOFT_GATE_PRIMARY_TEXT
             }

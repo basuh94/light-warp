@@ -23,7 +23,7 @@ pub fn display_name(harness: Harness) -> &'static str {
         Harness::Gemini => "Gemini CLI",
         Harness::Pi => "Pi",
         Harness::Codex => "Codex",
-        Harness::Unknown => "Unknown",
+        Harness::Unknown => light_i18n::tr("Unknown"),
     }
 }
 

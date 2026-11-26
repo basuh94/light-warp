@@ -32,9 +32,6 @@ use crate::view_components::compactible_action_button::{
 };
 use crate::{TelemetryEvent, send_telemetry_from_ctx};
 
-const ACCEPT_LABEL: &str = "Generate tests";
-const CANCEL_LABEL: &str = "Dismiss";
-
 #[derive(Debug, Clone)]
 pub enum SuggestedUnitTestsEvent {
     Accept,
@@ -82,7 +79,7 @@ impl SuggestedUnitTestsView {
         ctx: &mut ViewContext<Self>,
     ) -> Self {
         let accept_button = CompactibleActionButton::new(
-            ACCEPT_LABEL.to_string(),
+            light_i18n::tr("Generate tests").to_string(),
             Some(KeystrokeSource::Binding(
                 ACCEPT_PROMPT_SUGGESTION_KEYBINDING,
             )),
@@ -94,7 +91,7 @@ impl SuggestedUnitTestsView {
         );
 
         let cancel_button = CompactibleActionButton::new(
-            CANCEL_LABEL.to_string(),
+            light_i18n::tr("Dismiss").to_string(),
             Some(KeystrokeSource::Fixed(
                 REJECT_PROMPT_SUGGESTION_KEYSTROKE.clone(),
             )),
@@ -312,7 +309,7 @@ impl SuggestedUnitTestsView {
 
         let checkbox_text = appearance
             .ui_builder()
-            .span("Don't show me suggested code banners again")
+            .span(light_i18n::tr("Don't show me suggested code banners again"))
             .with_style(UiComponentStyles {
                 font_color: Some(font_color),
                 font_size: Some(font_size),
@@ -325,7 +322,7 @@ impl SuggestedUnitTestsView {
         let formatted_text = FormattedTextElement::new(
             FormattedText::new([FormattedTextLine::Line(vec![
                 FormattedTextFragment::hyperlink(
-                    "Manage suggested code banner settings",
+                    light_i18n::tr("Manage suggested code banner settings"),
                     "Settings > AI",
                 ),
             ])]),

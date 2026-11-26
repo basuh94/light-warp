@@ -109,41 +109,20 @@ use crate::workspaces::workspace::CustomerType;
 
 pub const STATUS_ICON_SIZE_DELTA: f32 = 4.;
 pub const STATUS_FOOTER_VERTICAL_PADDING: f32 = 4.;
-pub const WAITING_FOR_USER_INPUT_MESSAGE: &str = "Agent waiting for instructions...";
 const IMAGE_SOURCE_LINK_LINE_INDEX: usize = 1;
 
+// Status messages are shown translated at their use sites; these English constants remain for tests.
+#[allow(dead_code)]
 pub const LOAD_OUTPUT_MESSAGE: &str = "Warping...";
 /// The trailing ellipsis every in-progress status message ends with.
 pub const STATUS_MESSAGE_ELLIPSIS: &str = "...";
-pub const LOAD_OUTPUT_MESSAGE_FOR_ADJUSTING: &str = "Adjusting tasks...";
-pub const LOAD_OUTPUT_MESSAGE_FOR_PASSIVE_CODE_GEN: &str = "Generating fix...";
+#[allow(dead_code)]
 pub const LOAD_OUTPUT_MESSAGE_FOR_CREATING_DIFF: &str = "Creating diff...";
-pub const LOAD_OUTPUT_MESSAGE_FOR_PREPARING_QUESTION: &str = "Preparing question...";
+#[allow(dead_code)]
 pub const LOAD_OUTPUT_MESSAGE_FOR_GENERATING_PLAN: &str = "Generating plan...";
-pub const LOAD_OUTPUT_MESSAGE_FOR_UPDATING_PLAN: &str = "Updating plan...";
-pub const LOAD_OUTPUT_MESSAGE_FOR_SUMMARIZING_CONVERSATION: &str = "Summarizing conversation...";
-pub const LOAD_OUTPUT_MESSAGE_FOR_SUMMARIZING_TOOL_CALL_RESULT: &str =
-    "Summarizing command output...";
-pub const LOAD_OUTPUT_MESSAGE_FOR_SEARCH_CODEBASE: &str = "Searching codebase...";
-pub const LOAD_OUTPUT_MESSAGE_FOR_READING_FILES: &str = "Reading files...";
-pub const LOAD_OUTPUT_MESSAGE_FOR_GREP: &str = "Grepping...";
-pub const LOAD_OUTPUT_MESSAGE_FOR_FILE_GLOB: &str = "Finding files...";
-pub const LOAD_OUTPUT_MESSAGE_FOR_RUNNING_COMMAND: &str = "Executing command...";
-pub const LOAD_OUTPUT_MESSAGE_FOR_WRITING_TO_COMMAND: &str = "Writing command input...";
-pub const LOAD_OUTPUT_MESSAGE_FOR_WAITING_FOR_COMMAND_COMPLETION: &str =
-    "Waiting for command to exit...";
-pub const LOAD_OUTPUT_MESSAGE_FOR_WEB_SEARCH: &str = "Searching the web...";
 
 #[cfg(feature = "local_fs")]
 pub(crate) type ResolvedBlocklistImageSources = HashMap<String, Option<AssetSource>>;
-
-pub const BLOCKED_ACTION_MESSAGE_FOR_WRITE_TO_LONG_RUNNING_SHELL_COMMAND: &str =
-    "Can I write the following to this running command?";
-pub const BLOCKED_ACTION_MESSAGE_FOR_READING_FILES: &str = "Grant access to the following files?";
-pub const BLOCKED_ACTION_MESSAGE_FOR_SEARCHING_CODEBASE: &str =
-    "Grant access to the following repository?";
-pub const BLOCKED_ACTION_MESSAGE_FOR_GREP_OR_FILE_GLOB: &str =
-    "OK if I search the files in this directory?";
 
 const BLOCKLIST_VISUAL_SECTION_HEIGHT_LINE_MULTIPLIER: f32 = 10.0;
 const BLOCKLIST_MERMAID_MAX_HEIGHT_LINE_MULTIPLIER: f32 = 40.0;
@@ -212,8 +191,11 @@ pub struct ForceRefreshButtonProps<'a> {
 /// `"Generating plan..."` becomes `"Generating plan with Claude Sonnet 4.5..."`.
 pub fn status_message_naming_model(message: &str, model_display_name: &str) -> String {
     match message.strip_suffix(STATUS_MESSAGE_ELLIPSIS) {
-        Some(stem) => format!("{stem} with {model_display_name}{STATUS_MESSAGE_ELLIPSIS}"),
-        None => format!("{message} with {model_display_name}"),
+        Some(stem) => format!(
+            "{}{STATUS_MESSAGE_ELLIPSIS}",
+            light_i18n::tr!("{} with {}", stem, model_display_name)
+        ),
+        None => light_i18n::tr!("{} with {}", message, model_display_name),
     }
 }
 
@@ -312,10 +294,10 @@ pub fn render_warping_indicator<V: View>(
         // Choose the appropriate message based on summarization type
         let base_message = match summarization_type {
             SummarizationType::ConversationSummary => {
-                LOAD_OUTPUT_MESSAGE_FOR_SUMMARIZING_CONVERSATION
+                light_i18n::tr("Summarizing conversation...")
             }
             SummarizationType::ToolCallResultSummary => {
-                LOAD_OUTPUT_MESSAGE_FOR_SUMMARIZING_TOOL_CALL_RESULT
+                light_i18n::tr("Summarizing command output...")
             }
         };
 
@@ -336,24 +318,24 @@ pub fn render_warping_indicator<V: View>(
             base_message.to_string()
         }
     } else if props.model.contains_update_document_action(app) {
-        naming_model(LOAD_OUTPUT_MESSAGE_FOR_UPDATING_PLAN)
+        naming_model(light_i18n::tr("Updating plan..."))
     } else if props.model.contains_create_document_action(app) {
-        naming_model(LOAD_OUTPUT_MESSAGE_FOR_GENERATING_PLAN)
+        naming_model(light_i18n::tr("Generating plan..."))
     } else if props.model.request_type(app).is_passive_code_diff() {
-        naming_model(LOAD_OUTPUT_MESSAGE_FOR_PASSIVE_CODE_GEN)
+        naming_model(light_i18n::tr("Generating fix..."))
     } else if is_last_message_requesting_file_edits {
-        naming_model(LOAD_OUTPUT_MESSAGE_FOR_CREATING_DIFF)
+        naming_model(light_i18n::tr("Creating diff..."))
     } else if is_last_message_asking_user_question {
-        naming_model(LOAD_OUTPUT_MESSAGE_FOR_PREPARING_QUESTION)
+        naming_model(light_i18n::tr("Preparing question..."))
     } else if is_searching_web {
-        LOAD_OUTPUT_MESSAGE_FOR_WEB_SEARCH.to_string()
+        light_i18n::tr("Searching the web...").to_string()
     } else if is_interrupt_query_for_same_conversation
         && output_to_render
             .as_ref()
             .is_none_or(|output| output.get().messages.is_empty())
     {
         // Only "Adjusting..." if nothing from the current exchange has streamed yet.
-        naming_model(LOAD_OUTPUT_MESSAGE_FOR_ADJUSTING)
+        naming_model(light_i18n::tr("Adjusting tasks..."))
     } else {
         match props
             .action_model
@@ -361,9 +343,9 @@ pub fn render_warping_indicator<V: View>(
             .map(|action| &action.action)
         {
             Some(AIAgentActionType::SearchCodebase(..)) => {
-                LOAD_OUTPUT_MESSAGE_FOR_SEARCH_CODEBASE.to_owned()
+                light_i18n::tr("Searching codebase...").to_owned()
             }
-            Some(AIAgentActionType::Grep { .. }) => LOAD_OUTPUT_MESSAGE_FOR_GREP.to_owned(),
+            Some(AIAgentActionType::Grep { .. }) => light_i18n::tr("Grepping...").to_owned(),
             Some(AIAgentActionType::CallMCPTool {
                 server_id, name, ..
             }) => {
@@ -371,19 +353,19 @@ pub fn render_warping_indicator<V: View>(
                     .as_ref()
                     .and_then(|id| TemplatableMCPServerManager::get_mcp_name(id, app))
                 {
-                    Some(server) => format!("Calling \"{name}\" MCP tool on {server}..."),
-                    None => format!("Calling \"{name}\" MCP tool..."),
+                    Some(server) => light_i18n::tr!("Calling \"{}\" MCP tool on {}...", name, server),
+                    None => light_i18n::tr!("Calling \"{}\" MCP tool...", name),
                 }
             }
             Some(AIAgentActionType::ReadMCPResource { name, .. }) => {
-                format!("Reading \"{name}\" MCP resource...")
+                light_i18n::tr!("Reading \"{}\" MCP resource...", name)
             }
             Some(AIAgentActionType::FileGlob { .. })
             | Some(AIAgentActionType::FileGlobV2 { .. }) => {
-                LOAD_OUTPUT_MESSAGE_FOR_FILE_GLOB.to_owned()
+                light_i18n::tr("Finding files...").to_owned()
             }
             Some(AIAgentActionType::WriteToLongRunningShellCommand { .. }) => {
-                LOAD_OUTPUT_MESSAGE_FOR_WRITING_TO_COMMAND.to_owned()
+                light_i18n::tr("Writing command input...").to_owned()
             }
             action => {
                 let active_block = props.terminal_model.block_list().active_block();
@@ -393,7 +375,7 @@ pub fn render_warping_indicator<V: View>(
                 {
                     if action.is_none() {
                         should_render_waiting_icon = true;
-                        WAITING_FOR_USER_INPUT_MESSAGE.to_owned()
+                        light_i18n::tr("Agent waiting for instructions...").to_owned()
                     } else {
                         // Choose the base message depending on whether the agent is waiting
                         // for the command to exit or polling at a fixed interval.
@@ -401,8 +383,8 @@ pub fn render_warping_indicator<V: View>(
                             Some(AIAgentActionType::ReadShellCommandOutput {
                                 delay: Some(ShellCommandDelay::OnCompletion),
                                 ..
-                            }) => LOAD_OUTPUT_MESSAGE_FOR_WAITING_FOR_COMMAND_COMPLETION,
-                            _ => LOAD_OUTPUT_MESSAGE_FOR_RUNNING_COMMAND,
+                            }) => light_i18n::tr("Waiting for command to exit..."),
+                            _ => light_i18n::tr("Executing command..."),
                         };
                         // Compute "Next check in {time}" for fixed-interval polls. Only
                         // `ReadShellCommandOutput { delay: Duration(_) }` has a meaningful
@@ -429,7 +411,7 @@ pub fn render_warping_indicator<V: View>(
                             } else {
                                 format!("{}m", secs / 60)
                             };
-                            let suffix = format!(" · Next check in {formatted}");
+                            let suffix = light_i18n::tr!(" · Next check in {}", formatted);
 
                             // Keep the base message constant so the shimmering animation
                             // isn't interrupted every time the countdown ticks. The
@@ -465,8 +447,8 @@ pub fn render_warping_indicator<V: View>(
     if let Some(take_over_button_props) = props.take_over_lrc_control_button {
         has_buttons = true;
         buttons_row.add_child(render_switch_control_to_user_button(
-            "Take over",
-            "Take over control of the command",
+            light_i18n::tr("Take over"),
+            light_i18n::tr("Take over control of the command"),
             take_over_button_props,
             appearance,
         ));
@@ -790,9 +772,9 @@ fn render_hide_responses_button(
 ) -> Box<dyn Element> {
     let theme = appearance.theme();
     let button_text = if should_hide_responses {
-        "Show responses"
+        light_i18n::tr("Show responses")
     } else {
-        "Hide responses"
+        light_i18n::tr("Hide responses")
     };
     let text = Container::new(
         Text::new(
@@ -806,9 +788,9 @@ fn render_hide_responses_button(
     .finish();
 
     let tooltip_text = if should_hide_responses {
-        "Show agent responses"
+        light_i18n::tr("Show agent responses")
     } else {
-        "Hide agent responses"
+        light_i18n::tr("Hide agent responses")
     };
 
     render_warping_indicator_button(
@@ -872,7 +854,7 @@ fn render_stop_button(props: ButtonProps, appearance: &Appearance) -> Box<dyn El
         appearance,
         stop_icon,
         props.keystroke,
-        "Stop agent task".to_string(),
+        light_i18n::tr("Stop agent task").to_string(),
         props.is_active,
         false,
         |ctx: &mut EventContext<'_>| {
@@ -900,9 +882,9 @@ fn render_queue_next_prompt_button(
     .finish();
 
     let tooltip_text = if props.is_active {
-        "Auto-queue is on: your next prompt will be queued"
+        light_i18n::tr("Auto-queue is on: your next prompt will be queued")
     } else {
-        "Auto-queue next prompt while agent is responding"
+        light_i18n::tr("Auto-queue next prompt while agent is responding")
     };
 
     render_warping_indicator_button(
@@ -946,9 +928,9 @@ fn render_auto_approve_button(
     let tooltip_text = if props.is_locked {
         "Fast forward is always enabled for cloud agent conversations"
     } else if is_active {
-        "Turn off auto-approve all agent actions"
+        light_i18n::tr("Turn off auto-approve all agent actions")
     } else {
-        "Auto-approve all agent actions for this task"
+        light_i18n::tr("Auto-approve all agent actions for this task")
     };
 
     render_warping_indicator_button(
@@ -1002,7 +984,7 @@ fn render_force_refresh_inline(
         // Mirror `render_output_status_text` exactly: same `Text` configuration plus
         // the `Container::with_margin_top(1.)` wrapper so this sits on the same
         // baseline as the adjacent `Last seen by agent ...` text.
-        let text = Text::new(" · Check now".to_string(), font_family, font_size)
+        let text = Text::new(light_i18n::tr(" · Check now").to_string(), font_family, font_size)
             .with_color(color)
             .with_style(Properties::default())
             .with_clip(ClipConfig::end())
@@ -1016,7 +998,7 @@ fn render_force_refresh_inline(
         let mut stack = Stack::new().with_child(text_with_margin);
         if state.is_hovered() {
             let tool_tip = ui_builder
-                .tool_tip("Ask the agent to check this command now, skipping its timer.".to_owned())
+                .tool_tip(light_i18n::tr("Ask the agent to check this command now, skipping its timer.").to_owned())
                 .build()
                 .finish();
             stack.add_positioned_overlay_child(
@@ -2218,7 +2200,7 @@ fn render_mermaid_diagram_section<A: Action>(
         .finish();
 
     render_visual_card(
-        "Mermaid diagram".to_string(),
+        light_i18n::tr("Mermaid diagram").to_string(),
         Icon::Dataflow,
         Container::new(mermaid_canvas)
             .with_background(theme.background())
@@ -3384,9 +3366,9 @@ fn render_invalid_api_key_error(
             ..Default::default()
         })
         .with_text_label(if is_local_model_error {
-            "Configure local model".to_string()
+            light_i18n::tr("Configure local model").to_string()
         } else {
-            "Edit API Keys".to_string()
+            light_i18n::tr("Edit API Keys").to_string()
         })
         .with_cursor(Some(Cursor::PointingHand))
         .build()
@@ -3619,7 +3601,7 @@ pub(crate) fn render_debug_footer<V: View>(
                     warpui::ui_components::button::ButtonVariant::Text,
                     props.submit_issue_button_handle,
                 )
-                .with_centered_text_label("Send Feedback".to_string())
+                .with_centered_text_label(light_i18n::tr("Send Feedback").to_string())
                 .with_style(submit_button_style)
                 .with_hovered_styles(submit_button_hover_style)
                 .with_clicked_styles(submit_button_hover_style)
@@ -3635,7 +3617,7 @@ pub(crate) fn render_debug_footer<V: View>(
 
     // render the conversation's debug id so screenshots automatically show the debug id
     let debug_text = Text::new(
-        format!("Debug information: {debug_info}"),
+        light_i18n::tr!("Debug information: {}", debug_info),
         appearance.ui_font_family(),
         appearance.monospace_font_size(),
     )
@@ -3679,7 +3661,7 @@ pub(crate) fn render_debug_footer<V: View>(
     })
     .finish();
     let copy_button_with_tooltip = appearance.ui_builder().tool_tip_on_element(
-        "Copy debug ID".to_string(),
+        light_i18n::tr("Copy debug ID").to_string(),
         props.debug_copy_button_handle,
         copy_button,
         warpui::elements::ParentAnchor::TopRight,

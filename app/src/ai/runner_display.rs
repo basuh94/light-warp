@@ -18,7 +18,7 @@ pub fn os_display(os: RunnerOs) -> &'static str {
         RunnerOs::Linux => "Linux",
         RunnerOs::Macos => "macOS",
         RunnerOs::Windows => "Windows",
-        RunnerOs::Unknown => "Unknown",
+        RunnerOs::Unknown => light_i18n::tr("Unknown"),
     }
 }
 

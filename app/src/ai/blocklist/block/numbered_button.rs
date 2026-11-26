@@ -47,7 +47,7 @@ pub(super) fn render_recommended_badge(appearance: &Appearance) -> Box<dyn Eleme
     let theme = appearance.theme();
     Container::new(
         Text::new(
-            "Recommended".to_string(),
+            light_i18n::tr("Recommended").to_string(),
             appearance.ui_font_family(),
             appearance.monospace_font_size() - 2.,
         )

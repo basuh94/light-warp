@@ -235,7 +235,9 @@ fn build_harness_snapshot(
                 match local_setup_state {
                     Some(LocalHarnessSetupState::MissingHarness { tooltip }) => tooltip,
                     Some(LocalHarnessSetupState::ProductDisabled { message }) => message,
-                    Some(LocalHarnessSetupState::Ready) | None => "Disabled by your administrator",
+                    Some(LocalHarnessSetupState::Ready) | None => {
+                        light_i18n::tr("Disabled by your administrator")
+                    }
                 }
                 .to_string(),
             )
@@ -269,7 +271,7 @@ fn build_harness_snapshot(
             rows,
             selected_id,
             status: OptionSourceStatus::Empty {
-                message: "No harnesses available".to_string(),
+                message: light_i18n::tr("No harnesses available").to_string(),
             },
             footer: None,
         };
@@ -377,7 +379,7 @@ fn build_oz_model_snapshot(
             rows,
             selected_id,
             status: OptionSourceStatus::Empty {
-                message: "No models available".to_string(),
+                message: light_i18n::tr("No models available").to_string(),
             },
             footer: None,
         };

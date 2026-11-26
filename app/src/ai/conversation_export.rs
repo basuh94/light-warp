@@ -33,11 +33,11 @@ impl ConversationFileExportError {
 
     pub fn user_message(&self) -> String {
         match self.source.kind() {
-            io::ErrorKind::PermissionDenied => format!(
+            io::ErrorKind::PermissionDenied => light_i18n::tr!(
                 "Permission denied writing to {}. Check file permissions.",
                 self.path.display()
             ),
-            io::ErrorKind::NotFound => format!(
+            io::ErrorKind::NotFound => light_i18n::tr!(
                 "Directory not found: {}",
                 self.path
                     .parent()
@@ -45,9 +45,9 @@ impl ConversationFileExportError {
                     .unwrap_or_default()
             ),
             io::ErrorKind::AlreadyExists => {
-                format!("File {} already exists", self.path.display())
+                light_i18n::tr!("File {} already exists", self.path.display())
             }
-            _ => format!(
+            _ => light_i18n::tr!(
                 "Failed to export to {}: {}",
                 self.path.display(),
                 self.source

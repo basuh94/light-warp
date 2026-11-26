@@ -41,9 +41,11 @@ pub enum LoadAwsCredentialsError {
 impl std::fmt::Display for LoadAwsCredentialsError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::NotConfigured => write!(f, "No AWS credentials configured"),
+            Self::NotConfigured => {
+                write!(f, "{}", light_i18n::tr("No AWS credentials configured"))
+            }
             Self::CredentialsLoadFailed(msg) => {
-                write!(f, "Failed to load AWS credentials: {msg}")
+                write!(f, "{}", light_i18n::tr!("Failed to load AWS credentials: {}", msg))
             }
         }
     }
@@ -53,38 +55,39 @@ fn aws_profile_reference_for_message(profile: &str, capitalize_first_word: bool)
     let profile = profile.trim();
     if profile.is_empty() {
         if capitalize_first_word {
-            "The default AWS profile".to_string()
+            light_i18n::tr("The default AWS profile").to_string()
         } else {
-            "the default AWS profile".to_string()
+            light_i18n::tr("the default AWS profile").to_string()
         }
+    } else if capitalize_first_word {
+        light_i18n::tr!("The AWS profile `{}`", profile)
     } else {
-        let article = if capitalize_first_word { "The" } else { "the" };
-        format!("{article} AWS profile `{profile}`")
+        light_i18n::tr!("the AWS profile `{}`", profile)
     }
 }
 
 fn user_facing_aws_credentials_error_message(err: &CredentialsError, profile: &str) -> String {
     match err {
-        CredentialsError::CredentialsNotLoaded(_) => format!(
+        CredentialsError::CredentialsNotLoaded(_) => light_i18n::tr!(
             "AWS credentials were not found for {}. Log in with the AWS CLI or update your AWS credentials configuration, then refresh.",
             aws_profile_reference_for_message(profile, false)
         ),
         CredentialsError::ProviderTimedOut(_) => {
-            "Timed out while loading AWS credentials. Refresh and try again.".to_string()
+            light_i18n::tr("Timed out while loading AWS credentials. Refresh and try again.").to_string()
         }
-        CredentialsError::InvalidConfiguration(_) => format!(
+        CredentialsError::InvalidConfiguration(_) => light_i18n::tr!(
             "{} is invalid or incomplete in your local AWS configuration. Update your AWS profile settings and credentials, then refresh.",
             aws_profile_reference_for_message(profile, true)
         ),
         CredentialsError::ProviderError(_) => {
-            "Unable to load AWS credentials from your configured provider. Refresh your AWS login and try again."
+            light_i18n::tr("Unable to load AWS credentials from your configured provider. Refresh your AWS login and try again.")
                 .to_string()
         }
         CredentialsError::Unhandled(_) => {
-            "Unexpected error while loading AWS credentials. Refresh your AWS login and try again."
+            light_i18n::tr("Unexpected error while loading AWS credentials. Refresh your AWS login and try again.")
                 .to_string()
         }
-        _ => "Unable to load AWS credentials. Refresh your AWS login and try again."
+        _ => light_i18n::tr("Unable to load AWS credentials. Refresh your AWS login and try again.")
             .to_string(),
     }
 }

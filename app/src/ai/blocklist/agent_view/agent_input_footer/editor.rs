@@ -21,9 +21,6 @@ use crate::terminal::session_settings::{
     SessionSettingsChangedEvent, ToolbarChipSelection,
 };
 
-const AGENT_MODAL_TITLE: &str = "Edit agent toolbelt";
-const CLI_MODAL_TITLE: &str = "Edit CLI agent toolbelt";
-
 /// Controls which set of items and settings the editor modal operates on.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum AgentToolbarEditorMode {
@@ -251,7 +248,7 @@ impl View for AgentToolbarInlineEditor {
         render_chip_editor_sections(
             &self.chip_configurator,
             ChipEditorSectionsConfig {
-                available_section_label: "Available chips",
+                available_section_label: light_i18n::tr("Available chips"),
                 is_at_defaults: self.is_at_defaults(),
                 reset_action: AgentToolbarInlineEditorAction::ResetDefault,
                 activate_action: AgentToolbarInlineEditorAction::Activate,
@@ -360,8 +357,8 @@ impl AgentToolbarEditorModal {
 
     fn modal_title(&self) -> &'static str {
         match self.mode {
-            AgentToolbarEditorMode::AgentView => AGENT_MODAL_TITLE,
-            AgentToolbarEditorMode::CLIAgent => CLI_MODAL_TITLE,
+            AgentToolbarEditorMode::AgentView => light_i18n::tr("Edit agent toolbelt"),
+            AgentToolbarEditorMode::CLIAgent => light_i18n::tr("Edit CLI agent toolbelt"),
         }
     }
 }
@@ -419,7 +416,7 @@ impl View for AgentToolbarEditorModal {
             &self.chip_configurator,
             ChipEditorModalConfig {
                 title: self.modal_title(),
-                available_section_label: "Available chips",
+                available_section_label: light_i18n::tr("Available chips"),
                 is_at_defaults: self.is_at_defaults(),
                 is_dirty: self.is_dirty,
                 cancel_action: AgentToolbarEditorAction::Cancel,

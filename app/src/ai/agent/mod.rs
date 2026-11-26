@@ -833,8 +833,7 @@ impl RenderableAIError {
 }
 
 impl RenderableAIError {
-    const TRANSIENT_NETWORK_ERROR_MESSAGE: &'static str =
-        "Warp lost connection while receiving the agent response. This is usually temporary.";
+
     /// Creates a transient network error. `kind` is the structured cause (including the raw API
     /// error where one exists), preserved so user reports can disambiguate the different causes
     /// behind the shared user-facing copy.
@@ -986,42 +985,51 @@ impl Display for RenderableAIError {
                 if let Some(message) = user_display_message {
                     write!(f, "{message}")
                 } else {
-                    write!(f, "Quota limit reached.")
+                    write!(f, "{}", light_i18n::tr("Quota limit reached."))
                 }
             }
             Self::ServerOverloaded => {
-                write!(f, "Warp is currently overloaded. Please try again later.")
+                write!(
+                    f,
+                    "{}",
+                    light_i18n::tr("Warp is currently overloaded. Please try again later.")
+                )
             }
-            Self::InternalWarpError => write!(f, "Internal Warp error."),
+            Self::InternalWarpError => write!(f, "{}", light_i18n::tr("Internal Warp error.")),
             Self::ContextWindowExceeded(message) => {
-                write!(f, "Context window exceeded: {message}")
+                write!(f, "{}", light_i18n::tr!("Context window exceeded: {}", message))
             }
             Self::InvalidApiKey { provider, .. } => {
-                write!(f, "Invalid API key for {provider}")
+                write!(f, "{}", light_i18n::tr!("Invalid API key for {}", provider))
             }
             Self::AwsBedrockCredentialsExpiredOrInvalid { model_name } => {
                 write!(
                     f,
-                    "AWS Bedrock credentials expired or invalid for {model_name}"
+                    "{}",
+                    light_i18n::tr!("AWS Bedrock credentials expired or invalid for {}", model_name)
                 )
             }
             Self::GeminiEnterpriseCredentialsExpiredOrInvalid => {
-                write!(f, "Gemini Enterprise credentials expired or invalid")
+                write!(
+                    f,
+                    "{}",
+                    light_i18n::tr("Gemini Enterprise credentials expired or invalid")
+                )
             }
             Self::TransientNetworkError { kind, .. } => {
                 write!(
                     f,
-                    "{}\n\nDebug info: {kind}",
-                    Self::TRANSIENT_NETWORK_ERROR_MESSAGE
+                    "{}\n\n{}",
+                    light_i18n::tr("Warp lost connection while receiving the agent response. This is usually temporary."),
+                    light_i18n::tr!("Debug info: {}", kind)
                 )
             }
             Self::AgentStreamFailure { error_message } => write!(f, "{error_message}"),
             Self::Other { error_message, .. } => write!(f, "{error_message}"),
             Self::AgentExitedShell { command } => write!(
                 f,
-                "The shell exited while the agent was running the command `{command}`, so the run \
-                 could not continue. Ensure the agent is not asked to run commands or source \
-                 scripts that can exit the shell."
+                "{}",
+                light_i18n::tr!("The shell exited while the agent was running the command `{}`, so the run could not continue. Ensure the agent is not asked to run commands or source scripts that can exit the shell.", command)
             ),
             Self::CloudStartupFailed(msg) => write!(f, "{msg}"),
             Self::ChatGPTSubscriptionError {

@@ -36,7 +36,6 @@ use crate::ui_components::blended_colors;
 use crate::view_components::action_button::{ActionButton, PrimaryTheme};
 use crate::workspaces::user_workspaces::UserWorkspaces;
 
-const HEADER_TEXT: &str = "Suggested rule";
 const MAX_EDITOR_HEIGHT: f32 = 240.;
 
 pub fn init(app: &mut AppContext) {
@@ -94,7 +93,7 @@ impl SuggestedRuleModal {
 
         let view_handle = view.clone();
         let modal = ctx.add_typed_action_view(|ctx| {
-            Modal::new(Some(HEADER_TEXT.to_string()), view, ctx)
+            Modal::new(Some(light_i18n::tr("Suggested rule").to_string()), view, ctx)
                 .with_modal_style(UiComponentStyles {
                     width: Some(510.),
                     background: Some(background.into()),
@@ -246,7 +245,7 @@ impl SuggestedRuleView {
         ctx.subscribe_to_model(&network_status, |me, _, _event, ctx| {
             let is_edit_allowed = me.is_edit_allowed(ctx);
             let tooltip = if !is_edit_allowed {
-                Some("Editing is disabled while offline.".to_string())
+                Some(light_i18n::tr("Editing is disabled while offline.").to_string())
             } else {
                 None
             };
@@ -308,12 +307,12 @@ impl SuggestedRuleView {
         });
 
         let add_button = ctx.add_typed_action_view(|_| {
-            ActionButton::new("Add rule", PrimaryTheme)
+            ActionButton::new(light_i18n::tr("Add rule"), PrimaryTheme)
                 .on_click(|ctx| ctx.dispatch_typed_action(SuggestedRuleDialogAction::Add))
         });
 
         let edit_button = ctx.add_typed_action_view(|_| {
-            ActionButton::new("Edit rule", PrimaryTheme)
+            ActionButton::new(light_i18n::tr("Edit rule"), PrimaryTheme)
                 .on_click(|ctx| ctx.dispatch_typed_action(SuggestedRuleDialogAction::Edit))
         });
 
@@ -559,7 +558,7 @@ impl SuggestedRuleView {
         let editor_margin = 16.;
 
         Flex::column()
-            .with_child(self.render_label("Name".to_string(), appearance))
+            .with_child(self.render_label(light_i18n::tr("Name").to_string(), appearance))
             .with_child(
                 Container::new(ChildView::new(&self.name_editor).finish())
                     .with_background(editor_bg)
@@ -570,7 +569,7 @@ impl SuggestedRuleView {
                     .with_margin_bottom(editor_margin)
                     .finish(),
             )
-            .with_child(self.render_label("Rule".to_string(), appearance))
+            .with_child(self.render_label(light_i18n::tr("Rule").to_string(), appearance))
             .with_child(
                 ConstrainedBox::new(
                     Container::new(
