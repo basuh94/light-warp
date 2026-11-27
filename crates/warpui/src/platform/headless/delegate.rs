@@ -2,29 +2,12 @@ use std::mem::ManuallyDrop;
 use std::sync::{Arc, OnceLock};
 use std::thread;
 
-#[cfg(target_os = "macos")]
-use objc2_av_foundation::{AVAuthorizationStatus, AVCaptureDevice, AVMediaTypeAudio};
 use parking_lot::Mutex;
 
 use super::event_loop::{AppEvent, EventSender};
 use crate::clipboard::InMemoryClipboard;
 use crate::notification::{NotificationSendError, RequestPermissionsOutcome};
 use crate::platform::{self, Cursor};
-
-#[cfg(target_os = "macos")]
-fn macos_microphone_access_state() -> platform::MicrophoneAccessState {
-    let media_type = unsafe { AVMediaTypeAudio };
-    let Some(media_type) = media_type else {
-        return platform::MicrophoneAccessState::NotDetermined;
-    };
-    let status = unsafe { AVCaptureDevice::authorizationStatusForMediaType(media_type) };
-    match status {
-        AVAuthorizationStatus::Restricted => platform::MicrophoneAccessState::Restricted,
-        AVAuthorizationStatus::Denied => platform::MicrophoneAccessState::Denied,
-        AVAuthorizationStatus::Authorized => platform::MicrophoneAccessState::Authorized,
-        _ => platform::MicrophoneAccessState::NotDetermined,
-    }
-}
 
 /// Stores the ID of the application's main thread, which we can reference
 /// to determine if a given thread is the main thread or not.
@@ -83,12 +66,6 @@ impl platform::Delegate for AppDelegate {
     }
 
     fn open_url(&self, url: &str) -> bool {
-        #[cfg(target_os = "macos")]
-        {
-            // Use macOS platform implementation
-            crate::platform::mac::Window::open_url(url)
-        }
-        #[cfg(not(target_os = "macos"))]
         {
             // Reuse the winit implementation for non-mac platforms
             crate::windowing::winit::delegate::open_url_in_system(url)
@@ -204,14 +181,7 @@ impl platform::Delegate for AppDelegate {
         if !self.query_microphone_access {
             return platform::MicrophoneAccessState::Denied;
         }
-        #[cfg(target_os = "macos")]
-        {
-            macos_microphone_access_state()
-        }
-        #[cfg(not(target_os = "macos"))]
-        {
-            platform::MicrophoneAccessState::Authorized
-        }
+        { platform::MicrophoneAccessState::Authorized }
     }
 
     fn is_gui(&self) -> bool {

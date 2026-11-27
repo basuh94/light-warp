@@ -10,7 +10,6 @@ pub use resources::{Resources, adapter_has_rendering_offset_bug};
 use wgpu::wgt::WgpuHasDisplayHandle;
 
 use crate::platform::GraphicsBackend;
-#[cfg(not(target_family = "wasm"))]
 use crate::{rendering::GPUPowerPreference, windowing};
 
 static WGPU_INSTANCE: LazyLock<Mutex<Option<Arc<wgpu::Instance>>>> = LazyLock::new(Mutex::default);
@@ -111,22 +110,15 @@ pub fn init_wgpu_instance(display_handle: Box<dyn WgpuHasDisplayHandle>) {
         });
     };
 
-    cfg_if::cfg_if! {
-        if #[cfg(target_family = "wasm")] {
-            // On wasm, synchronously initialize the wgpu static variable.
-            init_static_var(None);
-        } else {
-            // On other platforms, initialize the wgpu static variable in a separate thread to parallelize
-            // wgpu instance initialization with other application initialization.  We block until we have
-            // acquired the lock on the instance, ensuring that this function doesn't return until it is
-            // safe to call `get_wgpu_instance()`.
-            let (tx, rx) = std::sync::mpsc::channel();
-            std::thread::spawn(move || {
-                init_static_var(Some(tx));
-            });
-            let _ = rx.recv();
-        }
-    }
+    // On other platforms, initialize the wgpu static variable in a separate thread to parallelize
+    // wgpu instance initialization with other application initialization.  We block until we have
+    // acquired the lock on the instance, ensuring that this function doesn't return until it is
+    // safe to call `get_wgpu_instance()`.
+    let (tx, rx) = std::sync::mpsc::channel();
+    std::thread::spawn(move || {
+        init_static_var(Some(tx));
+    });
+    let _ = rx.recv();
 }
 
 /// Helper function to get a [`wgpu::Instance`].
@@ -148,7 +140,6 @@ fn wgpu_backend_options() -> wgpu::Backends {
     wgpu::Backends::from_env().unwrap_or(wgpu::Backends::all())
 }
 
-#[cfg(not(target_family = "wasm"))]
 pub async fn print_wgpu_adapters(
     gpu_power_preference: GPUPowerPreference,
     backend_preference: Option<GraphicsBackend>,
@@ -192,20 +183,12 @@ pub async fn print_wgpu_adapters(
 /// Returns `true` if a low power GPU is available for rendering. Typically, this is true for
 /// machines with two GPUs -- a dedicated discrete high-performance GPU and a lower power
 /// integrated GPU.
-#[cfg(not(target_family = "wasm"))]
 pub async fn is_low_power_gpu_available() -> bool {
     get_wgpu_instance()
         .enumerate_adapters(::wgpu::Backends::all())
         .await
         .iter()
         .any(|adapter| adapter.get_info().device_type == ::wgpu::DeviceType::IntegratedGpu)
-}
-
-#[cfg(target_family = "wasm")]
-pub async fn is_low_power_gpu_available() -> bool {
-    // We return false here because we only support WebGL (not WebGPU) on the web and the former
-    // does not allow configuration of a low or high power GPU.
-    false
 }
 
 #[cfg(windows)]
@@ -225,7 +208,6 @@ fn get_dx12_shader_compiler() -> Option<wgpu::Dx12Compiler> {
 }
 
 /// Converts a [`wgpu::Backend`] to a [`GraphicsBackend`].
-#[cfg_attr(target_os = "macos", expect(dead_code))]
 pub(crate) fn from_wgpu_backend(backend: wgpu::Backend) -> GraphicsBackend {
     match backend {
         wgpu::Backend::Noop => GraphicsBackend::Empty,

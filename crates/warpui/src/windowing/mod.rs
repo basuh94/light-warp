@@ -1,4 +1,3 @@
-#[cfg(winit)]
 pub mod winit;
 
 pub use warpui_core::windowing::*;

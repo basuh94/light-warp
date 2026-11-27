@@ -16,9 +16,6 @@ use warpui_core::fonts::{
 };
 use warpui_core::rendering;
 
-#[cfg(target_os = "macos")]
-use crate::platform::mac::AutoreleasePoolGuard;
-
 /// A simpler rasterizer backed by font-kit.
 pub(crate) struct Rasterizer {
     fonts: DashMap<FontId, Arc<Font>>,
@@ -97,8 +94,6 @@ impl Rasterizer {
         // drains. A local pool bounds that peak without relying on the outer
         // pool. The guard drains on `Drop`, covering the error paths from `?`
         // below and any panics from `font_kit`.
-        #[cfg(target_os = "macos")]
-        let _pool = AutoreleasePoolGuard::new();
 
         let bounds =
             self.glyph_raster_bounds(font_id, point_size, glyph_id, scale, glyph_config)?;

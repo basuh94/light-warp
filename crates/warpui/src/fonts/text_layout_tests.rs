@@ -5,13 +5,10 @@ use pathfinder_color::ColorU;
 
 use crate::elements::DEFAULT_UI_LINE_HEIGHT_RATIO;
 use crate::fonts::{FamilyId, Properties, Style, Weight};
-#[cfg(target_os = "macos")]
-use crate::platform::mac::fonts::FontDB;
 use crate::platform::{FontDB as _, LineStyle};
 use crate::text_layout::{
     ClipConfig, DEFAULT_TOP_BOTTOM_RATIO, Line, StyleAndFont, TextAlignment, TextFrame, TextStyle,
 };
-#[cfg(not(target_os = "macos"))]
 use crate::windowing::winit::fonts::FontDB;
 
 const FONT_SIZE: f32 = 16.;
@@ -253,38 +250,6 @@ fn test_multiline_caret_positions() -> Result<()> {
     Ok(())
 }
 
-#[cfg_attr(
-    not(macos),
-    ignore = "discrepancy in winit vs. MacOS text layout implementation: glyph indices do not match"
-)]
-#[test]
-fn test_layout_str_infinite_height() -> Result<()> {
-    let (font_db, font_family) = init_fonts();
-
-    // Ensure layout_text terminates even if there's an unbounded `max_height`.
-    let frame = font_db.text_layout_system().layout_text(
-        "hello world",
-        LineStyle {
-            font_size: 14.,
-            line_height_ratio: 1.2,
-            baseline_ratio: DEFAULT_TOP_BOTTOM_RATIO,
-            fixed_width_tab_size: None,
-        },
-        &[(
-            0..12,
-            StyleAndFont::new(font_family, Properties::default(), TextStyle::new()),
-        )],
-        0.,
-        f32::INFINITY,
-        Default::default(),
-        None,
-    );
-
-    assert_eq!(frame.lines().len(), 10);
-
-    Ok(())
-}
-
 #[test]
 fn test_layout_str() -> Result<()> {
     let (font_db, font_family) = init_fonts();
@@ -378,50 +343,6 @@ fn test_layout_str_with_style() -> Result<()> {
     assert_eq!(
         foreground_colors,
         vec![Some(ColorU::from_u32(0xFF0000FF)), None, None, None]
-    );
-
-    Ok(())
-}
-
-#[cfg_attr(
-    not(macos),
-    ignore = "discrepancy in winit vs. MacOS text layout implementation: glyph indices do not match"
-)]
-#[test]
-fn test_multiline_glyph_indices() -> Result<()> {
-    let (font_db, font_family) = init_fonts();
-
-    let text = "eel\n\nivy\nthesaurus\n\nclingy";
-
-    let frame = font_db.text_layout_system().layout_text(
-        text,
-        LineStyle {
-            font_size: 16.0,
-            line_height_ratio: 1.2,
-            baseline_ratio: DEFAULT_TOP_BOTTOM_RATIO,
-            fixed_width_tab_size: None,
-        },
-        &[(
-            0..26,
-            StyleAndFont::new(font_family, Properties::default(), TextStyle::new()),
-        )],
-        10000.0,
-        10000.0,
-        TextAlignment::Left,
-        None,
-    );
-
-    let glyph_indices = collect_glyph_indices(&frame);
-    assert_eq!(
-        glyph_indices,
-        vec![
-            (0..4).collect_vec(),
-            (4..5).collect_vec(),
-            (5..9).collect_vec(),
-            (9..19).collect_vec(),
-            (19..20).collect_vec(),
-            (20..26).collect_vec(),
-        ],
     );
 
     Ok(())
@@ -529,14 +450,8 @@ fn test_caret_positions() -> Result<()> {
     );
 
     // On MacOS, there should be a caret position for each character.
-    #[cfg(target_os = "macos")]
-    assert_eq!(
-        collect_line_caret_position_starts(&line),
-        (0..16).collect::<Vec<usize>>()
-    );
 
     // With cosmic-text, we only get one caret position per visual glyph.
-    #[cfg(not(target_os = "macos"))]
     assert_eq!(
         collect_line_caret_position_starts(&line),
         [0, 2, 3, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
@@ -544,211 +459,6 @@ fn test_caret_positions() -> Result<()> {
 
     // On MacOS, there is a caret for the 3rd character at the 3rd position, even though
     // the first 2 characters ("fl") are represented with 1 glyph.
-    #[cfg(target_os = "macos")]
-    assert_eq!(
-        line.caret_position_for_index(3),
-        line.caret_positions[3].position_in_line
-    );
-
-    Ok(())
-}
-
-#[cfg_attr(
-    not(macos),
-    ignore = "discrepancy in winit vs. MacOS text layout implementation: glyph indices do not match"
-)]
-#[test]
-fn test_layout_text() -> Result<()> {
-    let (font_db, font_family) = init_fonts();
-
-    let text = "This is a sample text layout!";
-    let frame = font_db.text_layout_system().layout_text(
-        text,
-        LineStyle {
-            font_size: 16.0,
-            line_height_ratio: 1.2,
-            baseline_ratio: DEFAULT_TOP_BOTTOM_RATIO,
-            fixed_width_tab_size: None,
-        },
-        &[(
-            0..text.encode_utf16().count(),
-            StyleAndFont::new(font_family, Properties::default(), TextStyle::new()),
-        )],
-        100.,     /* max_width */
-        f32::MAX, /* max_height */
-        Default::default(),
-        None,
-    );
-
-    // The text should contain multiple lines since it can't fit in 100 pixels on the first
-    // line.
-    assert_eq!(frame.lines().len(), 3);
-
-    // The text should be wrapped over 4 lines and look like this:
-    // "This is a"
-    // "sample text"
-    // "layout!"
-    assert_eq!(
-        collect_glyph_indices(&frame),
-        vec![
-            vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-            vec![10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21],
-            vec![22, 23, 24, 25, 26, 27, 28],
-        ]
-    );
-
-    Ok(())
-}
-
-#[cfg_attr(
-    not(macos),
-    ignore = "discrepancy in winit vs. MacOS text layout implementation: glyph indices do not match"
-)]
-#[test]
-fn test_layout_text_first_line_head_indent() -> Result<()> {
-    // Similar test to above, except we add in a left head indent (with reduced max width)!
-    let (font_db, font_family) = init_fonts();
-
-    let text = "This is a sample text layout!";
-    let frame = font_db.text_layout_system().layout_text(
-        text,
-        LineStyle {
-            font_size: 16.0,
-            line_height_ratio: 1.2,
-            baseline_ratio: DEFAULT_TOP_BOTTOM_RATIO,
-            fixed_width_tab_size: None,
-        },
-        &[(
-            0..text.encode_utf16().count(),
-            StyleAndFont::new(font_family, Properties::default(), TextStyle::new()),
-        )],
-        80.,      /* max_width */
-        f32::MAX, /* max_height */
-        Default::default(),
-        Some(50.), /* first_line_head_indent */
-    );
-
-    // The text should contain multiple lines since we have a 50px left head indent on the first
-    // line and then each line only has 80px.
-    assert_eq!(frame.lines().len(), 4);
-
-    assert_eq!(
-        collect_glyph_indices(&frame),
-        vec![
-            vec![0, 1, 2],
-            vec![3, 4, 5, 6, 7, 8, 9],
-            vec![10, 11, 12, 13, 14, 15, 16],
-            vec![17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28],
-        ]
-    );
-
-    Ok(())
-}
-
-#[cfg_attr(
-    not(macos),
-    ignore = "discrepancy in winit vs. MacOS text layout implementation: glyph indices do not match"
-)]
-#[test]
-fn test_layout_text_large_first_line_head_indent() -> Result<()> {
-    // Similar test to above, except we have a large first line head indent which goes beyond the
-    // max_width of the first line! We expect an empty line at the start to account for this (post-layout).
-    let (font_db, font_family) = init_fonts();
-
-    let text = "This is a sample text layout!";
-    let frame = font_db.text_layout_system().layout_text(
-        text,
-        LineStyle {
-            font_size: 16.0,
-            line_height_ratio: 1.2,
-            baseline_ratio: DEFAULT_TOP_BOTTOM_RATIO,
-            fixed_width_tab_size: None,
-        },
-        &[(
-            0..text.encode_utf16().count(),
-            StyleAndFont::new(font_family, Properties::default(), TextStyle::new()),
-        )],
-        80.,      /* max_width */
-        f32::MAX, /* max_height */
-        Default::default(),
-        Some(80.), /* first_line_head_indent */
-    );
-
-    // We expect 1 empty line at the start and then 7 lines of content.
-    assert_eq!(frame.lines().len(), 4);
-
-    // CoreText leaves newline glyphs in the laid-out lines.
-    #[cfg(target_os = "macos")]
-    assert_eq!(
-        collect_glyph_indices(&frame),
-        vec![
-            vec![], // first line head indent takes up entire line!
-            vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-            vec![10, 11, 12, 13, 14, 15, 16],
-            vec![17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28],
-        ]
-    );
-
-    // cosmic-text strips newline glyphs from the laid-out lines.
-    #[cfg(not(target_os = "macos"))]
-    assert_eq!(
-        collect_glyph_indices(&frame),
-        vec![
-            vec![], // first line head indent takes up entire line!
-            vec![0, 1, 2, 3, 4, 5, 6, 7, 8],
-            vec![10, 11, 12, 13, 14, 15],
-            vec![17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28],
-        ]
-    );
-
-    Ok(())
-}
-
-#[cfg_attr(
-    not(macos),
-    ignore = "discrepancy in winit vs. MacOS text layout implementation: glyph indices do not match"
-)]
-#[test]
-fn test_layout_text_last_line_clipped() -> Result<()> {
-    let (font_db, font_family) = init_fonts();
-
-    let text = "This text doesn't fit in one line";
-
-    let max_width = 100.;
-    let frame = font_db.text_layout_system().layout_text(
-        text,
-        LineStyle {
-            font_size: 16.0,
-            line_height_ratio: 1.2,
-            baseline_ratio: DEFAULT_TOP_BOTTOM_RATIO,
-            fixed_width_tab_size: None,
-        },
-        &[(
-            0..text.encode_utf16().count(),
-            StyleAndFont::new(font_family, Properties::default(), TextStyle::new()),
-        )],
-        max_width,
-        30., /* max_height */
-        Default::default(),
-        None,
-    );
-
-    // The text should only fit one line.
-    assert_eq!(frame.lines().len(), 1);
-
-    // The text is one line long and should be clipped like so: "this text doesn't...".
-    // Note that the contents are not clipped, but the width exceeding the max width
-    // and the non-none clip direction indicate that when we paint, this is clipped.
-    assert_eq!(
-        collect_glyph_indices(&frame),
-        vec![[
-            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24,
-            25, 26, 27, 28, 29, 30, 31, 32
-        ],]
-    );
-    let first_line = frame.lines().first().unwrap();
-    assert!(first_line.width > max_width);
-    assert!(first_line.clip_config.is_some());
 
     Ok(())
 }
@@ -787,19 +497,8 @@ fn test_layout_text_first_line_indent_small() -> Result<()> {
     assert_eq!(no_indent_frame.lines().len(), 4);
 
     // CoreText leaves newline glyphs in the laid-out lines.
-    #[cfg(target_os = "macos")]
-    assert_eq!(
-        collect_glyph_indices(&no_indent_frame),
-        vec![
-            vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9],       // 9 is whitespace.
-            vec![10, 11, 12, 13, 14, 15, 16, 17, 18], // 18 is whitespace.
-            vec![19, 20, 21, 22, 23, 24, 25],         // 25 is whitespace.
-            vec![26, 27, 28, 29, 30],
-        ]
-    );
 
     // cosmic-text strips newline glyphs from the laid-out lines.
-    #[cfg(not(target_os = "macos"))]
     assert_eq!(
         collect_glyph_indices(&no_indent_frame),
         vec![
@@ -829,19 +528,8 @@ fn test_layout_text_first_line_indent_small() -> Result<()> {
     assert_eq!(small_indent_frame.lines().len(), 4);
 
     // CoreText leaves newline glyphs in the laid-out lines.
-    #[cfg(target_os = "macos")]
-    assert_eq!(
-        collect_glyph_indices(&small_indent_frame),
-        vec![
-            vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-            vec![10, 11, 12, 13, 14, 15, 16, 17, 18],
-            vec![19, 20, 21, 22, 23, 24, 25],
-            vec![26, 27, 28, 29, 30],
-        ]
-    );
 
     // cosmic-text strips newline glyphs from the laid-out lines.
-    #[cfg(not(target_os = "macos"))]
     assert_eq!(
         collect_glyph_indices(&small_indent_frame),
         vec![
@@ -871,20 +559,8 @@ fn test_layout_text_first_line_indent_small() -> Result<()> {
     assert_eq!(half_indent_frame.lines().len(), 5);
 
     // CoreText leaves newline glyphs in the laid-out lines.
-    #[cfg(target_os = "macos")]
-    assert_eq!(
-        collect_glyph_indices(&half_indent_frame),
-        vec![
-            vec![0, 1, 2, 3, 4, 5], // Fewer glyphs fit on this line. 5 is whitespace.
-            vec![6, 7, 8, 9, 10, 11, 12, 13], // 13 is whitespace.
-            vec![14, 15, 16, 17, 18],
-            vec![19, 20, 21, 22, 23, 24, 25],
-            vec![26, 27, 28, 29, 30],
-        ]
-    );
 
     // cosmic-text strips newline glyphs from the laid-out lines.
-    #[cfg(not(target_os = "macos"))]
     assert_eq!(
         collect_glyph_indices(&half_indent_frame),
         vec![
@@ -940,19 +616,8 @@ fn test_layout_text_first_line_indent_medium() -> Result<()> {
     assert_eq!(no_indent_frame.lines().len(), 4);
 
     // CoreText leaves newline glyphs in the laid-out lines.
-    #[cfg(target_os = "macos")]
-    assert_eq!(
-        collect_glyph_indices(&no_indent_frame),
-        vec![
-            vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-            vec![10, 11, 12, 13, 14, 15, 16, 17, 18],
-            vec![19, 20, 21, 22, 23, 24, 25],
-            vec![26, 27, 28, 29, 30],
-        ]
-    );
 
     // cosmic-text strips newline glyphs from the laid-out lines.
-    #[cfg(not(target_os = "macos"))]
     assert_eq!(
         collect_glyph_indices(&no_indent_frame),
         vec![
@@ -983,20 +648,8 @@ fn test_layout_text_first_line_indent_medium() -> Result<()> {
     assert_eq!(overflow_indent_frame.lines().len(), 5);
 
     // CoreText leaves newline glyphs in the laid-out lines.
-    #[cfg(target_os = "macos")]
-    assert_eq!(
-        collect_glyph_indices(&overflow_indent_frame),
-        vec![
-            vec![0, 1], // Only a few glyphs fit.
-            vec![2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
-            vec![14, 15, 16, 17, 18],
-            vec![19, 20, 21, 22, 23, 24, 25],
-            vec![26, 27, 28, 29, 30],
-        ]
-    );
 
     // cosmic-text strips newline glyphs from the laid-out lines.
-    #[cfg(not(target_os = "macos"))]
     assert_eq!(
         collect_glyph_indices(&overflow_indent_frame),
         vec![
@@ -1051,19 +704,8 @@ fn test_layout_text_first_line_indent_large() -> Result<()> {
     assert_eq!(no_indent_frame.lines().len(), 4);
 
     // CoreText leaves newline glyphs in the laid-out lines.
-    #[cfg(target_os = "macos")]
-    assert_eq!(
-        collect_glyph_indices(&no_indent_frame),
-        vec![
-            vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-            vec![10, 11, 12, 13, 14, 15, 16, 17, 18],
-            vec![19, 20, 21, 22, 23, 24, 25],
-            vec![26, 27, 28, 29, 30],
-        ]
-    );
 
     // cosmic-text strips newline glyphs from the laid-out lines.
-    #[cfg(not(target_os = "macos"))]
     assert_eq!(
         collect_glyph_indices(&no_indent_frame),
         vec![
@@ -1090,20 +732,8 @@ fn test_layout_text_first_line_indent_large() -> Result<()> {
     // The first line is left entirely blank since no glyphs fit on it.
 
     // CoreText leaves newline glyphs in the laid-out lines.
-    #[cfg(target_os = "macos")]
-    assert_eq!(
-        collect_glyph_indices(&overflow_indent_frame),
-        vec![
-            vec![], // No glyphs fit on this line.
-            vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-            vec![10, 11, 12, 13, 14, 15, 16, 17, 18],
-            vec![19, 20, 21, 22, 23, 24, 25],
-            vec![26, 27, 28, 29, 30],
-        ]
-    );
 
     // cosmic-text strips newline glyphs from the laid-out lines.
-    #[cfg(not(target_os = "macos"))]
     assert_eq!(
         collect_glyph_indices(&overflow_indent_frame),
         vec![
@@ -1137,20 +767,8 @@ fn test_layout_text_first_line_indent_large() -> Result<()> {
     assert_eq!(big_indent_frame.lines().len(), 5);
 
     // CoreText leaves newline glyphs in the laid-out lines.
-    #[cfg(target_os = "macos")]
-    assert_eq!(
-        collect_glyph_indices(&big_indent_frame),
-        vec![
-            vec![], // No glyphs fit on this line.
-            vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-            vec![10, 11, 12, 13, 14, 15, 16, 17, 18],
-            vec![19, 20, 21, 22, 23, 24, 25],
-            vec![26, 27, 28, 29, 30],
-        ]
-    );
 
     // cosmic-text strips newline glyphs from the laid-out lines.
-    #[cfg(not(target_os = "macos"))]
     assert_eq!(
         collect_glyph_indices(&big_indent_frame),
         vec![
@@ -1174,248 +792,7 @@ fn test_layout_text_first_line_indent_large() -> Result<()> {
 
 // TODO(PLAT-779): check all line bounds once bidirectional wrapping is fixed in cosmic-text.
 // See https://github.com/pop-os/cosmic-text/issues/252.
-#[cfg_attr(
-    not(macos),
-    ignore = "discrepancy in winit vs. MacOS text layout implementation: glyph indices do not match"
-)]
-#[test]
-fn test_layout_text_first_line_indent_small_bidirectional() -> Result<()> {
-    let (font_db, roboto) = init_fonts();
-
-    let text = "brekkie, إفطار, lunch (غداء) and dinner - عشاء";
-    //          0123456783210945678901265437890123456789015432
-    // RTL spans:       |-----|       |----|             |----|
-    let line_style = LineStyle {
-        font_size: FONT_SIZE,
-        line_height_ratio: DEFAULT_UI_LINE_HEIGHT_RATIO,
-        baseline_ratio: DEFAULT_TOP_BOTTOM_RATIO,
-        fixed_width_tab_size: None,
-    };
-    let style_runs = [(
-        0..text.encode_utf16().count(),
-        StyleAndFont::new(roboto, Properties::default(), TextStyle::new()),
-    )];
-
-    // First, lay out the text with no head indent.
-    let no_indent_frame = font_db.text_layout_system().layout_text(
-        text,
-        line_style,
-        &style_runs,
-        FRAME_WIDTH,
-        FRAME_HEIGHT,
-        Default::default(),
-        None,
-    );
-
-    // The text should contain multiple lines.
-    // The first line has about the same amount of content as the others,
-    // since there's no head indent.
-    assert_eq!(no_indent_frame.lines().len(), 5);
-    assert!(first_line_bounded(&no_indent_frame, 0., FRAME_WIDTH));
-    // assert!(all_lines_bounded(&no_indent_frame, FRAME_WIDTH));
-
-    // Lay out the text with a 5px head indent.
-    let small_indent_frame = font_db.text_layout_system().layout_text(
-        text,
-        line_style,
-        &style_runs,
-        FRAME_WIDTH,
-        FRAME_HEIGHT,
-        Default::default(),
-        Some(5.),
-    );
-
-    // The first line has about the same amount of content as the others,
-    // since the head indent is small.
-    assert_eq!(small_indent_frame.lines().len(), 5);
-    assert!(first_line_bounded(&small_indent_frame, 5., FRAME_WIDTH));
-    // assert!(all_lines_bounded(&small_indent_frame, FRAME_WIDTH));
-
-    // Lay out the text with a 40px head indent,
-    // which is half the width of the frame.
-    let half_indent_frame = font_db.text_layout_system().layout_text(
-        text,
-        line_style,
-        &style_runs,
-        FRAME_WIDTH,
-        FRAME_HEIGHT,
-        Default::default(),
-        Some(FRAME_WIDTH / 2.),
-    );
-
-    // The text contains an additional line to accommodate the indent.
-    assert_eq!(half_indent_frame.lines().len(), 5);
-    assert!(first_line_bounded(
-        &half_indent_frame,
-        FRAME_WIDTH / 2.,
-        FRAME_WIDTH,
-    ));
-    // assert!(all_lines_bounded(&half_indent_frame, FRAME_WIDTH));
-
-    Ok(())
-}
-
 // TODO(PLAT-779): check all line bounds once bidirectional wrapping is fixed in cosmic-text.
 // See https://github.com/pop-os/cosmic-text/issues/252.
-#[cfg_attr(
-    not(macos),
-    ignore = "discrepancy in winit vs. MacOS text layout implementation: glyph indices do not match"
-)]
-#[test]
-fn test_layout_text_first_line_indent_medium_bidirectional() -> Result<()> {
-    let (font_db, roboto) = init_fonts();
-
-    let text = "brekkie, إفطار, lunch (غداء) and dinner - عشاء";
-    //          0123456783210945678901265437890123456789015432
-    // RTL spans:       |-----|       |----|             |----|
-    let line_style = LineStyle {
-        font_size: FONT_SIZE,
-        line_height_ratio: DEFAULT_UI_LINE_HEIGHT_RATIO,
-        baseline_ratio: DEFAULT_TOP_BOTTOM_RATIO,
-        fixed_width_tab_size: None,
-    };
-    let style_runs = [(
-        0..text.encode_utf16().count(),
-        StyleAndFont::new(roboto, Properties::default(), TextStyle::new()),
-    )];
-
-    // First, lay out the text with no head indent.
-    let no_indent_frame = font_db.text_layout_system().layout_text(
-        text,
-        line_style,
-        &style_runs,
-        FRAME_WIDTH,
-        FRAME_HEIGHT,
-        Default::default(),
-        None,
-    );
-
-    // The text should contain multiple lines.
-    // The first line has about the same amount of content as the others,
-    // since there's no head indent.
-    assert_eq!(no_indent_frame.lines().len(), 5);
-    assert!(first_line_bounded(&no_indent_frame, 0., FRAME_WIDTH));
-    // assert!(all_lines_bounded(&no_indent_frame, FRAME_WIDTH));
-
-    // Lay out the text with a head indent that's 15px smaller than
-    // the width of the frame.
-    let overflow_indent_frame = font_db.text_layout_system().layout_text(
-        text,
-        line_style,
-        &style_runs,
-        FRAME_WIDTH,
-        FRAME_HEIGHT,
-        Default::default(),
-        Some(FRAME_WIDTH - 20.),
-    );
-
-    // The first line should have some glyphs on it, but not the whole
-    // first word.
-    assert_eq!(overflow_indent_frame.lines().len(), 5);
-    assert!(first_line_bounded(
-        &overflow_indent_frame,
-        FRAME_WIDTH - 20.,
-        FRAME_WIDTH,
-    ));
-    // assert!(all_lines_bounded(&overflow_indent_frame, FRAME_WIDTH));
-
-    Ok(())
-}
-
 // TODO(PLAT-779): check all line bounds once bidirectional wrapping is fixed in cosmic-text.
 // See https://github.com/pop-os/cosmic-text/issues/252.
-#[cfg_attr(
-    not(macos),
-    ignore = "discrepancy in winit vs. MacOS text layout implementation: glyph indices do not match"
-)]
-#[test]
-fn test_layout_text_first_line_indent_large_bidirectional() -> Result<()> {
-    let (font_db, roboto) = init_fonts();
-
-    let text = "brekkie, إفطار, lunch (غداء) and dinner - عشاء";
-    //          0123456783210945678901265437890123456789015432
-    // RTL spans:       |-----|       |----|             |----|
-    let line_style = LineStyle {
-        font_size: FONT_SIZE,
-        line_height_ratio: DEFAULT_UI_LINE_HEIGHT_RATIO,
-        baseline_ratio: DEFAULT_TOP_BOTTOM_RATIO,
-        fixed_width_tab_size: None,
-    };
-    let style_runs = [(
-        0..text.encode_utf16().count(),
-        StyleAndFont::new(roboto, Properties::default(), TextStyle::new()),
-    )];
-
-    // First, lay out the text with no head indent.
-    let no_indent_frame = font_db.text_layout_system().layout_text(
-        text,
-        line_style,
-        &style_runs,
-        FRAME_WIDTH,
-        FRAME_HEIGHT,
-        Default::default(),
-        Some(0.),
-    );
-
-    // The text should contain multiple lines.
-    // The first line has about the same amount of content as the others,
-    // since there's no head indent.
-    assert_eq!(no_indent_frame.lines().len(), 5);
-    assert!(first_line_bounded(&no_indent_frame, 0., FRAME_WIDTH));
-    // assert!(all_lines_bounded(&no_indent_frame, FRAME_WIDTH));
-
-    // Lay out the text with a head indent that's 5px bigger than the width of the frame.
-    let overflow_indent_frame = font_db.text_layout_system().layout_text(
-        text,
-        line_style,
-        &style_runs,
-        FRAME_WIDTH,
-        FRAME_HEIGHT,
-        Default::default(),
-        Some(FRAME_WIDTH + 5.),
-    );
-
-    // The first line is left entirely blank since no glyphs fit on it.
-    assert_eq!(overflow_indent_frame.lines().len(), 6);
-    assert!(
-        collect_glyph_indices(&overflow_indent_frame)
-            .first()
-            .unwrap()
-            .is_empty(),
-    );
-    assert!(first_line_bounded(
-        &overflow_indent_frame,
-        FRAME_WIDTH + 5.,
-        FRAME_WIDTH,
-    ));
-    // assert!(all_lines_bounded(&overflow_indent_frame, FRAME_WIDTH));
-
-    // Lay out the text with a 79px head indent,
-    // which spans almost the entire width of the frame.
-    let big_indent_frame = font_db.text_layout_system().layout_text(
-        text,
-        line_style,
-        &style_runs,
-        FRAME_WIDTH,
-        FRAME_HEIGHT,
-        Default::default(),
-        Some(FRAME_WIDTH - 0.1),
-    );
-
-    // The first line is left entirely blank since no glyphs fit on it.
-    assert_eq!(big_indent_frame.lines().len(), 6);
-    assert!(
-        collect_glyph_indices(&big_indent_frame)
-            .first()
-            .unwrap()
-            .is_empty(),
-    );
-    assert!(first_line_bounded(
-        &big_indent_frame,
-        FRAME_WIDTH - 0.1,
-        FRAME_WIDTH,
-    ));
-    // assert!(all_lines_bounded(&big_indent_frame, FRAME_WIDTH));
-
-    Ok(())
-}
