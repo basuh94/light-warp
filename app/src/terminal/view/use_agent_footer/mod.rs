@@ -4,8 +4,8 @@
 //! offering users the option to bring in the agent. For CLI agent commands (e.g., Claude Code,
 //! Gemini CLI, Codex), it displays a specialized footer with additional functionality.
 
-use light_i18n::tr;
 use base64::Engine;
+use light_i18n::tr;
 use warpui::clipboard::{ClipboardContent, ImageData};
 
 use crate::ai::agent::ImageContext;

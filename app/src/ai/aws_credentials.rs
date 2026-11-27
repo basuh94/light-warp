@@ -45,7 +45,11 @@ impl std::fmt::Display for LoadAwsCredentialsError {
                 write!(f, "{}", light_i18n::tr("No AWS credentials configured"))
             }
             Self::CredentialsLoadFailed(msg) => {
-                write!(f, "{}", light_i18n::tr!("Failed to load AWS credentials: {}", msg))
+                write!(
+                    f,
+                    "{}",
+                    light_i18n::tr!("Failed to load AWS credentials: {}", msg)
+                )
             }
         }
     }

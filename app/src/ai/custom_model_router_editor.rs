@@ -46,7 +46,6 @@ use crate::view_components::action_button::{
 use crate::view_components::dropdown::DropdownAction;
 use crate::workspaces::user_workspaces::UserWorkspaces;
 
-
 const EDITOR_CONTENT_WIDTH: f32 = 340.;
 const MODEL_MENU_WIDTH: f32 = 340.;
 
@@ -456,12 +455,18 @@ impl CustomRouterEditorView {
             RouterEditorType::Complexity => {
                 for (field, val) in [
                     (light_i18n::tr("Default"), self.complexity_default.as_str()),
-                    (light_i18n::tr("Easy"), self.complexity_easy.as_deref().unwrap_or_default()),
+                    (
+                        light_i18n::tr("Easy"),
+                        self.complexity_easy.as_deref().unwrap_or_default(),
+                    ),
                     (
                         light_i18n::tr("Medium"),
                         self.complexity_medium.as_deref().unwrap_or_default(),
                     ),
-                    (light_i18n::tr("Hard"), self.complexity_hard.as_deref().unwrap_or_default()),
+                    (
+                        light_i18n::tr("Hard"),
+                        self.complexity_hard.as_deref().unwrap_or_default(),
+                    ),
                 ] {
                     if val.is_empty() {
                         self.save_error = Some(light_i18n::tr!("{} model is required.", field));
@@ -478,7 +483,8 @@ impl CustomRouterEditorView {
             }
             RouterEditorType::Prompt => {
                 if self.prompt_default_model.is_empty() {
-                    self.save_error = Some(light_i18n::tr("A default model is required.").to_string());
+                    self.save_error =
+                        Some(light_i18n::tr("A default model is required.").to_string());
                     ctx.notify();
                     return;
                 }
@@ -503,7 +509,10 @@ impl CustomRouterEditorView {
                     .collect();
                 if rules.is_empty() {
                     self.save_error = Some(
-                        light_i18n::tr("At least one rule with a description and model is required.").to_string(),
+                        light_i18n::tr(
+                            "At least one rule with a description and model is required.",
+                        )
+                        .to_string(),
                     );
                     ctx.notify();
                     return;
@@ -674,7 +683,10 @@ impl CustomRouterEditorView {
             .sub_text_color(appearance.theme().surface_1());
 
         let mut column = Flex::column()
-            .with_child(Self::section_label(light_i18n::tr("Default model"), appearance))
+            .with_child(Self::section_label(
+                light_i18n::tr("Default model"),
+                appearance,
+            ))
             .with_child(
                 ConstrainedBox::new(ChildView::new(&self.prompt_default_dropdown).finish())
                     .with_width(EDITOR_CONTENT_WIDTH)
@@ -683,17 +695,20 @@ impl CustomRouterEditorView {
 
         if !self.prompt_rules.is_empty() {
             column.add_child(
-                Container::new(Self::section_label(light_i18n::tr("Rules").to_string(), appearance))
-                    .with_margin_top(12.)
-                    .finish(),
+                Container::new(Self::section_label(
+                    light_i18n::tr("Rules").to_string(),
+                    appearance,
+                ))
+                .with_margin_top(12.)
+                .finish(),
             );
             let rules_copy = FormattedText::new([
-                FormattedTextLine::Line(vec![FormattedTextFragment::plain_text(
-                    light_i18n::tr("Rules are custom prompts that describe when to use a specific model. Warp intelligently matches your tasks against these rules."),
-                )]),
-                FormattedTextLine::Line(vec![FormattedTextFragment::plain_text(
-                    light_i18n::tr("Rules are matched top to bottom — rules higher in the list take precedence over those below."),
-                )]),
+                FormattedTextLine::Line(vec![FormattedTextFragment::plain_text(light_i18n::tr(
+                    "Rules are custom prompts that describe when to use a specific model. Warp intelligently matches your tasks against these rules.",
+                ))]),
+                FormattedTextLine::Line(vec![FormattedTextFragment::plain_text(light_i18n::tr(
+                    "Rules are matched top to bottom — rules higher in the list take precedence over those below.",
+                ))]),
             ]);
             column.add_child(
                 Container::new(
@@ -734,7 +749,10 @@ impl CustomRouterEditorView {
         col.add_child(
             Container::new(
                 Flex::column()
-                    .with_child(Self::section_label(light_i18n::tr("Router name"), appearance))
+                    .with_child(Self::section_label(
+                        light_i18n::tr("Router name"),
+                        appearance,
+                    ))
                     .with_child(
                         ConstrainedBox::new(editor_row(&self.name_editor, None, appearance))
                             .with_width(EDITOR_CONTENT_WIDTH)
@@ -751,21 +769,24 @@ impl CustomRouterEditorView {
         let routing_type_copy = FormattedText::new([
             FormattedTextLine::Line(vec![
                 FormattedTextFragment::bold(light_i18n::tr("Complexity-based")),
-                FormattedTextFragment::plain_text(
-                    light_i18n::tr(" routing chooses a model based on Warp's classification of the task's difficulty."),
-                ),
+                FormattedTextFragment::plain_text(light_i18n::tr(
+                    " routing chooses a model based on Warp's classification of the task's difficulty.",
+                )),
             ]),
             FormattedTextLine::Line(vec![
                 FormattedTextFragment::bold(light_i18n::tr("Rule-based")),
-                FormattedTextFragment::plain_text(
-                    light_i18n::tr(" routing chooses a model based on custom prompts."),
-                ),
+                FormattedTextFragment::plain_text(light_i18n::tr(
+                    " routing chooses a model based on custom prompts.",
+                )),
             ]),
         ]);
         col.add_child(
             Container::new(
                 Flex::column()
-                    .with_child(Self::section_label(light_i18n::tr("Router type"), appearance))
+                    .with_child(Self::section_label(
+                        light_i18n::tr("Router type"),
+                        appearance,
+                    ))
                     .with_child(
                         Container::new(
                             FormattedTextElement::new(

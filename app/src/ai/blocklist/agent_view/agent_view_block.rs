@@ -227,7 +227,10 @@ fn render_deleted_state(
             })
             .finish(),
         )
-        .with_child(render_subtext(light_i18n::tr("Deleted").to_string(), appearance))
+        .with_child(render_subtext(
+            light_i18n::tr("Deleted").to_string(),
+            appearance,
+        ))
         .finish();
 
     render_block_container(
@@ -486,7 +489,8 @@ impl TypedActionView for AgentViewEntryBlock {
                         ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
                             toast_stack.add_ephemeral_toast(
                                 DismissibleToast::error(
-                                    light_i18n::tr("Couldn't navigate to conversation.").to_string(),
+                                    light_i18n::tr("Couldn't navigate to conversation.")
+                                        .to_string(),
                                 ),
                                 window_id,
                                 ctx,

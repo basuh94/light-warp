@@ -236,7 +236,8 @@ impl CliAgentPluginManager for CodexPluginManager {
         if !updated {
             log.push_str("Post-install version check: platform plugin is still outdated\n");
             return Err(PluginInstallError {
-                message: light_i18n::tr("Platform plugin installation did not take effect").to_owned(),
+                message: light_i18n::tr("Platform plugin installation did not take effect")
+                    .to_owned(),
                 log,
             });
         }
@@ -289,13 +290,17 @@ static PLUGIN_INSTALL_INSTRUCTIONS: LazyLock<PluginInstructions> =
                 link: None,
             },
         ]),
-        post_install_notes: Vec::leak(vec![light_i18n::tr("Restart Codex to activate the plugin.")]),
+        post_install_notes: Vec::leak(vec![light_i18n::tr(
+            "Restart Codex to activate the plugin.",
+        )]),
     });
 
 static NATIVE_INSTALL_INSTRUCTIONS: LazyLock<PluginInstructions> = LazyLock::new(|| {
     PluginInstructions {
         title: light_i18n::tr("Enable Warp Notifications for Codex"),
-        subtitle: light_i18n::tr("Update Codex to the latest version, then enable in-focus notifications so Warp can display them while you work."),
+        subtitle: light_i18n::tr(
+            "Update Codex to the latest version, then enable in-focus notifications so Warp can display them while you work.",
+        ),
         steps: Vec::leak(vec![
             PluginInstructionStep {
                 description: light_i18n::tr("Update Codex to the latest version."),
@@ -304,7 +309,9 @@ static NATIVE_INSTALL_INSTRUCTIONS: LazyLock<PluginInstructions> = LazyLock::new
                 link: Some("https://developers.openai.com/codex/cli#upgrade"),
             },
             PluginInstructionStep {
-                description: light_i18n::tr("Set the notification condition to \"always\" in your Codex config. Open or create ~/.codex/config.toml and add:"),
+                description: light_i18n::tr(
+                    "Set the notification condition to \"always\" in your Codex config. Open or create ~/.codex/config.toml and add:",
+                ),
                 command: "[tui]\nnotification_condition = \"always\"",
                 executable: false,
                 link: None,
@@ -341,7 +348,9 @@ static PLUGIN_UPDATE_INSTRUCTIONS: LazyLock<PluginInstructions> = LazyLock::new(
         ]),
         post_install_notes: Vec::leak(vec![
             light_i18n::tr("Restart Codex to activate the update."),
-            light_i18n::tr("If this fails because codex-warp is not configured as a Git marketplace, remove and re-add the marketplace."),
+            light_i18n::tr(
+                "If this fails because codex-warp is not configured as a Git marketplace, remove and re-add the marketplace.",
+            ),
         ]),
     }
 });

@@ -59,7 +59,11 @@ pub(super) fn new_state(publish: bool, commits: Vec<Commit>) -> PushState {
 }
 
 pub(super) fn confirm_label(publish: bool) -> &'static str {
-    if publish { light_i18n::tr("Publish") } else { light_i18n::tr("Push") }
+    if publish {
+        light_i18n::tr("Publish")
+    } else {
+        light_i18n::tr("Push")
+    }
 }
 
 pub(super) fn confirm_icon(publish: bool) -> Icon {

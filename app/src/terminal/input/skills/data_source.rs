@@ -1,6 +1,6 @@
-use light_i18n::tr;
 use ai::skills::{SkillProvider, SkillReference, SkillScope};
 use fuzzy_match::FuzzyMatchResult;
+use light_i18n::tr;
 use ordered_float::OrderedFloat;
 use warp_core::ui::icons::Icon;
 use warp_core::ui::theme::Fill;

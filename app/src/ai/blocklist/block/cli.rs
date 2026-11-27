@@ -1317,8 +1317,10 @@ impl View for CLISubagentView {
             AIAgentActionType::WriteToLongRunningShellCommand { input, mode, .. } => {
                 Some(render_blocked_action(
                     BlockedActionProps {
-                        header: light_i18n::tr("Can I write the following to this running command?")
-                            .to_string(),
+                        header: light_i18n::tr(
+                            "Can I write the following to this running command?",
+                        )
+                        .to_string(),
                         description: Some(render_write_to_pty_input(
                             WriteToPtyInputProps {
                                 input: input.clone(),
@@ -1491,7 +1493,9 @@ impl TypedActionView for CLISubagentView {
                 let window_id = ctx.window_id();
                 ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
                     toast_stack.add_ephemeral_toast(
-                        DismissibleToast::success(String::from(light_i18n::tr("Copied to clipboard"))),
+                        DismissibleToast::success(String::from(light_i18n::tr(
+                            "Copied to clipboard",
+                        ))),
                         window_id,
                         ctx,
                     );
@@ -1599,7 +1603,9 @@ fn get_action_loading_text(action: AIAgentActionType) -> Option<String> {
         }
         AIAgentActionType::ReadFiles(_) => Some(light_i18n::tr("Reading files...").to_string()),
         AIAgentActionType::Grep { .. } => Some(light_i18n::tr("Grepping...").to_string()),
-        AIAgentActionType::FileGlobV2 { .. } => Some(light_i18n::tr("Finding files...").to_string()),
+        AIAgentActionType::FileGlobV2 { .. } => {
+            Some(light_i18n::tr("Finding files...").to_string())
+        }
         _ => None,
     }
 }
@@ -1887,7 +1893,10 @@ fn render_permissions_speedbump(
 
     let formatted_text = FormattedTextElement::new(
         FormattedText::new([FormattedTextLine::Line(vec![
-            FormattedTextFragment::hyperlink(light_i18n::tr("Manage Agent permissions"), "Settings > AI"),
+            FormattedTextFragment::hyperlink(
+                light_i18n::tr("Manage Agent permissions"),
+                "Settings > AI",
+            ),
         ])]),
         font_size,
         font_family,
@@ -2071,24 +2080,38 @@ fn render_search_action_input(
                     .map(|q| format!(" - `{q}`"))
                     .collect::<Vec<_>>()
                     .join("\n");
-                light_i18n::tr!("Grep for the following patterns in {}:\n{}", display_path, patterns_list)
+                light_i18n::tr!(
+                    "Grep for the following patterns in {}:\n{}",
+                    display_path,
+                    patterns_list
+                )
             }
         }
         AIAgentActionType::FileGlobV2 {
             ref patterns,
             ref search_dir,
         } => {
-            let display_path = search_dir.as_deref().unwrap_or(light_i18n::tr("the current directory"));
+            let display_path = search_dir
+                .as_deref()
+                .unwrap_or(light_i18n::tr("the current directory"));
 
             if patterns.len() == 1 {
-                light_i18n::tr!("Search for files that match `{}` in {}", patterns[0], display_path)
+                light_i18n::tr!(
+                    "Search for files that match `{}` in {}",
+                    patterns[0],
+                    display_path
+                )
             } else {
                 let patterns_list = patterns
                     .iter()
                     .map(|p| format!(" - `{p}`"))
                     .collect::<Vec<_>>()
                     .join("\n");
-                light_i18n::tr!("Find files that match the following patterns in {}:\n{}", display_path, patterns_list)
+                light_i18n::tr!(
+                    "Find files that match the following patterns in {}:\n{}",
+                    display_path,
+                    patterns_list
+                )
             }
         }
         _ => return None,

@@ -1347,8 +1347,12 @@ impl AgentProfilesPageView {
                 AgentModeCodingPermissionsType::iter()
                     .map(|t| {
                         let display = match t {
-                            AgentModeCodingPermissionsType::AlwaysAskBeforeReading => light_i18n::tr("Always ask"),
-                            AgentModeCodingPermissionsType::AlwaysAllowReading => light_i18n::tr("Always allow"),
+                            AgentModeCodingPermissionsType::AlwaysAskBeforeReading => {
+                                light_i18n::tr("Always ask")
+                            }
+                            AgentModeCodingPermissionsType::AlwaysAllowReading => {
+                                light_i18n::tr("Always allow")
+                            }
                             AgentModeCodingPermissionsType::AllowReadingSpecificFiles => {
                                 light_i18n::tr("Allow in specific directories")
                             }
@@ -2818,7 +2822,9 @@ impl AgentsWidget {
         );
         render_ai_list(
             light_i18n::tr("Command denylist"),
-            light_i18n::tr("Regular expressions to match commands that the Warp Agent should always ask permission to execute."),
+            light_i18n::tr(
+                "Regular expressions to match commands that the Warp Agent should always ask permission to execute.",
+            ),
             list,
             view,
             ai_settings,
@@ -2856,7 +2862,9 @@ impl AgentsWidget {
 
         render_ai_list(
             light_i18n::tr("Command allowlist"),
-            light_i18n::tr("Regular expressions to match commands that can be automatically executed by the Warp Agent."),
+            light_i18n::tr(
+                "Regular expressions to match commands that can be automatically executed by the Warp Agent.",
+            ),
             list,
             view,
             ai_settings,
@@ -2958,9 +2966,9 @@ impl AgentsWidget {
         render_dropdown_item(
             appearance,
             light_i18n::tr("Base model"),
-            Some(
-                light_i18n::tr("This model serves as the primary engine behind the Warp Agent. It powers most interactions and invokes other models for tasks like planning or code generation when necessary. Warp may automatically switch to alternate models based on model availability or for auxiliary tasks such as conversation summarization."),
-            ),
+            Some(light_i18n::tr(
+                "This model serves as the primary engine behind the Warp Agent. It powers most interactions and invokes other models for tasks like planning or code generation when necessary. Warp may automatically switch to alternate models based on model availability or for auxiliary tasks such as conversation summarization.",
+            )),
             Some(show_in_prompt_checkbox),
             LocalOnlyIconState::Hidden,
             (!ai_settings.is_any_ai_enabled(app))
@@ -2989,9 +2997,9 @@ impl AgentsWidget {
         );
 
         let codebase_context_description = vec![
-            FormattedTextFragment::plain_text(
-                light_i18n::tr("Allow the Warp Agent to generate an outline of your codebase that can be used for context. No code is ever stored on our servers. "),
-            ),
+            FormattedTextFragment::plain_text(light_i18n::tr(
+                "Allow the Warp Agent to generate an outline of your codebase that can be used for context. No code is ever stored on our servers. ",
+            )),
             FormattedTextFragment::hyperlink(
                 light_i18n::tr("Learn more"),
                 "https://docs.warp.dev/agents/capabilities/codebase-context",
@@ -3062,9 +3070,9 @@ impl AgentsWidget {
 
         let subtext = {
             let subtext_fragments = vec![
-                FormattedTextFragment::plain_text(
-                    light_i18n::tr("You haven't added any MCP servers yet. Once you do, you'll be able to control how much autonomy the Warp Agent has when interacting with them. "),
-                ),
+                FormattedTextFragment::plain_text(light_i18n::tr(
+                    "You haven't added any MCP servers yet. Once you do, you'll be able to control how much autonomy the Warp Agent has when interacting with them. ",
+                )),
                 FormattedTextFragment::hyperlink_action(
                     light_i18n::tr("Add a server"),
                     AgentProfilesPageAction::OpenMCPServerCollection,

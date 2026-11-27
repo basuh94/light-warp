@@ -889,7 +889,8 @@ fn block_maximum_rows_description() -> String {
         light_i18n::tr("1 million")
     };
 
-    light_i18n::tr!("Setting the limit above 100k lines may impact performance. Maximum rows supported is {}.",
+    light_i18n::tr!(
+        "Setting the limit above 100k lines may impact performance. Maximum rows supported is {}.",
         max_rows
     )
 }
@@ -4217,9 +4218,13 @@ impl FeaturesPageView {
                     Shrinkable::new(
                         2.,
                         Align::new(
-                            Text::new_inline(light_i18n::tr("Keybinding"), appearance.ui_font_family(), 13.)
-                                .with_color(appearance.theme().active_ui_text_color().into())
-                                .finish(),
+                            Text::new_inline(
+                                light_i18n::tr("Keybinding"),
+                                appearance.ui_font_family(),
+                                13.,
+                            )
+                            .with_color(appearance.theme().active_ui_text_color().into())
+                            .finish(),
                         )
                         .left()
                         .finish(),
@@ -4380,9 +4385,13 @@ impl FeaturesPageView {
                 }
 
                 Container::new(
-                    Text::new_inline(light_i18n::tr("Change keybinding"), appearance.ui_font_family(), 12.)
-                        .with_color(button_color)
-                        .finish(),
+                    Text::new_inline(
+                        light_i18n::tr("Change keybinding"),
+                        appearance.ui_font_family(),
+                        12.,
+                    )
+                    .with_color(button_color)
+                    .finish(),
                 )
                 .with_border(border)
                 .finish()
@@ -4601,7 +4610,8 @@ impl SettingsWidget for NativeRedirectWidget {
                 on_click_action: None,
                 secondary_text: None,
                 tooltip_override_text: Some(
-                    light_i18n::tr("Automatically open links in desktop app whenever possible.").into(),
+                    light_i18n::tr("Automatically open links in desktop app whenever possible.")
+                        .into(),
                 ),
             }),
             LocalOnlyIconState::for_setting(
@@ -5289,7 +5299,9 @@ impl SettingsWidget for DesktopNotificationsWidget {
                 ),
                 view.render_notification_toggle(
                     session_settings.notifications.is_needs_attention_enabled,
-                    light_i18n::tr("Notify when a command or agent needs your attention to continue"),
+                    light_i18n::tr(
+                        "Notify when a command or agent needs your attention to continue",
+                    ),
                     FeaturesPageAction::ToggleNeedsAttentionNotifications,
                     view.button_mouse_states
                         .agent_needs_attention_notifications_checkbox
@@ -5384,9 +5396,13 @@ impl SettingsWidget for DesktopNotificationsWidget {
                         .finish(),
                     )
                     .with_child(
-                        Text::new_inline(light_i18n::tr("seconds"), appearance.ui_font_family(), font_size)
-                            .with_color(font_color.into())
-                            .finish(),
+                        Text::new_inline(
+                            light_i18n::tr("seconds"),
+                            appearance.ui_font_family(),
+                            font_size,
+                        )
+                        .with_color(font_color.into())
+                        .finish(),
                     )
                     .finish();
 
@@ -6060,7 +6076,8 @@ impl SettingsWidget for NativeShellCompletionsWidget {
 
         let description = if warp_on && as_you_type_on && native_on {
             let keystroke = &*view.completions_keystroke;
-            keystroke.is_empty().not().then_some(light_i18n::tr!("Native shell completions aren't generated as you type; press {} to fetch them.",
+            keystroke.is_empty().not().then_some(light_i18n::tr!(
+                "Native shell completions aren't generated as you type; press {} to fetch them.",
                 keystroke
             ))
         } else {
@@ -6262,7 +6279,9 @@ impl SettingsWidget for RightClickBehaviorWidget {
                     light_i18n::tr("Right-click:"),
                     selection_settings
                         .right_click_pastes()
-                        .then_some(light_i18n::tr("Shift+right-click to open the context menu.")),
+                        .then_some(light_i18n::tr(
+                            "Shift+right-click to open the context menu.",
+                        )),
                     None,
                     LocalOnlyIconState::for_setting(
                         RightClickBehaviorSetting::storage_key(),
@@ -6777,7 +6796,8 @@ impl TabKeyBehaviorWidget {
                 // user can always still accept with right arrow.
                 Some("→ accepts autosuggestions.".into())
             }
-            TabBehavior::Completions => Some(light_i18n::tr!("{} accepts autosuggestions.",
+            TabBehavior::Completions => Some(light_i18n::tr!(
+                "{} accepts autosuggestions.",
                 *view.autosuggestions_keystroke
             )),
             TabBehavior::Autosuggestions
@@ -6786,7 +6806,8 @@ impl TabKeyBehaviorWidget {
                 if view.completions_keystroke.is_empty() {
                     Some(light_i18n::tr("Completions open as you type.").into())
                 } else {
-                    Some(light_i18n::tr!("Completions open as you type (or {}).",
+                    Some(light_i18n::tr!(
+                        "Completions open as you type (or {}).",
                         *view.completions_keystroke
                     ))
                 }
@@ -6794,7 +6815,8 @@ impl TabKeyBehaviorWidget {
             TabBehavior::Autosuggestions if view.completions_keystroke.is_empty() => {
                 Some(light_i18n::tr("Opening the completion menu is unbound.").into())
             }
-            TabBehavior::Autosuggestions => Some(light_i18n::tr!("{} opens completion menu.",
+            TabBehavior::Autosuggestions => Some(light_i18n::tr!(
+                "{} opens completion menu.",
                 *view.completions_keystroke
             )),
             TabBehavior::UserDefined => None,
@@ -7385,9 +7407,9 @@ impl SettingsWidget for Osc52ClipboardAccessWidget {
         render_dropdown_item(
             appearance,
             light_i18n::tr("Clipboard access (OSC 52)"),
-            Some(
-                light_i18n::tr("Controls whether programs running in the terminal can read or write your system clipboard."),
-            ),
+            Some(light_i18n::tr(
+                "Controls whether programs running in the terminal can read or write your system clipboard.",
+            )),
             None,
             LocalOnlyIconState::for_setting(
                 Osc52ClipboardAccessSetting::storage_key(),
@@ -7572,7 +7594,8 @@ impl SettingsWidget for LinuxSelectionClipboardWidget {
                 on_click_action: None,
                 secondary_text: None,
                 tooltip_override_text: Some(
-                    light_i18n::tr("Whether the Linux primary clipboard should be supported.").into(),
+                    light_i18n::tr("Whether the Linux primary clipboard should be supported.")
+                        .into(),
                 ),
             }),
             LocalOnlyIconState::for_setting(
@@ -7695,7 +7718,9 @@ impl SettingsWidget for WindowSystemWidget {
                 mouse_state: self.additional_info_link.clone(),
                 on_click_action: None,
                 secondary_text: None,
-                tooltip_override_text: Some(light_i18n::tr("Enables the use of Wayland").to_string()),
+                tooltip_override_text: Some(
+                    light_i18n::tr("Enables the use of Wayland").to_string(),
+                ),
             }),
             LocalOnlyIconState::for_setting(
                 ForceX11::storage_key(),
@@ -7787,7 +7812,10 @@ impl SettingsWidget for GraphicsBackendWidget {
             col.add_child(
                 appearance
                     .ui_builder()
-                    .wrappable_text(light_i18n::tr!("Current backend: {}", backend.to_label()), true)
+                    .wrappable_text(
+                        light_i18n::tr!("Current backend: {}", backend.to_label()),
+                        true,
+                    )
                     .with_style(UiComponentStyles {
                         font_color: Some(theme.sub_text_color(theme.background()).into_solid()),
                         ..Default::default()

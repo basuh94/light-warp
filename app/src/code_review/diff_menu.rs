@@ -112,7 +112,10 @@ impl CodeReviewDiffMenu {
                 ..Default::default()
             };
             let mut editor = EditorView::new(options, ctx);
-            editor.set_placeholder_text(light_i18n::tr("Search diff sets or branches to compare…"), ctx);
+            editor.set_placeholder_text(
+                light_i18n::tr("Search diff sets or branches to compare…"),
+                ctx,
+            );
             editor
         });
 

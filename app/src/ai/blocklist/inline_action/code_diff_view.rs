@@ -421,11 +421,14 @@ impl CodeDiffView {
             self.accept_split_button_menu.update(ctx, |menu, ctx| {
                 menu.set_items(
                     vec![
-                        MenuItemFields::new_multiline(light_i18n::tr("Accept and continue with agent"), 2)
-                            .with_on_select_action(
-                                CodeDiffViewAction::AcceptPassiveDiffAndContinueWithAgent,
-                            )
-                            .into_item(),
+                        MenuItemFields::new_multiline(
+                            light_i18n::tr("Accept and continue with agent"),
+                            2,
+                        )
+                        .with_on_select_action(
+                            CodeDiffViewAction::AcceptPassiveDiffAndContinueWithAgent,
+                        )
+                        .into_item(),
                     ],
                     ctx,
                 );
@@ -441,12 +444,10 @@ impl CodeDiffView {
             .map(|k| k.displayed())
             .unwrap_or_default();
 
-            let accept_item = MenuItemFields::new_with_label(
-                light_i18n::tr("Accept"),
-                accept_keystroke.as_str(),
-            )
-            .with_on_select_action(CodeDiffViewAction::TryAccept)
-            .into_item();
+            let accept_item =
+                MenuItemFields::new_with_label(light_i18n::tr("Accept"), accept_keystroke.as_str())
+                    .with_on_select_action(CodeDiffViewAction::TryAccept)
+                    .into_item();
 
             let auto_item = MenuItemFields::new_with_label(
                 light_i18n::tr("Auto-approve"),
@@ -1064,7 +1065,9 @@ impl CodeDiffView {
                         log::error!("Failed to revert file edits: {error}");
                         ToastStack::handle(ctx).update(ctx, |stack, ctx| {
                             stack.add_ephemeral_toast(
-                                DismissibleToast::error(light_i18n::tr!("Failed to revert changes to {}", file_name
+                                DismissibleToast::error(light_i18n::tr!(
+                                    "Failed to revert changes to {}",
+                                    file_name
                                 )),
                                 window_id,
                                 ctx,

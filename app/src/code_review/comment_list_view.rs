@@ -964,10 +964,15 @@ impl CommentListView {
             if !has_sendable_comments {
                 Cow::Borrowed(light_i18n::tr("No non-outdated comments to send"))
             } else {
-                Cow::Owned(light_i18n::tr!("Send diff comments to {}", agent.display_name()))
+                Cow::Owned(light_i18n::tr!(
+                    "Send diff comments to {}",
+                    agent.display_name()
+                ))
             }
         } else if !ai_enabled {
-            Cow::Borrowed(light_i18n::tr("AI must be enabled to send comments to Agent"))
+            Cow::Borrowed(light_i18n::tr(
+                "AI must be enabled to send comments to Agent",
+            ))
         } else if !ai_available {
             Cow::Borrowed(light_i18n::tr("Agent code review requires AI credits"))
         } else if matches!(destination, ReviewDestination::None) {

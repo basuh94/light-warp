@@ -3,8 +3,8 @@ mod data_source;
 mod search_item;
 mod view;
 
-use light_i18n::tr;
 use ai::document::AIDocumentId;
+use light_i18n::tr;
 pub use view::{InlinePlanMenuEvent, InlinePlanMenuView};
 use warpui::keymap::Keystroke;
 

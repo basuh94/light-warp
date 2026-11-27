@@ -19,7 +19,6 @@ use crate::themes::theme_creator_body::{
 use crate::view_components::DismissibleToast;
 use crate::workspace::ToastStack;
 
-
 pub struct ThemeCreatorModal {
     theme_creator_modal: ViewHandle<Modal<ThemeCreatorBody>>,
 }

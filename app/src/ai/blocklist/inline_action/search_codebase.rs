@@ -229,7 +229,11 @@ impl SearchCodebaseView {
                 font_size: Some(appearance.monospace_font_size()),
                 ..Default::default()
             };
-            self.render_formatted_text(light_i18n::tr("No results found").to_string(), no_results_style, appearance)
+            self.render_formatted_text(
+                light_i18n::tr("No results found").to_string(),
+                no_results_style,
+                appearance,
+            )
         } else {
             render_read_files_text(
                 render_read_file_args,
@@ -479,8 +483,10 @@ impl View for SearchCodebaseView {
             }
             Some(AIActionStatus::Finished(result)) if result.result.is_cancelled() => {
                 let cancelled_text = if let Some(repo_name) = &self.repo_name {
-                    light_i18n::tr!("Search for \"{}\" in {} cancelled",
-                        self.search_query, repo_name
+                    light_i18n::tr!(
+                        "Search for \"{}\" in {} cancelled",
+                        self.search_query,
+                        repo_name
                     )
                 } else {
                     light_i18n::tr!("Search for \"{}\" cancelled", self.search_query)
@@ -496,8 +502,10 @@ impl View for SearchCodebaseView {
                 .finish(),
             _ => {
                 let text = if let Some(repo_name) = &self.repo_name {
-                    light_i18n::tr!("Searched codebase for \"{}\" in {}",
-                        self.search_query, repo_name
+                    light_i18n::tr!(
+                        "Searched codebase for \"{}\" in {}",
+                        self.search_query,
+                        repo_name
                     )
                 } else {
                     light_i18n::tr!("Searched codebase for \"{}\"", self.search_query)

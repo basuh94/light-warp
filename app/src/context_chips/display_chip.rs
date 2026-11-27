@@ -587,8 +587,11 @@ impl GitBranchTrackingStatus {
             Some(upstream) if self.is_rebased() => {
                 light_i18n::tr!("Tracking {} • branch was rebased", upstream)
             }
-            Some(upstream) if self.counts_available => light_i18n::tr!("Tracking {} • ahead {}, behind {}",
-                upstream, self.ahead, self.behind
+            Some(upstream) if self.counts_available => light_i18n::tr!(
+                "Tracking {} • ahead {}, behind {}",
+                upstream,
+                self.ahead,
+                self.behind
             ),
             Some(upstream) => {
                 light_i18n::tr!("Tracking {}; ahead/behind counts are unavailable", upstream)
@@ -596,8 +599,10 @@ impl GitBranchTrackingStatus {
             None if self.is_rebased() => {
                 light_i18n::tr("Branch was rebased; upstream name is unavailable").to_string()
             }
-            None if self.counts_available => light_i18n::tr!("Ahead {}, behind {}; upstream name is unavailable",
-                self.ahead, self.behind
+            None if self.counts_available => light_i18n::tr!(
+                "Ahead {}, behind {}; upstream name is unavailable",
+                self.ahead,
+                self.behind
             ),
             None => light_i18n::tr("No upstream configured").to_string(),
         }

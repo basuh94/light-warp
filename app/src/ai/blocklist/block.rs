@@ -1439,11 +1439,14 @@ impl AIBlock {
         });
 
         let disable_rule_suggestions_button = ctx.add_typed_action_view(|_| {
-            ActionButton::new(light_i18n::tr("Don't show again"), SuggestionDismissButtonTheme)
-                .with_size(ButtonSize::Small)
-                .on_click(|ctx| {
-                    ctx.dispatch_typed_action(AIBlockAction::DisableRuleSuggestions);
-                })
+            ActionButton::new(
+                light_i18n::tr("Don't show again"),
+                SuggestionDismissButtonTheme,
+            )
+            .with_size(ButtonSize::Small)
+            .on_click(|ctx| {
+                ctx.dispatch_typed_action(AIBlockAction::DisableRuleSuggestions);
+            })
         });
 
         let ai_block_view_id = ctx.view_id();
@@ -2196,7 +2199,8 @@ impl AIBlock {
                     action: AIAgentActionType::SuggestNewConversation { .. },
                     ..
                 } => {
-                    let start_new_conversation_button_text = light_i18n::tr("Start a new conversation").to_owned();
+                    let start_new_conversation_button_text =
+                        light_i18n::tr("Start a new conversation").to_owned();
                     let continue_current_conversation_button_text =
                         light_i18n::tr("Continue current conversation").to_owned();
 
@@ -6102,8 +6106,9 @@ fn set_imported_comment_button_disabled(
     handle.update(ctx, |button, ctx| {
         button.set_disabled(should_disable, ctx);
         if should_disable {
-            let tooltip = repo_path
-                .map(|path| light_i18n::tr!("Navigate to {} to open these comments", path.display_path()));
+            let tooltip = repo_path.map(|path| {
+                light_i18n::tr!("Navigate to {} to open these comments", path.display_path())
+            });
             button.set_tooltip(tooltip, ctx);
         } else {
             button.set_tooltip(None::<String>, ctx);
@@ -6634,7 +6639,9 @@ impl TypedActionView for AIBlock {
                 let window_id = ctx.window_id();
                 ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
                     toast_stack.add_ephemeral_toast(
-                        DismissibleToast::success(String::from(light_i18n::tr("Copied to clipboard"))),
+                        DismissibleToast::success(String::from(light_i18n::tr(
+                            "Copied to clipboard",
+                        ))),
                         window_id,
                         ctx,
                     );
@@ -6951,8 +6958,9 @@ impl TypedActionView for AIBlock {
 
                 let window_id = ctx.window_id();
                 ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
-                    let toast =
-                        DismissibleToast::default(String::from(light_i18n::tr("Thank you for the feedback!")));
+                    let toast = DismissibleToast::default(String::from(light_i18n::tr(
+                        "Thank you for the feedback!",
+                    )));
                     toast_stack.add_ephemeral_toast(toast, window_id, ctx);
                 });
 

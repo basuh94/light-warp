@@ -116,12 +116,12 @@ impl ThemeChooserMode {
             ThemeChooserMode::SystemAgnostic => appearance
                 .ui_builder()
                 .paragraph(light_i18n::tr("Change your current theme.").to_string()),
-            ThemeChooserMode::SystemLight => appearance
-                .ui_builder()
-                .paragraph(light_i18n::tr("Pick a theme for when your system is in light mode.").to_string()),
-            ThemeChooserMode::SystemDark => appearance
-                .ui_builder()
-                .paragraph(light_i18n::tr("Pick a theme for when your system is in dark mode.").to_string()),
+            ThemeChooserMode::SystemLight => appearance.ui_builder().paragraph(
+                light_i18n::tr("Pick a theme for when your system is in light mode.").to_string(),
+            ),
+            ThemeChooserMode::SystemDark => appearance.ui_builder().paragraph(
+                light_i18n::tr("Pick a theme for when your system is in dark mode.").to_string(),
+            ),
         };
         hint_text
             .build()
@@ -841,7 +841,9 @@ impl View for ThemeChooser {
 
     fn accessibility_contents(&self, _: &AppContext) -> Option<AccessibilityContent> {
         Some(AccessibilityContent::new(
-            light_i18n::tr("Theme chooser. Unfortunately, theme chooser window isn't compatible with screen readers yet."),
+            light_i18n::tr(
+                "Theme chooser. Unfortunately, theme chooser window isn't compatible with screen readers yet.",
+            ),
             light_i18n::tr("Press escape to close."),
             WarpA11yRole::WindowRole,
         ))

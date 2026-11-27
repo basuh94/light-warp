@@ -142,10 +142,12 @@ where
 
             // Generate the appropriate message based on secret level
             let secret_message = match secret_level {
-                Some(SecretLevel::Enterprise) => {
-                    light_i18n::tr("Pattern matched your organization's secret redaction regex list.")
+                Some(SecretLevel::Enterprise) => light_i18n::tr(
+                    "Pattern matched your organization's secret redaction regex list.",
+                ),
+                Some(SecretLevel::User) => {
+                    light_i18n::tr("Pattern matched your secret redaction regex list.")
                 }
-                Some(SecretLevel::User) => light_i18n::tr("Pattern matched your secret redaction regex list."),
                 None => light_i18n::tr("Pattern matched the secret redaction regex list."),
             };
 

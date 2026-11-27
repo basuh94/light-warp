@@ -122,7 +122,10 @@ impl BranchPicker {
             dropdown.set_disabled(ctx);
             // Show loading text in the dropdown top bar so the modal
             // doesn't shift layout while the fetch is in-flight.
-            let placeholder = DropdownItem::new(light_i18n::tr("Fetching branches…").to_string(), String::new());
+            let placeholder = DropdownItem::new(
+                light_i18n::tr("Fetching branches…").to_string(),
+                String::new(),
+            );
             dropdown.set_items(vec![placeholder], ctx);
             dropdown.set_selected_by_name(light_i18n::tr("Fetching branches…"), ctx);
         });

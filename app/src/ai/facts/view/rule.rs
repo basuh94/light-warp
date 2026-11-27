@@ -587,12 +587,15 @@ impl RuleView {
     }
 
     fn render_disabled_banner(&self, appearance: &Appearance) -> Box<dyn Element> {
-        let mut link = FormattedTextFragment::hyperlink(light_i18n::tr("turn it back on"), "Settings > AI");
+        let mut link =
+            FormattedTextFragment::hyperlink(light_i18n::tr("turn it back on"), "Settings > AI");
         link.styles.weight = Some(CustomWeight::Bold);
 
         let formatted_text = FormattedTextElement::new(
             FormattedText::new([FormattedTextLine::Line(vec![
-                FormattedTextFragment::bold(light_i18n::tr("Your rules are disabled and won't be used as context in sessions. You can ")),
+                FormattedTextFragment::bold(light_i18n::tr(
+                    "Your rules are disabled and won't be used as context in sessions. You can ",
+                )),
                 link,
                 FormattedTextFragment::bold(light_i18n::tr(" anytime.")),
             ])]),
@@ -873,8 +876,12 @@ impl RuleView {
 
     fn render_zero_state(&self, appearance: &Appearance) -> Box<dyn Element> {
         let text = match self.current_scope {
-            RuleScope::Global => light_i18n::tr("Add a rule above, or drop one at ~/.agents/AGENTS.md to apply it across every project."),
-            RuleScope::ProjectBased => light_i18n::tr("Once you generate a WARP.md rules file for a project, it will appear here."),
+            RuleScope::Global => light_i18n::tr(
+                "Add a rule above, or drop one at ~/.agents/AGENTS.md to apply it across every project.",
+            ),
+            RuleScope::ProjectBased => light_i18n::tr(
+                "Once you generate a WARP.md rules file for a project, it will appear here.",
+            ),
         };
 
         let centered_text = appearance

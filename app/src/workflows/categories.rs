@@ -755,8 +755,9 @@ impl CategoriesView {
         let no_workflows_text =
             CategoriesView::text_label(light_i18n::tr("No matching workflows found."), appearance);
 
-        let mut workflow_documentation_link_text =
-            Flex::row().with_child(CategoriesView::text_label(light_i18n::tr("Try "), appearance));
+        let mut workflow_documentation_link_text = Flex::row().with_child(
+            CategoriesView::text_label(light_i18n::tr("Try "), appearance),
+        );
 
         workflow_documentation_link_text.add_child(
             appearance
@@ -1209,7 +1210,9 @@ impl View for CategoriesView {
     fn accessibility_contents(&self, _: &AppContext) -> Option<AccessibilityContent> {
         Some(AccessibilityContent::new(
             light_i18n::tr("Workflows"),
-            light_i18n::tr("Search or use arrow up and arrow down keys to navigate and find a workflow. Use enter to confirm the workflow and esc to quit."),
+            light_i18n::tr(
+                "Search or use arrow up and arrow down keys to navigate and find a workflow. Use enter to confirm the workflow and esc to quit.",
+            ),
             WarpA11yRole::MenuRole,
         ))
     }

@@ -80,14 +80,18 @@ impl FilterChipRenderer for QueryFilter {
             }
 
             flex.add_child(
-                Text::new_inline(light_i18n::tr_dynamic(self.display_name()), appearance.ui_font_family(), font_size)
-                    .with_color(
-                        appearance
-                            .theme()
-                            .main_text_color(appearance.theme().surface_2())
-                            .into_solid(),
-                    )
-                    .finish(),
+                Text::new_inline(
+                    light_i18n::tr_dynamic(self.display_name()),
+                    appearance.ui_font_family(),
+                    font_size,
+                )
+                .with_color(
+                    appearance
+                        .theme()
+                        .main_text_color(appearance.theme().surface_2())
+                        .into_solid(),
+                )
+                .finish(),
             );
 
             Container::new(flex.finish())

@@ -24,9 +24,9 @@ use super::cli_controller::{CLISubagentController, CLISubagentEvent, UserTakeOve
 use super::model::{AIBlockModel, AIBlockModelImpl, AIBlockOutputStatus};
 use super::view_impl::common::{
     AutoExecuteButtonProps, ButtonProps, ForceRefreshButtonProps, MaybeShimmeringText,
-    STATUS_MESSAGE_ELLIPSIS,
-    WarpingIndicatorProps, WarpingProps, render_switch_control_to_user_button,
-    render_warping_indicator, render_warping_indicator_base, status_message_naming_model,
+    STATUS_MESSAGE_ELLIPSIS, WarpingIndicatorProps, WarpingProps,
+    render_switch_control_to_user_button, render_warping_indicator, render_warping_indicator_base,
+    status_message_naming_model,
 };
 use crate::ai::AgentTip;
 use crate::ai::agent::conversation::AIConversationId;
@@ -1059,7 +1059,10 @@ fn render_agent_tip(tip: &AgentTip, app: &AppContext) -> Box<dyn Element> {
         _ => {
             if let Some(link_target) = tip.link.clone() {
                 fragments.push(FormattedTextFragment::plain_text(" "));
-                fragments.push(FormattedTextFragment::hyperlink(light_i18n::tr("Learn more"), link_target));
+                fragments.push(FormattedTextFragment::hyperlink(
+                    light_i18n::tr("Learn more"),
+                    link_target,
+                ));
             }
         }
     }
@@ -1121,9 +1124,14 @@ fn render_fallback_explanation<V: View>(
         .map(|info| info.base_model_name.as_str());
     let text = match primary_name {
         Some(primary) => {
-            light_i18n::tr!("The primary model ({}) failed. Retrying with the fallback model.", primary)
+            light_i18n::tr!(
+                "The primary model ({}) failed. Retrying with the fallback model.",
+                primary
+            )
         }
-        None => light_i18n::tr("The primary model failed. Retrying with the fallback model.").to_owned(),
+        None => {
+            light_i18n::tr("The primary model failed. Retrying with the fallback model.").to_owned()
+        }
     };
     let appearance = Appearance::as_ref(app);
     Text::new_inline(

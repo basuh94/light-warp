@@ -81,16 +81,22 @@ fn codebase_indexing_label() -> &'static str {
     light_i18n::tr("Codebase indexing")
 }
 fn codebase_index_description() -> &'static str {
-    light_i18n::tr("Warp can automatically index code repositories as you navigate them, helping agents quickly understand context and provide solutions. Code is never stored on the server. If a codebase is unable to be indexed, Warp can still navigate your codebase and gain insights via grep and find tool calling.")
+    light_i18n::tr(
+        "Warp can automatically index code repositories as you navigate them, helping agents quickly understand context and provide solutions. Code is never stored on the server. If a codebase is unable to be indexed, Warp can still navigate your codebase and gain insights via grep and find tool calling.",
+    )
 }
 fn warp_indexing_ignore_description() -> &'static str {
-    light_i18n::tr("To exclude specific files or directories from indexing, add them to the .warpindexingignore file in your repository directory. These files will still be accessible to AI features, but they won't be included in codebase embeddings.")
+    light_i18n::tr(
+        "To exclude specific files or directories from indexing, add them to the .warpindexingignore file in your repository directory. These files will still be accessible to AI features, but they won't be included in codebase embeddings.",
+    )
 }
 fn auto_index_feature_name() -> &'static str {
     light_i18n::tr("Index new folders by default")
 }
 fn auto_index_description() -> &'static str {
-    light_i18n::tr("When set to true, Warp will automatically index code repositories as you navigate them - helping agents quickly understand context and provide targeted solutions.")
+    light_i18n::tr(
+        "When set to true, Warp will automatically index code repositories as you navigate them - helping agents quickly understand context and provide targeted solutions.",
+    )
 }
 const INDEXING_DISABLED_ADMIN_TEXT: &str = "Team admins have disabled codebase indexing.";
 const INDEXING_WORKSPACE_ENABLED_ADMIN_TEXT: &str = "Team admins have enabled codebase indexing.";
@@ -98,7 +104,9 @@ fn indexing_disabled_global_ai_text() -> &'static str {
     light_i18n::tr("AI Features must be enabled to use codebase indexing.")
 }
 fn codebase_index_limit_reached() -> &'static str {
-    light_i18n::tr("You have reached the maximum number of codebase indices for your plan. Delete existing indices to auto-index new codebases.")
+    light_i18n::tr(
+        "You have reached the maximum number of codebase indices for your plan. Delete existing indices to auto-index new codebases.",
+    )
 }
 #[cfg(not(target_family = "wasm"))]
 const REMOTE_CODEBASE_INDEX_LIMIT_REACHED_FAILURE: &str =
@@ -1491,7 +1499,11 @@ impl CodePageWidget {
                 Some(SyncProgress::Syncing {
                     completed_nodes,
                     total_nodes,
-                }) => Cow::from(light_i18n::tr!("Syncing - {} / {}", completed_nodes, total_nodes)),
+                }) => Cow::from(light_i18n::tr!(
+                    "Syncing - {} / {}",
+                    completed_nodes,
+                    total_nodes
+                )),
                 None => Cow::from(light_i18n::tr("Syncing...")),
             };
 
@@ -1524,7 +1536,11 @@ impl CodePageWidget {
                     Icon::ClockRefresh,
                 )
             } else {
-                (light_i18n::tr("Failed"), theme.ui_error_color(), Icon::AlertTriangle)
+                (
+                    light_i18n::tr("Failed"),
+                    theme.ui_error_color(),
+                    Icon::AlertTriangle,
+                )
             };
 
             return IndexingStatusPresentation {
@@ -1603,7 +1619,9 @@ impl CodePageWidget {
                     (Some(completed), Some(total)) => {
                         Cow::from(light_i18n::tr!("Indexing - {} / {}", completed, total))
                     }
-                    (Some(completed), None) => Cow::from(light_i18n::tr!("Indexing - {}", completed)),
+                    (Some(completed), None) => {
+                        Cow::from(light_i18n::tr!("Indexing - {}", completed))
+                    }
                     (None, Some(total)) => Cow::from(light_i18n::tr!("Indexing - 0 / {}", total)),
                     (None, None) => Cow::from(light_i18n::tr("Indexing...")),
                 };
@@ -1895,7 +1913,9 @@ impl CodePageWidget {
         );
 
         let (description, is_installing) = match &repo_status {
-            Some(LspRepoStatus::DisabledAndInstalled { .. }) => (light_i18n::tr("Installed"), false),
+            Some(LspRepoStatus::DisabledAndInstalled { .. }) => {
+                (light_i18n::tr("Installed"), false)
+            }
             Some(LspRepoStatus::Installing { .. }) => (light_i18n::tr("Installing..."), true),
             Some(LspRepoStatus::CheckingForInstallation) => (light_i18n::tr("Checking..."), true),
             _ => (light_i18n::tr("Available for download"), false),
@@ -2179,12 +2199,16 @@ impl CodePageWidget {
                             .into(),
                         light_i18n::tr("Failed"),
                     ),
-                    LspState::Stopped { .. } | LspState::Stopping { .. } => {
-                        (theme.disabled_ui_text_color().into_solid(), light_i18n::tr("Stopped"))
-                    }
+                    LspState::Stopped { .. } | LspState::Stopping { .. } => (
+                        theme.disabled_ui_text_color().into_solid(),
+                        light_i18n::tr("Stopped"),
+                    ),
                 }
             }
-            None => (theme.disabled_ui_text_color().into_solid(), light_i18n::tr("Not running")),
+            None => (
+                theme.disabled_ui_text_color().into_solid(),
+                light_i18n::tr("Not running"),
+            ),
         }
     }
 }

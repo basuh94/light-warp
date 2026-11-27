@@ -403,14 +403,20 @@ impl View for NewWorktreeModal {
             .with_cross_axis_alignment(CrossAxisAlignment::Stretch);
 
         // Repo picker
-        body.add_child(Self::render_section_label(light_i18n::tr("Select repository"), appearance));
+        body.add_child(Self::render_section_label(
+            light_i18n::tr("Select repository"),
+            appearance,
+        ));
         body.add_child(ChildView::new(&self.repo_picker).finish());
 
         // Branch picker (with gap)
         body.add_child(
-            Container::new(Self::render_section_label(light_i18n::tr("Select branch"), appearance))
-                .with_margin_top(SECTION_GAP)
-                .finish(),
+            Container::new(Self::render_section_label(
+                light_i18n::tr("Select branch"),
+                appearance,
+            ))
+            .with_margin_top(SECTION_GAP)
+            .finish(),
         );
         body.add_child(ChildView::new(&self.branch_picker).finish());
 
@@ -491,7 +497,10 @@ impl View for NewWorktreeModal {
                 body.add_child(
                     Container::new(
                         Text::new_inline(
-                            light_i18n::tr("Name can only contain letters, numbers, hyphens, and underscores").to_string(),
+                            light_i18n::tr(
+                                "Name can only contain letters, numbers, hyphens, and underscores",
+                            )
+                            .to_string(),
                             appearance.ui_font_family(),
                             ERROR_FONT_SIZE,
                         )

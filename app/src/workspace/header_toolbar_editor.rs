@@ -14,7 +14,6 @@ use crate::workspace::tab_settings::{
     HeaderToolbarChipSelection, TabSettings, TabSettingsChangedEvent,
 };
 
-
 pub fn init(app: &mut AppContext) {
     use warpui::keymap::macros::*;
 

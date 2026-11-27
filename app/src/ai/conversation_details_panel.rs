@@ -949,7 +949,8 @@ impl ConversationDetailsPanel {
 
                 let window_id = ctx.window_id();
                 ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
-                    let toast = DismissibleToast::default(light_i18n::tr("Copied branch name").to_string());
+                    let toast =
+                        DismissibleToast::default(light_i18n::tr("Copied branch name").to_string());
                     toast_stack.add_ephemeral_toast(toast, window_id, ctx);
                 });
             }
@@ -2310,18 +2311,26 @@ impl View for ConversationDetailsPanel {
         if let Some(duration) = self.data.run_time {
             let formatted = human_readable_precise_duration(duration);
             content.add_child(
-                Container::new(self.render_simple_field(light_i18n::tr("Run time"), &formatted, appearance))
-                    .with_margin_bottom(FIELD_SPACING)
-                    .finish(),
+                Container::new(self.render_simple_field(
+                    light_i18n::tr("Run time"),
+                    &formatted,
+                    appearance,
+                ))
+                .with_margin_bottom(FIELD_SPACING)
+                .finish(),
             );
         }
 
         if let Some(created_at) = self.data.created_at {
             let formatted = created_at.format("%I:%M %p on %-m/%-d/%Y").to_string();
             content.add_child(
-                Container::new(self.render_simple_field(light_i18n::tr("Created on"), &formatted, appearance))
-                    .with_margin_bottom(FIELD_SPACING)
-                    .finish(),
+                Container::new(self.render_simple_field(
+                    light_i18n::tr("Created on"),
+                    &formatted,
+                    appearance,
+                ))
+                .with_margin_bottom(FIELD_SPACING)
+                .finish(),
             );
         }
 

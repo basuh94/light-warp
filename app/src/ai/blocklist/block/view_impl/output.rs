@@ -1048,7 +1048,11 @@ pub(super) fn render(props: Props, app: &AppContext) -> Box<dyn Element> {
                                 });
 
                             let done = is_finished || is_cancelled;
-                            let verb = if done { light_i18n::tr("Searched") } else { light_i18n::tr("Searching") };
+                            let verb = if done {
+                                light_i18n::tr("Searched")
+                            } else {
+                                light_i18n::tr("Searching")
+                            };
 
                             let mut fragments: Vec<FormattedTextFragment> =
                                 vec![FormattedTextFragment::plain_text(format!("{verb} "))];
@@ -1435,10 +1439,12 @@ fn render_search_codebase(
                                     .codebase_search_speedbump_option_handles
                                     .clone(),
                                 vec![
-                                    RadioButtonItem::text(
-                                        light_i18n::tr("Always allow file access for coding tasks"),
-                                    ),
-                                    RadioButtonItem::text(light_i18n::tr("Always allow file access for this repo")),
+                                    RadioButtonItem::text(light_i18n::tr(
+                                        "Always allow file access for coding tasks",
+                                    )),
+                                    RadioButtonItem::text(light_i18n::tr(
+                                        "Always allow file access for this repo",
+                                    )),
                                 ],
                                 props
                                     .state_handles
@@ -1528,7 +1534,8 @@ fn render_search_codebase(
                         renderable_action(
                             props,
                             id,
-                            light_i18n::tr!("Search in {}", root_repo_path.to_string_lossy()).as_str(),
+                            light_i18n::tr!("Search in {}", root_repo_path.to_string_lossy())
+                                .as_str(),
                             app,
                             footer,
                             appearance,
@@ -1578,7 +1585,8 @@ fn render_search_codebase(
                     renderable_action(
                         props,
                         id,
-                        light_i18n::tr!("Searching in {}", root_repo_path.to_string_lossy()).as_str(),
+                        light_i18n::tr!("Searching in {}", root_repo_path.to_string_lossy())
+                            .as_str(),
                         app,
                         footer,
                         appearance,
@@ -1640,11 +1648,15 @@ fn render_search_codebase(
                         SearchCodebaseResult::Failed { reason, .. } => {
                             let root_repo_path = root_repo_path?;
                             let message = match reason {
-                                SearchCodebaseFailureReason::CodebaseNotIndexed => light_i18n::tr!("Search in {} failed because the codebase isn't indexed",
+                                SearchCodebaseFailureReason::CodebaseNotIndexed => light_i18n::tr!(
+                                    "Search in {} failed because the codebase isn't indexed",
                                     root_repo_path.to_string_lossy(),
                                 ),
                                 _ => {
-                                    light_i18n::tr!("Search in {} failed", root_repo_path.to_string_lossy())
+                                    light_i18n::tr!(
+                                        "Search in {} failed",
+                                        root_repo_path.to_string_lossy()
+                                    )
                                 }
                             };
                             renderable_action(
@@ -1664,8 +1676,11 @@ fn render_search_codebase(
                             renderable_action(
                                 props,
                                 id,
-                                light_i18n::tr!("Search in {} cancelled", root_repo_path.to_string_lossy())
-                                    .as_str(),
+                                light_i18n::tr!(
+                                    "Search in {} cancelled",
+                                    root_repo_path.to_string_lossy()
+                                )
+                                .as_str(),
                                 app,
                                 footer,
                                 appearance,
@@ -2198,7 +2213,8 @@ fn render_stopped_output(props: Props, app: &AppContext) -> Box<dyn Element> {
                         .map(|index| (item, index))
                 })
             {
-                return Some(light_i18n::tr!("Stopped task {}/{}: \"{}\"",
+                return Some(light_i18n::tr!(
+                    "Stopped task {}/{}: \"{}\"",
                     item_index + 1,
                     todo_list.len(),
                     item.title
@@ -2525,8 +2541,9 @@ fn render_suggest_new_conversation(
 
     let mut content = Flex::column().with_cross_axis_alignment(CrossAxisAlignment::Stretch);
 
-    let new_conversation_header_text =
-        light_i18n::tr("It seems like the topic changed. Would you like to make a new conversation?");
+    let new_conversation_header_text = light_i18n::tr(
+        "It seems like the topic changed. Would you like to make a new conversation?",
+    );
     let new_conversation_header_element = HeaderConfig::new(new_conversation_header_text, app)
         .with_icon(yellow_stop_icon(appearance))
         .with_corner_radius_override(CornerRadius::with_top(Radius::Pixels(8.)))
@@ -2608,13 +2625,22 @@ fn create_formatted_text_for_grep(
 
         if is_cancelled {
             lines.push(FormattedTextLine::Line(vec![
-                FormattedTextFragment::plain_text(light_i18n::tr!("Cancelled grep for the following patterns in {}", display_path)),
+                FormattedTextFragment::plain_text(light_i18n::tr!(
+                    "Cancelled grep for the following patterns in {}",
+                    display_path
+                )),
             ]));
         } else {
             lines.push(FormattedTextLine::Line(vec![if is_queued {
-                FormattedTextFragment::plain_text(light_i18n::tr!("Grep for the following patterns in {}", display_path))
+                FormattedTextFragment::plain_text(light_i18n::tr!(
+                    "Grep for the following patterns in {}",
+                    display_path
+                ))
             } else {
-                FormattedTextFragment::plain_text(light_i18n::tr!("Grepping for the following patterns in {}", display_path))
+                FormattedTextFragment::plain_text(light_i18n::tr!(
+                    "Grepping for the following patterns in {}",
+                    display_path
+                ))
             }]));
         }
 
@@ -2707,13 +2733,22 @@ fn create_formatted_text_for_file_glob(
 
         if is_cancelled {
             lines.push(FormattedTextLine::Line(vec![
-                FormattedTextFragment::plain_text(light_i18n::tr!("Cancelled search for files that match the following patterns in {}", path)),
+                FormattedTextFragment::plain_text(light_i18n::tr!(
+                    "Cancelled search for files that match the following patterns in {}",
+                    path
+                )),
             ]));
         } else {
             lines.push(FormattedTextLine::Line(vec![if is_queued {
-                FormattedTextFragment::plain_text(light_i18n::tr!("Find files that match the following patterns in {}", path))
+                FormattedTextFragment::plain_text(light_i18n::tr!(
+                    "Find files that match the following patterns in {}",
+                    path
+                ))
             } else {
-                FormattedTextFragment::plain_text(light_i18n::tr!("Finding files that match the following patterns in {}", path))
+                FormattedTextFragment::plain_text(light_i18n::tr!(
+                    "Finding files that match the following patterns in {}",
+                    path
+                ))
             }]));
         }
 

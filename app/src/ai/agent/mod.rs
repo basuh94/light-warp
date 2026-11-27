@@ -833,7 +833,6 @@ impl RenderableAIError {
 }
 
 impl RenderableAIError {
-
     /// Creates a transient network error. `kind` is the structured cause (including the raw API
     /// error where one exists), preserved so user reports can disambiguate the different causes
     /// behind the shared user-facing copy.
@@ -997,7 +996,11 @@ impl Display for RenderableAIError {
             }
             Self::InternalWarpError => write!(f, "{}", light_i18n::tr("Internal Warp error.")),
             Self::ContextWindowExceeded(message) => {
-                write!(f, "{}", light_i18n::tr!("Context window exceeded: {}", message))
+                write!(
+                    f,
+                    "{}",
+                    light_i18n::tr!("Context window exceeded: {}", message)
+                )
             }
             Self::InvalidApiKey { provider, .. } => {
                 write!(f, "{}", light_i18n::tr!("Invalid API key for {}", provider))
@@ -1006,7 +1009,10 @@ impl Display for RenderableAIError {
                 write!(
                     f,
                     "{}",
-                    light_i18n::tr!("AWS Bedrock credentials expired or invalid for {}", model_name)
+                    light_i18n::tr!(
+                        "AWS Bedrock credentials expired or invalid for {}",
+                        model_name
+                    )
                 )
             }
             Self::GeminiEnterpriseCredentialsExpiredOrInvalid => {
@@ -1020,7 +1026,9 @@ impl Display for RenderableAIError {
                 write!(
                     f,
                     "{}\n\n{}",
-                    light_i18n::tr("Warp lost connection while receiving the agent response. This is usually temporary."),
+                    light_i18n::tr(
+                        "Warp lost connection while receiving the agent response. This is usually temporary."
+                    ),
                     light_i18n::tr!("Debug info: {}", kind)
                 )
             }
@@ -1029,7 +1037,10 @@ impl Display for RenderableAIError {
             Self::AgentExitedShell { command } => write!(
                 f,
                 "{}",
-                light_i18n::tr!("The shell exited while the agent was running the command `{}`, so the run could not continue. Ensure the agent is not asked to run commands or source scripts that can exit the shell.", command)
+                light_i18n::tr!(
+                    "The shell exited while the agent was running the command `{}`, so the run could not continue. Ensure the agent is not asked to run commands or source scripts that can exit the shell.",
+                    command
+                )
             ),
             Self::CloudStartupFailed(msg) => write!(f, "{msg}"),
             Self::ChatGPTSubscriptionError {

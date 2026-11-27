@@ -6,11 +6,11 @@ pub(crate) mod positioning;
 pub mod styles;
 mod view;
 
+use light_i18n::tr;
 pub use message_bar::{InlineMenuMessageArgs, InlineMenuMessageBarArgs};
 pub use message_provider::{InlineMenuMessageProvider, default_navigation_message_items};
 pub use model::{InlineMenuModel, InlineMenuModelEvent, InlineMenuTabConfig};
 pub use positioning::InlineMenuPositioner;
-use light_i18n::tr;
 use serde::{Deserialize, Serialize};
 pub use view::{
     DetailsRenderConfig, InlineMenuAction, InlineMenuClickBehavior, InlineMenuEvent,

@@ -548,9 +548,9 @@ impl Input {
                 {
                     self.ephemeral_message_model.update(ctx, |model, ctx| {
                         let appearance = Appearance::handle(ctx).as_ref(ctx);
-                        let message = Message::from_text(
-                            tr("cannot start new conversation while terminal command is running"),
-                        )
+                        let message = Message::from_text(tr(
+                            "cannot start new conversation while terminal command is running",
+                        ))
                         .with_text_color(appearance.theme().ansi_fg_red());
                         model.show_ephemeral_message(
                             EphemeralMessage::new(
@@ -835,9 +835,9 @@ impl Input {
                 // Show a toast to confirm the export
                 let window_id = ctx.window_id();
                 ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
-                    let toast = DismissibleToast::default(String::from(
-                        tr("Conversation exported to clipboard"),
-                    ));
+                    let toast = DismissibleToast::default(String::from(tr(
+                        "Conversation exported to clipboard",
+                    )));
                     toast_stack.add_ephemeral_toast(toast, window_id, ctx);
                 });
             }

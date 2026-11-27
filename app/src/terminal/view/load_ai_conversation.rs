@@ -860,16 +860,16 @@ impl TerminalView {
 
         match &restore_context_state {
             RestorationDirState::MissingOriginalDir => {
-                items.push(MessageItem::text(
-                    tr("couldn't find original conversation directory "),
-                ));
+                items.push(MessageItem::text(tr(
+                    "couldn't find original conversation directory ",
+                )));
                 items.push(open_repo_hint.clone());
                 items.push(MessageItem::text(tr(" change repos")));
             }
             RestorationDirState::NeedsCd { .. } => {
-                items.push(MessageItem::text(
-                    tr("changed directory to continue conversation "),
-                ));
+                items.push(MessageItem::text(tr(
+                    "changed directory to continue conversation ",
+                )));
                 items.push(open_repo_hint.clone());
                 items.push(MessageItem::text(tr(" change repos")));
             }

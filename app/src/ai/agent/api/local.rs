@@ -326,8 +326,7 @@ fn history_messages(tasks: &[Task]) -> Vec<ChatMessage> {
                 }
             }
             Some(MessageKind::ToolCallResult(result)) => {
-                if let Some(outcome) = result.result.as_ref().and_then(ToolOutcome::from_message)
-                {
+                if let Some(outcome) = result.result.as_ref().and_then(ToolOutcome::from_message) {
                     messages.push(tool_result_message(
                         &result.tool_call_id,
                         &outcome,

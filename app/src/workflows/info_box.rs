@@ -594,7 +594,9 @@ impl WorkflowsMoreInfoView {
                             ButtonVariant::Secondary,
                             self.button_mouse_states.add_env_var_collection.clone(),
                         )
-                        .with_centered_text_label(light_i18n::tr("New environment variables").to_owned())
+                        .with_centered_text_label(
+                            light_i18n::tr("New environment variables").to_owned(),
+                        )
                         .build()
                         .on_click(|ctx, _, _| {
                             // Create envvars in personal drive for max extensibility (can be moved

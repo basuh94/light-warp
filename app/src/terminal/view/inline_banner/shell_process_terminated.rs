@@ -23,7 +23,9 @@ pub fn render_shell_process_terminated_banner(
                     color_override: Some(appearance.theme().foreground().into_solid()),
                 }),
                 content: Some(vec![Text::new(
-                    tr("The output from Warp's initialization script is visible above to assist with debugging."),
+                    tr(
+                        "The output from Warp's initialization script is visible above to assist with debugging.",
+                    ),
                     appearance.ui_font_family(),
                     appearance.ui_font_size(),
                 )]),

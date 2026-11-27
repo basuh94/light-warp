@@ -1773,9 +1773,13 @@ fn render_groups(
 
     if workspace.tabs.is_empty() {
         return Container::new(
-            Text::new_inline(light_i18n::tr("No tabs open"), appearance.ui_font_family(), 12.)
-                .with_color(theme.sub_text_color(theme.background()).into())
-                .finish(),
+            Text::new_inline(
+                light_i18n::tr("No tabs open"),
+                appearance.ui_font_family(),
+                12.,
+            )
+            .with_color(theme.sub_text_color(theme.background()).into())
+            .finish(),
         )
         .with_padding(Padding::uniform(12.))
         .finish();
@@ -4080,7 +4084,6 @@ fn should_show_tab_group_header(
     has_custom_title || is_being_renamed || visible_pane_count > 1
 }
 
-
 /// The group title as displayed in the panel header, including the fallback
 /// used for a group the user has never named. Search matches against this so a
 /// query matches what is actually on screen.
@@ -5871,14 +5874,20 @@ fn subtitle_options_for_primary(
 ) -> [(VerticalTabsCompactSubtitle, &'static str); 2] {
     match primary {
         VerticalTabsPrimaryInfo::Command => [
-            (VerticalTabsCompactSubtitle::Branch, light_i18n::tr("Branch")),
+            (
+                VerticalTabsCompactSubtitle::Branch,
+                light_i18n::tr("Branch"),
+            ),
             (
                 VerticalTabsCompactSubtitle::WorkingDirectory,
                 light_i18n::tr("Working Directory"),
             ),
         ],
         VerticalTabsPrimaryInfo::WorkingDirectory => [
-            (VerticalTabsCompactSubtitle::Branch, light_i18n::tr("Branch")),
+            (
+                VerticalTabsCompactSubtitle::Branch,
+                light_i18n::tr("Branch"),
+            ),
             (
                 VerticalTabsCompactSubtitle::Command,
                 light_i18n::tr("Command / Conversation"),
@@ -6230,7 +6239,9 @@ pub(super) fn render_settings_popup(
             let pr_link_info_tooltip = if show_pr_link && pr_validation_suppressed {
                 Some(ShowToggleInfoTooltip {
                     mouse_state: state.show_pr_link_info_tooltip_mouse_state.clone(),
-                    tooltip_text: light_i18n::tr("Requires the GitHub CLI to be installed and authenticated"),
+                    tooltip_text: light_i18n::tr(
+                        "Requires the GitHub CLI to be installed and authenticated",
+                    ),
                 })
             } else {
                 None

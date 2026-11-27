@@ -305,9 +305,7 @@ use crate::terminal::input::profiles::{InlineProfileSelectorEvent, InlineProfile
 use crate::terminal::input::prompts::{InlinePromptsMenuEvent, InlinePromptsMenuView};
 use crate::terminal::input::repos::{InlineReposMenuEvent, InlineReposMenuView};
 use crate::terminal::input::rewind::{RewindMenuEvent, RewindMenuView};
-use crate::terminal::input::skills::{
-    InlineSkillSelectorEvent, InlineSkillSelectorView,
-};
+use crate::terminal::input::skills::{InlineSkillSelectorEvent, InlineSkillSelectorView};
 use crate::terminal::input::slash_command_model::{SlashCommandEntryState, SlashCommandModel};
 use crate::terminal::input::slash_commands::{
     CloudModeV2SlashCommandView, GuiSlashCommandDataSource, InlineSlashCommandView,
@@ -447,13 +445,14 @@ pub(crate) const EXTERNAL_ALT_C_BINDING_CONTEXT: &str = "ExternalAltCDirectorySe
 pub const INPUT_A11Y_LABEL: &str = "Command Input.";
 pub const INPUT_A11Y_HELPER: &str = "Input your shell command, press enter to execute. Press cmd-up to navigate to output of previously executed commands. Press cmd-l to re-focus command input.";
 
-
 // Rotating hint text options for new Agent Mode conversations
 fn agent_mode_hint_options() -> [&'static str; 20] {
     [
         tr("Warp anything e.g. Deploy my React app to Vercel and set up environment variables"),
         tr("Warp anything e.g. Help me debug why my Python tests are failing in CI"),
-        tr("Warp anything e.g. Set up a new microservice with Docker and create the deployment pipeline"),
+        tr(
+            "Warp anything e.g. Set up a new microservice with Docker and create the deployment pipeline",
+        ),
         tr("Warp anything e.g. Find and fix the memory leak in my Node.js application"),
         tr("Warp anything e.g. Create a backup script for my PostgreSQL database and schedule it"),
         tr("Warp anything e.g. Help me migrate my data from MySQL to PostgreSQL"),
@@ -463,7 +462,9 @@ fn agent_mode_hint_options() -> [&'static str; 20] {
         tr("Warp anything e.g. Create a GitHub Actions workflow to automatically deploy on merge"),
         tr("Warp anything e.g. Set up Redis caching for my web application"),
         tr("Warp anything e.g. Help me troubleshoot why my Kubernetes pods keep crashing"),
-        tr("Warp anything e.g. Build a data pipeline to process CSV files and load them into BigQuery"),
+        tr(
+            "Warp anything e.g. Build a data pipeline to process CSV files and load them into BigQuery",
+        ),
         tr("Warp anything e.g. Set up SSL certificates and configure HTTPS for my domain"),
         tr("Warp anything e.g. Help me refactor this legacy code to use modern design patterns"),
         tr("Warp anything e.g. Create unit tests for my authentication service"),
@@ -6383,10 +6384,8 @@ impl Input {
                         ));
                         toast_stack.add_ephemeral_toast(toast, window_id, ctx);
                     }
-                    let toast = DismissibleToast::default(tr!(
-                        "Conversation exported to {}",
-                        display_path
-                    ));
+                    let toast =
+                        DismissibleToast::default(tr!("Conversation exported to {}", display_path));
                     toast_stack.add_ephemeral_toast(toast, window_id, ctx);
                 });
             }
@@ -6441,7 +6440,10 @@ impl Input {
             let message = if images_removed == 1 {
                 tr("1 image was removed - limit is 20 per conversation.").into()
             } else {
-                tr!("{} images were removed - limit is 20 per conversation.", images_removed)
+                tr!(
+                    "{} images were removed - limit is 20 per conversation.",
+                    images_removed
+                )
             };
 
             ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
@@ -6885,9 +6887,7 @@ impl Input {
             input_model.input_type(),
             input_model.should_run_input_autodetection(app),
         ) {
-            (InputType::Shell, false) => {
-                tr("Run commands").to_owned()
-            }
+            (InputType::Shell, false) => tr("Run commands").to_owned(),
             (InputType::Shell, true) => {
                 // Ensure hint text is cached for new conversations
                 get_stable_agent_mode_hint_text(&mut self.cached_agent_mode_hint_text).to_owned()
@@ -6921,7 +6921,8 @@ impl Input {
                             if is_udi_enabled {
                                 tr("Queue a follow up for the running agent").to_owned()
                             } else {
-                                tr("Queue a follow up for the running agent, or backspace to exit").to_owned()
+                                tr("Queue a follow up for the running agent, or backspace to exit")
+                                    .to_owned()
                             }
                         } else if is_udi_enabled {
                             tr("Steer the running agent").to_owned()
@@ -7391,10 +7392,7 @@ impl Input {
             .session(self.terminal_view_id)
             .map(|session| match session.agent {
                 CLIAgent::Unknown => Cow::Borrowed(tr("Tell the agent what to build...")),
-                _ => Cow::Owned(tr!(
-                    "Enter prompt for {}...",
-                    session.agent.display_name()
-                )),
+                _ => Cow::Owned(tr!("Enter prompt for {}...", session.agent.display_name())),
             })
             .unwrap_or(Cow::Borrowed(tr("Tell the agent what to build...")))
     }
@@ -12186,7 +12184,11 @@ impl Input {
             };
 
             let message = if excess_images == 1 {
-                tr!("1 image wasn't attached - limit is {} images {}.", limit_value, limit_name)
+                tr!(
+                    "1 image wasn't attached - limit is {} images {}.",
+                    limit_value,
+                    limit_name
+                )
             } else {
                 tr!(
                     "{} images weren't attached - limit is {} images {}.",

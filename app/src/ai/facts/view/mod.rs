@@ -75,7 +75,8 @@ pub struct AIFactView {
 
 impl AIFactView {
     pub fn new(ctx: &mut ViewContext<Self>) -> Self {
-        let pane_configuration = ctx.add_model(|_ctx| PaneConfiguration::new(light_i18n::tr("Rules")));
+        let pane_configuration =
+            ctx.add_model(|_ctx| PaneConfiguration::new(light_i18n::tr("Rules")));
 
         let rule_view = ctx.add_typed_action_view(RuleView::new);
         ctx.subscribe_to_view(&rule_view, |me, _, event, ctx| {
@@ -208,7 +209,12 @@ impl AIFactView {
                         Container::new(
                             appearance
                                 .ui_builder()
-                                .wrappable_text(light_i18n::tr("You are offline. Some rules will be read only."), true)
+                                .wrappable_text(
+                                    light_i18n::tr(
+                                        "You are offline. Some rules will be read only.",
+                                    ),
+                                    true,
+                                )
                                 .build()
                                 .finish(),
                         )

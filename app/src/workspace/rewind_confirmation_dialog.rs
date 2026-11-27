@@ -187,7 +187,9 @@ impl View for RewindConfirmationDialog {
             )
             .with_child(
                 Text::new_inline(
-                    light_i18n::tr("Rewinding does not affect files edited manually or via shell commands."),
+                    light_i18n::tr(
+                        "Rewinding does not affect files edited manually or via shell commands.",
+                    ),
                     appearance.ui_font_family(),
                     12.,
                 )

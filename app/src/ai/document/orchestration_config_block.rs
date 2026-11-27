@@ -70,7 +70,6 @@ fn host_presence(execution_mode: &RunAgentsExecutionMode) -> bool {
     )
 }
 
-
 // ── Action type ─────────────────────────────────────────────────────
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -847,7 +846,8 @@ impl View for OrchestrationConfigBlockView {
 
         // Description
         let description = Text::new(
-            light_i18n::tr("Break this work into coordinated streams with multiple agents.").to_string(),
+            light_i18n::tr("Break this work into coordinated streams with multiple agents.")
+                .to_string(),
             appearance.ui_font_family(),
             appearance.monospace_font_size(),
         )

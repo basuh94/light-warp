@@ -54,10 +54,10 @@ use super::ai_shared::{
     render_ai_setting_toggle, render_toolbar_layout_editor, styles,
     update_editor_interaction_state,
 };
-use super::local_model_settings::LocalModelSettingsView;
 use super::custom_inference_modal::{
     CustomEndpointModal, CustomEndpointModalEvent, CustomEndpointModalViewState,
 };
+use super::local_model_settings::LocalModelSettingsView;
 use super::remove_custom_endpoint_confirmation_dialog::{
     RemoveCustomEndpointConfirmationDialog, RemoveCustomEndpointConfirmationDialogEvent,
 };
@@ -1128,7 +1128,9 @@ impl WarpAgentPageView {
             let current = *crate::util::file::external_editor::EditorSettings::as_ref(ctx)
                 .open_conversation_layout_preference;
             match current {
-                OpenConversationPreference::NewTab => dropdown.set_selected_by_name(light_i18n::tr("New Tab"), ctx),
+                OpenConversationPreference::NewTab => {
+                    dropdown.set_selected_by_name(light_i18n::tr("New Tab"), ctx)
+                }
                 OpenConversationPreference::SplitPane => {
                     dropdown.set_selected_by_name(light_i18n::tr("Split Pane"), ctx)
                 }
@@ -1434,7 +1436,8 @@ impl WarpAgentPageView {
         }
         let provider_name = provider.display_name();
         let current_default = Self::active_base_model_display_name(ctx);
-        let description = light_i18n::tr!("You added your own {} API key, but your default model is currently set \
+        let description = light_i18n::tr!(
+            "You added your own {} API key, but your default model is currently set \
              to {}, which won't work without Warp credits. Would you like to change \
              your default model?",
             provider_name,
@@ -1480,7 +1483,8 @@ impl WarpAgentPageView {
             return;
         }
         let current_default = Self::active_base_model_display_name(ctx);
-        let description = light_i18n::tr!("You added the \"{}\" custom endpoint, but your default model is currently set to \
+        let description = light_i18n::tr!(
+            "You added the \"{}\" custom endpoint, but your default model is currently set to \
              {}, which won't work without Warp credits. Would you like to change \
              your default model?",
             endpoint.name,
@@ -1584,8 +1588,10 @@ impl WarpAgentPageView {
             });
         self.pending_remove_custom_endpoint_index = None;
 
-        self.custom_endpoint_modal_state
-            .set_title(Some(light_i18n::tr("Edit custom endpoint").to_string()), ctx);
+        self.custom_endpoint_modal_state.set_title(
+            Some(light_i18n::tr("Edit custom endpoint").to_string()),
+            ctx,
+        );
         self.custom_endpoint_modal_state
             .prefill(endpoint.as_ref(), Some(index), ctx);
         self.custom_endpoint_modal_state.open(ctx);
@@ -1844,8 +1850,10 @@ impl WarpAgentPageView {
                 );
                 let window_id = ctx.window_id();
                 ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
-                    let toast =
-                        DismissibleToast::error(light_i18n::tr!("Couldn't start Grok login: {}", err));
+                    let toast = DismissibleToast::error(light_i18n::tr!(
+                        "Couldn't start Grok login: {}",
+                        err
+                    ));
                     toast_stack.add_ephemeral_toast(toast, window_id, ctx);
                 });
                 return;
@@ -1870,7 +1878,8 @@ impl WarpAgentPageView {
         let window_id = ctx.window_id();
         ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
             let toast = DismissibleToast::default(
-                light_i18n::tr("Opening your browser to connect your SuperGrok subscription…").to_string(),
+                light_i18n::tr("Opening your browser to connect your SuperGrok subscription…")
+                    .to_string(),
             )
             .with_object_id(GROK_OAUTH_CONNECT_TOAST_OBJECT_ID.to_string())
             .with_link(
@@ -1949,8 +1958,11 @@ impl WarpAgentPageView {
                     let window_id = ctx.window_id();
                     ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
                         toast_stack.add_ephemeral_toast(
-                            DismissibleToast::error(light_i18n::tr!("Couldn't connect SuperGrok: {}", err))
-                                .with_object_id(GROK_OAUTH_CONNECT_TOAST_OBJECT_ID.to_string()),
+                            DismissibleToast::error(light_i18n::tr!(
+                                "Couldn't connect SuperGrok: {}",
+                                err
+                            ))
+                            .with_object_id(GROK_OAUTH_CONNECT_TOAST_OBJECT_ID.to_string()),
                             window_id,
                             ctx,
                         );
@@ -2181,8 +2193,10 @@ impl WarpAgentPageView {
         let window_id = ctx.window_id();
         ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
             toast_stack.add_ephemeral_toast(
-                DismissibleToast::success(light_i18n::tr("SuperGrok subscription connected").to_string())
-                    .with_object_id(GROK_OAUTH_CONNECT_TOAST_OBJECT_ID.to_string()),
+                DismissibleToast::success(
+                    light_i18n::tr("SuperGrok subscription connected").to_string(),
+                )
+                .with_object_id(GROK_OAUTH_CONNECT_TOAST_OBJECT_ID.to_string()),
                 window_id,
                 ctx,
             );
@@ -2270,7 +2284,8 @@ impl WarpAgentPageView {
                         let window_id = ctx.window_id();
                         ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
                             toast_stack.add_ephemeral_toast(
-                                DismissibleToast::error(light_i18n::tr!("Couldn't connect SuperGrok: {}",
+                                DismissibleToast::error(light_i18n::tr!(
+                                    "Couldn't connect SuperGrok: {}",
                                     err
                                 ))
                                 .with_object_id(GROK_OAUTH_CONNECT_TOAST_OBJECT_ID.to_string()),
@@ -2403,7 +2418,10 @@ impl WarpAgentPageView {
                 widgets.push(Box::new(CustomModelRoutersWidget));
                 widgets
             };
-            categories.push(Category::new(light_i18n::tr("Custom Routers"), custom_router_widgets));
+            categories.push(Category::new(
+                light_i18n::tr("Custom Routers"),
+                custom_router_widgets,
+            ));
         }
 
         categories.push(Category::new(
@@ -2435,16 +2453,18 @@ impl WarpAgentPageView {
         let global_ai_sign_up_button = MouseStateHandle::default();
         PageType::new_categorized(
             categories,
-            Some(PageTitle::new(light_i18n::tr("Warp Agent")).with_trailing_element(
-                move |_view, appearance, app| {
-                    render_global_ai_toggle(
-                        &global_ai_switch_state,
-                        &global_ai_sign_up_button,
-                        appearance,
-                        app,
-                    )
-                },
-            )),
+            Some(
+                PageTitle::new(light_i18n::tr("Warp Agent")).with_trailing_element(
+                    move |_view, appearance, app| {
+                        render_global_ai_toggle(
+                            &global_ai_switch_state,
+                            &global_ai_sign_up_button,
+                            appearance,
+                            app,
+                        )
+                    },
+                ),
+            ),
         )
     }
 
@@ -3670,7 +3690,9 @@ impl SettingsWidget for GitOperationsAutogenWidget {
                 app,
             ))
             .with_child(render_ai_setting_description(
-                light_i18n::tr("Let AI generate commit messages and pull request titles and descriptions."),
+                light_i18n::tr(
+                    "Let AI generate commit messages and pull request titles and descriptions.",
+                ),
                 is_toggleable,
                 app,
             ))
@@ -3905,11 +3927,11 @@ impl SettingsWidget for PromptSubmissionModeWidget {
         let mut column = Flex::column().with_child(render_dropdown_item(
             appearance,
             light_i18n::tr("Default prompt submission mode"),
-            Some(
-                light_i18n::tr("What happens when you submit a new prompt while the agent is still \
+            Some(light_i18n::tr(
+                "What happens when you submit a new prompt while the agent is still \
                  responding. You can override this per conversation using the auto-queue \
-                 toggle."),
-            ),
+                 toggle.",
+            )),
             None,
             LocalOnlyIconState::for_setting(
                 PromptSubmissionMode::storage_key(),
@@ -3928,11 +3950,11 @@ impl SettingsWidget for PromptSubmissionModeWidget {
                 Container::new(render_dropdown_item(
                     appearance,
                     light_i18n::tr("Default long-running command submission mode"),
-                    Some(
-                        light_i18n::tr("What happens when you submit a prompt while an agent is driving an \
+                    Some(light_i18n::tr(
+                        "What happens when you submit a prompt while an agent is driving an \
                          agent-requested long-running command. Queued prompts are sent to the \
-                         agent when the command finishes."),
-                    ),
+                         agent when the command finishes.",
+                    )),
                     None,
                     LocalOnlyIconState::for_setting(
                         LongRunningCommandSubmissionMode::storage_key(),
@@ -3988,7 +4010,9 @@ impl NaturalLanguageDetectionWidget {
             static AUTODETECTION_DESCRIPTION_FRAGMENTS: LazyLock<Vec<FormattedTextFragment>> =
                 LazyLock::new(|| {
                     vec![
-                        FormattedTextFragment::plain_text(light_i18n::tr("Encountered an incorrect detection? ")),
+                        FormattedTextFragment::plain_text(light_i18n::tr(
+                            "Encountered an incorrect detection? ",
+                        )),
                         FormattedTextFragment::hyperlink(
                             light_i18n::tr("Let us know"),
                             "https://warpdotdev.typeform.com/to/offrTIpq",
@@ -4042,12 +4066,12 @@ impl NaturalLanguageDetectionWidget {
                 Vec<FormattedTextFragment>,
             > = LazyLock::new(|| {
                 vec![
-                    FormattedTextFragment::plain_text(
-                        light_i18n::tr("Enabling natural language detection will detect when natural language is written in the terminal input, and then automatically switch to Agent Mode for AI queries."),
-                    ),
-                    FormattedTextFragment::plain_text(
-                        light_i18n::tr(" Encountered an incorrect input detection? "),
-                    ),
+                    FormattedTextFragment::plain_text(light_i18n::tr(
+                        "Enabling natural language detection will detect when natural language is written in the terminal input, and then automatically switch to Agent Mode for AI queries.",
+                    )),
+                    FormattedTextFragment::plain_text(light_i18n::tr(
+                        " Encountered an incorrect input detection? ",
+                    )),
                     FormattedTextFragment::hyperlink(
                         light_i18n::tr("Let us know"),
                         "https://warpdotdev.typeform.com/to/offrTIpq",
@@ -4097,7 +4121,9 @@ impl NaturalLanguageDetectionWidget {
                 app,
             ))
             .with_child(render_ai_setting_description(
-                light_i18n::tr("Commands listed here will never trigger natural language detection."),
+                light_i18n::tr(
+                    "Commands listed here will never trigger natural language detection.",
+                ),
                 is_toggleable,
                 app,
             ))
@@ -4136,9 +4162,9 @@ impl VoiceWidget {
         ));
 
         let voice_input_description_text_fragments = vec![
-            FormattedTextFragment::plain_text(
-                light_i18n::tr("Voice input allows you to control Warp by speaking directly to your terminal (powered by "),
-            ),
+            FormattedTextFragment::plain_text(light_i18n::tr(
+                "Voice input allows you to control Warp by speaking directly to your terminal (powered by ",
+            )),
             FormattedTextFragment::hyperlink("Wispr Flow", WISPR_FLOW_URL),
             FormattedTextFragment::plain_text(")."),
         ];
@@ -4184,7 +4210,9 @@ impl VoiceWidget {
             column.add_child(render_filterable_dropdown_item(
                 appearance,
                 light_i18n::tr("Speech Language"),
-                Some(light_i18n::tr("Language used when transcribing voice input.")),
+                Some(light_i18n::tr(
+                    "Language used when transcribing voice input.",
+                )),
                 None,
                 LocalOnlyIconState::for_setting(
                     VoiceInputLanguage::storage_key(),
@@ -4475,7 +4503,9 @@ impl SettingsWidget for ThinkingDisplayModeWidget {
         render_dropdown_item(
             appearance,
             light_i18n::tr("Agent thinking display"),
-            Some(light_i18n::tr("Controls how reasoning/thinking traces are displayed.")),
+            Some(light_i18n::tr(
+                "Controls how reasoning/thinking traces are displayed.",
+            )),
             None,
             LocalOnlyIconState::for_setting(
                 ThinkingDisplayMode::storage_key(),
@@ -4509,7 +4539,9 @@ impl SettingsWidget for OrchestrationMessageDisplayModeWidget {
         render_dropdown_item(
             appearance,
             light_i18n::tr("Orchestration message display"),
-            Some(light_i18n::tr("Controls whether orchestration messages stay expanded.")),
+            Some(light_i18n::tr(
+                "Controls whether orchestration messages stay expanded.",
+            )),
             None,
             LocalOnlyIconState::for_setting(
                 OrchestrationMessageDisplayMode::storage_key(),
@@ -5194,7 +5226,8 @@ impl ApiKeysWidget {
         // Disabled between a Cancel click and the port being confirmed
         // released -- exposing Connect any earlier could race it.
         let grok_cancelling_button = ctx.add_typed_action_view(|_| {
-            ActionButton::new(light_i18n::tr("Cancelling…"), SecondaryTheme).with_size(ButtonSize::Small)
+            ActionButton::new(light_i18n::tr("Cancelling…"), SecondaryTheme)
+                .with_size(ButtonSize::Small)
         });
         grok_cancelling_button.update(ctx, |button, ctx| {
             button.set_disabled(true, ctx);
@@ -5331,7 +5364,8 @@ impl ApiKeysWidget {
     ) -> Box<dyn Element> {
         let provider_name = provider.display_name();
         let tooltip_text = FormattedText::new([FormattedTextLine::Line(vec![
-            FormattedTextFragment::plain_text(light_i18n::tr!("Your organization has provided an API key for {}. A key entered here takes precedence for {} requests.",
+            FormattedTextFragment::plain_text(light_i18n::tr!(
+                "Your organization has provided an API key for {}. A key entered here takes precedence for {} requests.",
                 provider_name,
                 provider_name
             )),
@@ -5474,21 +5508,21 @@ impl ApiKeysWidget {
         };
 
         if show_provider_keys {
-            add_paragraph(vec![FormattedTextFragment::plain_text(
-                light_i18n::tr("Use your own API keys from model providers for Warp Agent. API keys are used to make requests to your chosen model provider. Using auto models or models you do not have available API keys for will consume Warp credits."),
-            )]);
+            add_paragraph(vec![FormattedTextFragment::plain_text(light_i18n::tr(
+                "Use your own API keys from model providers for Warp Agent. API keys are used to make requests to your chosen model provider. Using auto models or models you do not have available API keys for will consume Warp credits.",
+            ))]);
         }
 
         if show_custom_endpoints {
-            add_paragraph(vec![FormattedTextFragment::plain_text(
-                light_i18n::tr("Add custom endpoints to use third-party models. Custom endpoints must support OpenAI Chat Completions, OpenAI Responses, or Anthropic Messages."),
-            )]);
+            add_paragraph(vec![FormattedTextFragment::plain_text(light_i18n::tr(
+                "Add custom endpoints to use third-party models. Custom endpoints must support OpenAI Chat Completions, OpenAI Responses, or Anthropic Messages.",
+            ))]);
         }
 
         if show_provider_keys || show_custom_endpoints {
-            add_paragraph(vec![FormattedTextFragment::plain_text(
-                light_i18n::tr("API keys added here are stored only on this device, not on Warp's servers."),
-            )]);
+            add_paragraph(vec![FormattedTextFragment::plain_text(light_i18n::tr(
+                "API keys added here are stored only on this device, not on Warp's servers.",
+            ))]);
             add_paragraph(vec![FormattedTextFragment::hyperlink(
                 light_i18n::tr("Learn more"),
                 CUSTOM_INFERENCE_LEARN_MORE_URL,
@@ -5593,9 +5627,13 @@ impl ApiKeysWidget {
             .with_cross_axis_alignment(CrossAxisAlignment::Center)
             .with_spacing(4.)
             .with_child(
-                Text::new_inline(light_i18n::tr("Use your"), appearance.ui_font_family(), CONTENT_FONT_SIZE)
-                    .with_color(text_color.into())
-                    .finish(),
+                Text::new_inline(
+                    light_i18n::tr("Use your"),
+                    appearance.ui_font_family(),
+                    CONTENT_FONT_SIZE,
+                )
+                .with_color(text_color.into())
+                .finish(),
             )
             .with_child(
                 ConstrainedBox::new(Icon::XLogo.to_warpui_icon(text_color).finish())
@@ -5649,7 +5687,8 @@ impl ApiKeysWidget {
 
         if let Some(tokens) = grok_tokens {
             let connected_text = match tokens.connected_at.map(DateTime::<Local>::from) {
-                Some(connected_at) => light_i18n::tr!("Connected on {}.",
+                Some(connected_at) => light_i18n::tr!(
+                    "Connected on {}.",
                     connected_at.format(light_i18n::tr("%m/%d/%Y at %-I:%M%P"))
                 ),
                 // Tokens stored before the connection time was tracked.
@@ -6371,8 +6410,10 @@ impl AwsBedrockWidget {
         let toggle_description = if is_admin_enforced {
             light_i18n::tr("Warp loads and sends local AWS CLI credentials for Bedrock-supported models. This setting is managed by your organization.").to_string()
         } else {
-            light_i18n::tr("Warp loads and sends local AWS CLI credentials for Bedrock-supported models.")
-                .to_string()
+            light_i18n::tr(
+                "Warp loads and sends local AWS CLI credentials for Bedrock-supported models.",
+            )
+            .to_string()
         };
 
         let mut column = Flex::column().with_spacing(16.).with_child(
@@ -6535,7 +6576,9 @@ impl AwsBedrockWidget {
             app,
         );
         let description = render_ai_setting_description(
-            light_i18n::tr("When enabled, the login command will run automatically when AWS Bedrock credentials expire."),
+            light_i18n::tr(
+                "When enabled, the login command will run automatically when AWS Bedrock credentials expire.",
+            ),
             is_usage_enabled,
             app,
         );

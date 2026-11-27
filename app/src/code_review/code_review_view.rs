@@ -268,8 +268,10 @@ pub const CODE_REVIEW_TOOLTIP_TEXT: &str = "View changes";
 
 pub fn get_discard_button_disabled_tooltip(git_operation_blocked: bool) -> String {
     if git_operation_blocked {
-        light_i18n::tr("Cannot discard changes while a git operation (merge, rebase, etc.) is in progress")
-            .to_string()
+        light_i18n::tr(
+            "Cannot discard changes while a git operation (merge, rebase, etc.) is in progress",
+        )
+        .to_string()
     } else {
         light_i18n::tr("No changes to discard").to_string()
     }
@@ -471,7 +473,9 @@ impl DiscardOperationType {
             DiscardOperationType::FileUncommittedChanges => {
                 light_i18n::tr("Discard all uncommitted changes to file?").to_string()
             }
-            DiscardOperationType::AllChangesAgainstBranch(_) => light_i18n::tr("Discard all changes?").to_string(),
+            DiscardOperationType::AllChangesAgainstBranch(_) => {
+                light_i18n::tr("Discard all changes?").to_string()
+            }
             DiscardOperationType::FileChangesAgainstBranch(_) => {
                 light_i18n::tr("Discard all changes to file?").to_string()
             }
@@ -1305,7 +1309,9 @@ impl CodeReviewView {
         let open_repository_button = ctx.add_typed_action_view(|_ctx| {
             ActionButton::new(light_i18n::tr("Open repository"), NakedTheme)
                 .with_size(ButtonSize::Small)
-                .with_tooltip(light_i18n::tr("Navigate to a repo and initialize it for coding"))
+                .with_tooltip(light_i18n::tr(
+                    "Navigate to a repo and initialize it for coding",
+                ))
                 .with_tooltip_alignment(TooltipAlignment::Center)
                 .on_click(|ctx| ctx.dispatch_typed_action(CodeReviewAction::OpenRepository))
         });
@@ -3985,21 +3991,33 @@ impl CodeReviewView {
         appearance: &Appearance,
         open_repo_button: Option<Box<dyn Element>>,
     ) -> Box<dyn Element> {
-        Self::render_no_repo_found_state(appearance, light_i18n::tr("Diffs only work for local workspaces."), open_repo_button)
+        Self::render_no_repo_found_state(
+            appearance,
+            light_i18n::tr("Diffs only work for local workspaces."),
+            open_repo_button,
+        )
     }
 
     pub fn render_wsl_state(
         appearance: &Appearance,
         open_repo_button: Option<Box<dyn Element>>,
     ) -> Box<dyn Element> {
-        Self::render_no_repo_found_state(appearance, light_i18n::tr("Diffs don't currently work in WSL."), open_repo_button)
+        Self::render_no_repo_found_state(
+            appearance,
+            light_i18n::tr("Diffs don't currently work in WSL."),
+            open_repo_button,
+        )
     }
 
     pub fn render_not_repo_state(
         appearance: &Appearance,
         open_repo_button: Option<Box<dyn Element>>,
     ) -> Box<dyn Element> {
-        Self::render_no_repo_found_state(appearance, light_i18n::tr("Diffs only work for git repositories."), open_repo_button)
+        Self::render_no_repo_found_state(
+            appearance,
+            light_i18n::tr("Diffs only work for git repositories."),
+            open_repo_button,
+        )
     }
 
     fn render_loaded_state(
@@ -4280,7 +4298,8 @@ impl CodeReviewView {
 
                 self.clear_review_comments(ctx);
                 ToastStack::handle(ctx).update(ctx, |stack, ctx| {
-                    let toast = DismissibleToast::default(light_i18n::tr("Comments sent to agent").into());
+                    let toast =
+                        DismissibleToast::default(light_i18n::tr("Comments sent to agent").into());
                     stack.add_ephemeral_toast(toast, self.window_id, ctx);
                 });
                 ctx.emit(CodeReviewViewEvent::ReviewSubmitted);
@@ -4288,7 +4307,8 @@ impl CodeReviewView {
             }
             ReviewSubmissionResult::Error => {
                 report_error!("Failed to submit review comments");
-                let error_message = light_i18n::tr("Could not submit comments to the agent").to_string();
+                let error_message =
+                    light_i18n::tr("Could not submit comments to the agent").to_string();
                 ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
                     let toast = DismissibleToast::error(error_message);
                     toast_stack.add_ephemeral_toast(toast, self.window_id, ctx);
@@ -5517,8 +5537,10 @@ impl CodeReviewView {
                     )
                     .check(self.discard_dialog_state.stash_changes_enabled)
                     .with_label(
-                        appearance.ui_builder().span(light_i18n::tr("Stash changes")).with_style(
-                            UiComponentStyles {
+                        appearance
+                            .ui_builder()
+                            .span(light_i18n::tr("Stash changes"))
+                            .with_style(UiComponentStyles {
                                 font_size: Some(appearance.ui_font_size()),
                                 font_color: Some(
                                     appearance
@@ -5527,8 +5549,7 @@ impl CodeReviewView {
                                         .into(),
                                 ),
                                 ..Default::default()
-                            },
-                        ),
+                            }),
                     )
                     .build()
                     .on_click(|ctx, _, _| {
@@ -5761,7 +5782,8 @@ impl CodeReviewView {
                 let toast_id = self.attach_context_not_allowed_toast_id(ctx);
                 crate::workspace::ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
                     let toast = crate::view_components::DismissibleToast::default(
-                        light_i18n::tr("Cannot attach context when terminal is running").to_string(),
+                        light_i18n::tr("Cannot attach context when terminal is running")
+                            .to_string(),
                     )
                     .with_object_id(toast_id);
                     toast_stack.add_ephemeral_toast(toast, self.window_id, ctx);
@@ -5869,7 +5891,8 @@ impl CodeReviewView {
                 let toast_id = self.attach_diff_not_allowed_toast_id(ctx);
                 ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
                     let toast = DismissibleToast::default(
-                        light_i18n::tr("Cannot attach diff while input is not available").to_string(),
+                        light_i18n::tr("Cannot attach diff while input is not available")
+                            .to_string(),
                     )
                     .with_object_id(toast_id);
                     toast_stack.add_ephemeral_toast(toast, self.window_id, ctx);
@@ -6603,7 +6626,10 @@ impl CodeReviewView {
                 });
                 self.git_operations_chevron.update(ctx, |button, ctx| {
                     button.set_disabled(disabled, ctx);
-                    button.set_tooltip(disabled.then_some(light_i18n::tr("No git actions available")), ctx);
+                    button.set_tooltip(
+                        disabled.then_some(light_i18n::tr("No git actions available")),
+                        ctx,
+                    );
                 });
             }
             PrimaryGitActionMode::Push => {

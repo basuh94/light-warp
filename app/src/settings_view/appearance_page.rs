@@ -1420,7 +1420,10 @@ impl AppearanceSettingsPageView {
         }
 
         if !window_settings_widgets.is_empty() {
-            categories.push(Category::new(light_i18n::tr("Window"), window_settings_widgets));
+            categories.push(Category::new(
+                light_i18n::tr("Window"),
+                window_settings_widgets,
+            ));
         }
 
         // Tools panel tab visibility toggles. These control which of the four
@@ -1444,7 +1447,10 @@ impl AppearanceSettingsPageView {
         }
         tools_panel_widgets.push(Box::new(ToolsPanelWarpDriveWidget::default()));
         if !tools_panel_widgets.is_empty() {
-            categories.push(Category::new(light_i18n::tr("Tools panel"), tools_panel_widgets));
+            categories.push(Category::new(
+                light_i18n::tr("Tools panel"),
+                tools_panel_widgets,
+            ));
         }
 
         // Create the Input category with all widgets
@@ -1473,7 +1479,10 @@ impl AppearanceSettingsPageView {
         if FeatureFlag::MinimalistUI.is_enabled() {
             block_settings_widgets.push(Box::new(ShowBlockDividersWidget::default()));
         }
-        categories.push(Category::new(light_i18n::tr("Blocks"), block_settings_widgets));
+        categories.push(Category::new(
+            light_i18n::tr("Blocks"),
+            block_settings_widgets,
+        ));
 
         let font_settings = FontSettings::as_ref(ctx);
         let mut text_settings_widgets: Vec<Box<dyn SettingsWidget<View = Self>>> = vec![
@@ -2683,7 +2692,10 @@ impl AppearanceSettingsPageView {
                 LanguagePreference::ALL
                     .into_iter()
                     .map(|language| {
-                        DropdownItem::new(language.label(), AppearancePageAction::SetLanguage(language))
+                        DropdownItem::new(
+                            language.label(),
+                            AppearancePageAction::SetLanguage(language),
+                        )
                     })
                     .collect(),
                 ctx,
@@ -3103,7 +3115,9 @@ impl SettingsWidget for CustomAppIconWidget {
         let dropdown = render_dropdown_item(
             appearance,
             light_i18n::tr("Customize your app icon"),
-            show_bundle_warning.then_some(light_i18n::tr("Changing the app icon requires the app to be bundled.")),
+            show_bundle_warning.then_some(light_i18n::tr(
+                "Changing the app icon requires the app to be bundled.",
+            )),
             None,
             LocalOnlyIconState::Hidden,
             None,
@@ -3344,7 +3358,9 @@ impl SettingsWidget for WindowOpacityWidget {
                 .with_child(
                     Container::new(
                         FormattedTextElement::from_str(
-                            light_i18n::tr("Transparency is not supported with your graphics drivers."),
+                            light_i18n::tr(
+                                "Transparency is not supported with your graphics drivers.",
+                            ),
                             appearance.ui_font_family(),
                             appearance.ui_font_size(),
                         )
@@ -3395,9 +3411,9 @@ impl SettingsWidget for WindowOpacityWidget {
             // Skip showing the warning for OpenGL since WGPU often incorrectly reports it as not
             // supporting alpha.
             if !window.supports_transparency() && window.graphics_backend() != GraphicsBackend::Gl {
-                let mut message = Cow::Borrowed(
-                    light_i18n::tr("The selected graphics settings may not support rendering transparent windows."),
-                );
+                let mut message = Cow::Borrowed(light_i18n::tr(
+                    "The selected graphics settings may not support rendering transparent windows.",
+                ));
                 let gpu_settings = GPUSettings::as_ref(app);
                 if (gpu_settings
                     .prefer_low_power_gpu
@@ -3407,10 +3423,10 @@ impl SettingsWidget for WindowOpacityWidget {
                         .preferred_backend
                         .is_supported_on_current_platform()
                 {
-                    message.to_mut().push_str(
-                        light_i18n::tr(" Try changing the settings for the graphics backend or integrated GPU in \
-                        Features > System."),
-                    );
+                    message.to_mut().push_str(light_i18n::tr(
+                        " Try changing the settings for the graphics backend or integrated GPU in \
+                        Features > System.",
+                    ));
                 }
 
                 col.add_child(
@@ -3537,7 +3553,9 @@ impl SettingsWidget for WindowBackdropWidget {
             col.add_child(
                 Container::new(
                     FormattedTextElement::from_str(
-                        light_i18n::tr("The selected hardware may not support rendering transparent windows."),
+                        light_i18n::tr(
+                            "The selected hardware may not support rendering transparent windows.",
+                        ),
                         appearance.ui_font_family(),
                         appearance.ui_font_size(),
                     )
@@ -3637,7 +3655,10 @@ impl SettingsWidget for ToolsPanelProjectExplorerWidget {
                     );
                 })
                 .finish(),
-            Some(light_i18n::tr("Show the project explorer / file tree tab in the tools panel.").to_string()),
+            Some(
+                light_i18n::tr("Show the project explorer / file tree tab in the tools panel.")
+                    .to_string(),
+            ),
         )
     }
 }
@@ -3677,7 +3698,10 @@ impl SettingsWidget for ToolsPanelConversationHistoryWidget {
                     );
                 })
                 .finish(),
-            Some(light_i18n::tr("Show the agent conversation history tab in the tools panel.").to_string()),
+            Some(
+                light_i18n::tr("Show the agent conversation history tab in the tools panel.")
+                    .to_string(),
+            ),
         )
     }
 }
@@ -4686,7 +4710,9 @@ impl SettingsWidget for LigaturesWidget {
                 mouse_state: self.info_mouse_state.clone(),
                 on_click_action: None,
                 secondary_text: None,
-                tooltip_override_text: Some(light_i18n::tr("Ligatures may reduce performance").to_string()),
+                tooltip_override_text: Some(
+                    light_i18n::tr("Ligatures may reduce performance").to_string(),
+                ),
             }),
             LocalOnlyIconState::for_setting(
                 LigatureRenderingEnabled::storage_key(),
@@ -5624,7 +5650,9 @@ impl SettingsWidget for ZoomLevelWidget {
         render_dropdown_item(
             appearance,
             light_i18n::tr("Zoom"),
-            Some(light_i18n::tr("Adjusts the default zoom level across all windows")),
+            Some(light_i18n::tr(
+                "Adjusts the default zoom level across all windows",
+            )),
             Some(reset_button),
             LocalOnlyIconState::for_setting(
                 crate::window_settings::ZoomLevel::storage_key(),

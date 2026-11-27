@@ -320,7 +320,8 @@ impl MainSettingsPageView {
 
         widgets.push(Box::new(LogoutWidget::default()));
 
-        let page = PageType::new_uncategorized(widgets, Some(PageTitle::new(light_i18n::tr("Account"))));
+        let page =
+            PageType::new_uncategorized(widgets, Some(PageTitle::new(light_i18n::tr("Account"))));
 
         MainSettingsPageView {
             self_handle: ctx.handle(),
@@ -931,7 +932,9 @@ impl VersionInfoWidget {
                     ),
                     AutoupdateStage::UnableToUpdateToNewVersion { .. } => (
                         Some(StatusContent {
-                            text: light_i18n::tr("A new version of Warp is available but can't be installed"),
+                            text: light_i18n::tr(
+                                "A new version of Warp is available but can't be installed",
+                            ),
                             color: ansi_red,
                         }),
                         Some(CallToActionContent {
@@ -942,7 +945,9 @@ impl VersionInfoWidget {
                     ),
                     AutoupdateStage::UnableToLaunchNewVersion { .. } => (
                         Some(StatusContent {
-                            text: light_i18n::tr("A new version of Warp is installed but can't be launched."),
+                            text: light_i18n::tr(
+                                "A new version of Warp is installed but can't be launched.",
+                            ),
                             color: ansi_red,
                         }),
                         Some(CallToActionContent {

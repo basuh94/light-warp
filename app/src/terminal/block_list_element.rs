@@ -149,8 +149,6 @@ const LINEAR_SCROLLING: ScrollingAcceleration = ScrollingAcceleration::Polynomia
 /// have a height that extends down to the bottom of the window when there's a horizontal scroll bar, which messes with the on-hover behavior.
 const BLOCK_HOVER_BUTTON_HEIGHT: f32 = 28.;
 
-
-
 enum ScrollingAcceleration {
     Polynomial(f32),
 }
@@ -1220,7 +1218,8 @@ impl BlockListElement {
                 render_hoverable_block_button(
                     icon,
                     Some(ToolbeltButtonTooltip {
-                        label: light_i18n::tr("Blocks containing secrets cannot be saved.").to_owned(),
+                        label: light_i18n::tr("Blocks containing secrets cannot be saved.")
+                            .to_owned(),
                         tool_tip_below_button: should_render_tooltip_below_button,
                     }),
                     false,

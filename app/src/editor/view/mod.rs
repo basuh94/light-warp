@@ -544,11 +544,15 @@ pub fn init(ctx: &mut AppContext) {
         )
         .with_context_predicate(id!("EditorView") & !id!("IMEOpen"))
         .with_mac_key_binding("shift-ctrl-F"),
-        EditableBinding::new(SELECT_UP_ACTION_NAME, light_i18n::tr("Select up"), EditorAction::SelectUp)
-            .with_context_predicate(id!("EditorView") & !id!("IMEOpen"))
-            // Set this to Mac only since otherwise it could conflict with opening the command
-            // palette. NOTE `shift-up` still exists as a cross platform keybinding for this action.
-            .with_mac_key_binding("shift-ctrl-P"),
+        EditableBinding::new(
+            SELECT_UP_ACTION_NAME,
+            light_i18n::tr("Select up"),
+            EditorAction::SelectUp,
+        )
+        .with_context_predicate(id!("EditorView") & !id!("IMEOpen"))
+        // Set this to Mac only since otherwise it could conflict with opening the command
+        // palette. NOTE `shift-up` still exists as a cross platform keybinding for this action.
+        .with_mac_key_binding("shift-ctrl-P"),
         EditableBinding::new(
             SELECT_DOWN_ACTION_NAME,
             light_i18n::tr("Select down"),
@@ -610,15 +614,27 @@ pub fn init(ctx: &mut AppContext) {
         .with_context_predicate(id!("EditorView") & !id!("IMEOpen"))
         .with_mac_key_binding("cmd-shift-left"),
         // Navigation
-        EditableBinding::new("editor_view:up", light_i18n::tr("Move cursor up"), EditorAction::Up)
-            .with_context_predicate(id!("EditorView") & !id!("IMEOpen"))
-            .with_key_binding("ctrl-p"),
-        EditableBinding::new("editor_view:down", light_i18n::tr("Move cursor down"), EditorAction::Down)
-            .with_context_predicate(id!("EditorView") & !id!("IMEOpen"))
-            .with_key_binding("ctrl-n"),
-        EditableBinding::new("editor_view:left", light_i18n::tr("Move cursor left"), EditorAction::Left)
-            .with_context_predicate(id!("EditorView") & !id!("IMEOpen"))
-            .with_key_binding("ctrl-b"),
+        EditableBinding::new(
+            "editor_view:up",
+            light_i18n::tr("Move cursor up"),
+            EditorAction::Up,
+        )
+        .with_context_predicate(id!("EditorView") & !id!("IMEOpen"))
+        .with_key_binding("ctrl-p"),
+        EditableBinding::new(
+            "editor_view:down",
+            light_i18n::tr("Move cursor down"),
+            EditorAction::Down,
+        )
+        .with_context_predicate(id!("EditorView") & !id!("IMEOpen"))
+        .with_key_binding("ctrl-n"),
+        EditableBinding::new(
+            "editor_view:left",
+            light_i18n::tr("Move cursor left"),
+            EditorAction::Left,
+        )
+        .with_context_predicate(id!("EditorView") & !id!("IMEOpen"))
+        .with_key_binding("ctrl-b"),
         EditableBinding::new(
             "editor_view:right",
             light_i18n::tr("Move cursor right"),
@@ -655,10 +671,14 @@ pub fn init(ctx: &mut AppContext) {
         .with_context_predicate(id!("EditorView") & !id!("IMEOpen"))
         .with_mac_key_binding("cmd-left")
         .with_linux_or_windows_key_binding("home"),
-        EditableBinding::new("editor_view:end", light_i18n::tr("End"), EditorAction::MoveToVisualLineEnd)
-            .with_context_predicate(id!("EditorView") & !id!("IMEOpen"))
-            .with_mac_key_binding("cmd-right")
-            .with_linux_or_windows_key_binding("end"),
+        EditableBinding::new(
+            "editor_view:end",
+            light_i18n::tr("End"),
+            EditorAction::MoveToVisualLineEnd,
+        )
+        .with_context_predicate(id!("EditorView") & !id!("IMEOpen"))
+        .with_mac_key_binding("cmd-right")
+        .with_linux_or_windows_key_binding("end"),
         EditableBinding::new(
             "editor_view:cmd_down",
             light_i18n::tr("Move cursor to the bottom"),
@@ -783,9 +803,13 @@ pub fn init(ctx: &mut AppContext) {
         )
         .with_context_predicate(id!("EditorView") & !id!("IMEOpen"))
         .with_key_binding("alt-d"),
-        EditableBinding::new("editor_view:delete", light_i18n::tr("Delete"), EditorAction::Delete)
-            .with_context_predicate(id!("EditorView") & !id!("EditorView_SingleCursorBufferEnd"))
-            .with_key_binding("ctrl-d"),
+        EditableBinding::new(
+            "editor_view:delete",
+            light_i18n::tr("Delete"),
+            EditorAction::Delete,
+        )
+        .with_context_predicate(id!("EditorView") & !id!("EditorView_SingleCursorBufferEnd"))
+        .with_key_binding("ctrl-d"),
         EditableBinding::new(
             "editor:delete_word_right",
             light_i18n::tr("Delete word right"),
@@ -837,12 +861,20 @@ pub fn init(ctx: &mut AppContext) {
         .with_context_predicate(id!("EditorView") & !id!("IMEOpen"))
         .with_key_binding("ctrl-j"),
         // Folds
-        EditableBinding::new("editor_view:fold", light_i18n::tr("Fold"), EditorAction::Fold)
-            .with_context_predicate(id!("EditorView") & !id!("IMEOpen"))
-            .with_key_binding("alt-cmdorctrl-["),
-        EditableBinding::new("editor_view:unfold", light_i18n::tr("Unfold"), EditorAction::Unfold)
-            .with_context_predicate(id!("EditorView") & !id!("IMEOpen"))
-            .with_key_binding("alt-cmdorctrl-]"),
+        EditableBinding::new(
+            "editor_view:fold",
+            light_i18n::tr("Fold"),
+            EditorAction::Fold,
+        )
+        .with_context_predicate(id!("EditorView") & !id!("IMEOpen"))
+        .with_key_binding("alt-cmdorctrl-["),
+        EditableBinding::new(
+            "editor_view:unfold",
+            light_i18n::tr("Unfold"),
+            EditorAction::Unfold,
+        )
+        .with_context_predicate(id!("EditorView") & !id!("IMEOpen"))
+        .with_key_binding("alt-cmdorctrl-]"),
         EditableBinding::new(
             "editor_view:fold_selected_ranges",
             light_i18n::tr("Fold selected ranges"),
@@ -1711,14 +1743,16 @@ impl ImageContextOptions {
 
             if *num_images_attached >= MAX_IMAGE_COUNT_FOR_QUERY {
                 return light_i18n::tr!(
-                    "Image attachment is disabled — limit is {} per query", MAX_IMAGE_COUNT_FOR_QUERY
+                    "Image attachment is disabled — limit is {} per query",
+                    MAX_IMAGE_COUNT_FOR_QUERY
                 );
             }
 
             let total_images = *num_images_attached + *num_images_in_conversation;
             if total_images >= MAX_IMAGES_PER_CONVERSATION {
                 return light_i18n::tr!(
-                    "Image attachment is disabled — limit is {} per conversation", MAX_IMAGES_PER_CONVERSATION
+                    "Image attachment is disabled — limit is {} per conversation",
+                    MAX_IMAGES_PER_CONVERSATION
                 );
             }
         }

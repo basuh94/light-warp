@@ -819,9 +819,13 @@ fn render_zero_state(
 
     let new_conversation_button =
         Hoverable::new(zero_state_button_mouse_state, move |mouse_state| {
-            let label = Text::new_inline(light_i18n::tr("New conversation"), appearance.ui_font_family(), 12.)
-                .with_color(theme.main_text_color(theme.background()).into_solid())
-                .finish();
+            let label = Text::new_inline(
+                light_i18n::tr("New conversation"),
+                appearance.ui_font_family(),
+                12.,
+            )
+            .with_color(theme.main_text_color(theme.background()).into_solid())
+            .finish();
 
             let button_content = Flex::row()
                 .with_cross_axis_alignment(CrossAxisAlignment::Center)
@@ -995,7 +999,10 @@ impl TypedActionView for ConversationListView {
                     ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
                         toast_stack.add_ephemeral_toast(
                             DismissibleToast::error(
-                                light_i18n::tr("Conversations cannot be deleted while in progress.").to_string(),
+                                light_i18n::tr(
+                                    "Conversations cannot be deleted while in progress.",
+                                )
+                                .to_string(),
                             ),
                             window_id,
                             ctx,
@@ -1048,8 +1055,8 @@ impl TypedActionView for ConversationListView {
                         })
                         .with_disabled(!entry.capabilities.can_delete);
                     if !entry.capabilities.can_delete {
-                        delete_item =
-                            delete_item.with_tooltip(light_i18n::tr("This conversation cannot be deleted"));
+                        delete_item = delete_item
+                            .with_tooltip(light_i18n::tr("This conversation cannot be deleted"));
                     }
 
                     // Only show share item if the conversation is shareable
@@ -1158,8 +1165,10 @@ impl TypedActionView for ConversationListView {
                         ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
                             toast_stack.add_ephemeral_toast(
                                 DismissibleToast::error(
-                                    light_i18n::tr("Conversations cannot be deleted while in progress.")
-                                        .to_string(),
+                                    light_i18n::tr(
+                                        "Conversations cannot be deleted while in progress.",
+                                    )
+                                    .to_string(),
                                 ),
                                 window_id,
                                 ctx,

@@ -504,7 +504,9 @@ impl RightPanelView {
         let open_repository_button = ctx.add_typed_action_view(|_| {
             ActionButton::new(light_i18n::tr("Open repository"), NakedTheme)
                 .with_size(crate::view_components::action_button::ButtonSize::Small)
-                .with_tooltip(light_i18n::tr("Navigate to a repo and initialize it for coding"))
+                .with_tooltip(light_i18n::tr(
+                    "Navigate to a repo and initialize it for coding",
+                ))
                 .with_tooltip_alignment(TooltipAlignment::Center)
                 .on_click(|ctx| ctx.dispatch_typed_action(RightPanelAction::OpenRepository))
         });
@@ -1080,10 +1082,14 @@ impl RightPanelView {
 
         let title = Shrinkable::new(
             1.0,
-            Text::new_inline(light_i18n::tr("Code review").to_string(), appearance.ui_font_family(), 12.)
-                .with_style(Properties::default().weight(Weight::Bold))
-                .with_color(sub_text_color.into())
-                .finish(),
+            Text::new_inline(
+                light_i18n::tr("Code review").to_string(),
+                appearance.ui_font_family(),
+                12.,
+            )
+            .with_style(Properties::default().weight(Weight::Bold))
+            .with_color(sub_text_color.into())
+            .finish(),
         )
         .finish();
 

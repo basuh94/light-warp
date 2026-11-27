@@ -21,8 +21,8 @@ use super::execution_profiles::profiles::AIExecutionProfilesModel;
 use super::local_models;
 use crate::auth::AuthStateProvider;
 use crate::server::ids::ServerId;
-use crate::settings::{AISettings, AISettingsChangedEvent};
 use crate::server::server_api::ServerApiProvider;
+use crate::settings::{AISettings, AISettingsChangedEvent};
 use crate::user_config::{WarpConfig, WarpConfigUpdateEvent};
 use crate::workspaces::update_manager::TeamUpdateManager;
 #[cfg(feature = "agent_mode_evals")]

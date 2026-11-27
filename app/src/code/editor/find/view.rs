@@ -389,11 +389,16 @@ impl CodeEditorFind {
                     match_index + 1,
                     self.searcher.as_ref(ctx).match_count()
                 ),
-                light_i18n::tr("Use enter and shift-enter to navigate between matches. Escape to quit."),
+                light_i18n::tr(
+                    "Use enter and shift-enter to navigate between matches. Escape to quit.",
+                ),
                 WarpA11yRole::UserAction,
             )
         } else {
-            AccessibilityContent::new_without_help(light_i18n::tr("No results."), WarpA11yRole::UserAction)
+            AccessibilityContent::new_without_help(
+                light_i18n::tr("No results."),
+                WarpA11yRole::UserAction,
+            )
         };
         ctx.emit_a11y_content(content);
     }
@@ -405,9 +410,13 @@ impl CodeEditorFind {
             let remaining_matches = self.searcher.as_ref(ctx).match_count();
             AccessibilityContent::new(
                 light_i18n::tr!(
-                    "Successfully replaced match. Selected match is {} of {}", match_index, remaining_matches
+                    "Successfully replaced match. Selected match is {} of {}",
+                    match_index,
+                    remaining_matches
                 ),
-                light_i18n::tr("Continue pressing Enter to replace more matches, or use up/down arrows to navigate."),
+                light_i18n::tr(
+                    "Continue pressing Enter to replace more matches, or use up/down arrows to navigate.",
+                ),
                 WarpA11yRole::UserAction,
             )
         } else {

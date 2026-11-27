@@ -132,7 +132,10 @@ impl CLIAgentsPageView {
             Box::new(CLIAgentCommandsWidget),
             Box::new(CLIAgentToolbarLayoutWidget),
         ];
-        PageType::new_uncategorized(widgets, Some(PageTitle::new(light_i18n::tr("Third party CLI agents"))))
+        PageType::new_uncategorized(
+            widgets,
+            Some(PageTitle::new(light_i18n::tr("Third party CLI agents"))),
+        )
     }
 
     fn create_cli_agent_dropdowns(
@@ -437,9 +440,9 @@ impl SettingsWidget for CLIAgentWidget {
         );
 
         let description_fragments = vec![
-            FormattedTextFragment::plain_text(
-                light_i18n::tr("Show a toolbar with quick actions when running coding agents like "),
-            ),
+            FormattedTextFragment::plain_text(light_i18n::tr(
+                "Show a toolbar with quick actions when running coding agents like ",
+            )),
             FormattedTextFragment::inline_code("claude"),
             FormattedTextFragment::plain_text(", "),
             FormattedTextFragment::inline_code("codex"),
@@ -765,7 +768,9 @@ impl SettingsWidget for CLIAgentCommandsWidget {
 
         let description = appearance
             .ui_builder()
-            .paragraph(light_i18n::tr("Add regex patterns to show the coding agent toolbar for matching commands."))
+            .paragraph(light_i18n::tr(
+                "Add regex patterns to show the coding agent toolbar for matching commands.",
+            ))
             .with_style(UiComponentStyles {
                 font_size: Some(appearance.ui_font_size()),
                 font_color: Some(styles::description_font_color(true, app).into()),

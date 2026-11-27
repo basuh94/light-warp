@@ -366,9 +366,10 @@ impl EditorView {
     fn show_microphone_access_toast(ctx: &mut ViewContext<Self>) {
         let active_window_id = ctx.window_id();
         ToastStack::handle(ctx).update(ctx, move |toast_stack, ctx| {
-            let mut toast = crate::view_components::DismissibleToast::error(String::from(
-                light_i18n::tr("Failed to start voice input (you may need to enable Microphone access)"),
-            ));
+            let mut toast =
+                crate::view_components::DismissibleToast::error(String::from(light_i18n::tr(
+                    "Failed to start voice input (you may need to enable Microphone access)",
+                )));
             // Set an id so the toast is shown at most once.
             toast = toast.with_object_id(MICROPHONE_ACCESS_ERROR_ID.to_string());
             toast_stack.add_ephemeral_toast(toast, active_window_id, ctx);
@@ -565,7 +566,10 @@ impl EditorView {
 
         let modifier_key = AISettings::handle(app).as_ref(app).voice_input_toggle_key;
         let tooltip_text = if mic_access_denied {
-            light_i18n::tr("Voice transcription is disabled because Microphone access was not granted.").to_string()
+            light_i18n::tr(
+                "Voice transcription is disabled because Microphone access was not granted.",
+            )
+            .to_string()
         } else if modifier_key == VoiceInputToggleKey::None {
             light_i18n::tr("Voice transcription").to_string()
         } else {

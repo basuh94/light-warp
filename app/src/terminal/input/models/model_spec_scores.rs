@@ -20,21 +20,27 @@ pub fn model_specs_title() -> &'static str {
     tr("Model Specs")
 }
 pub fn model_specs_description() -> &'static str {
-    tr("Warp's benchmarks for how well a model performs in our harness, the rate at which it consumes credits, and task speed.")
+    tr(
+        "Warp's benchmarks for how well a model performs in our harness, the rate at which it consumes credits, and task speed.",
+    )
 }
 
 pub fn reasoning_level_title() -> &'static str {
     tr("Reasoning level")
 }
 pub fn reasoning_level_description() -> &'static str {
-    tr("Increased reasoning levels consume more credits and have higher latency, but higher performance for complicated tasks.")
+    tr(
+        "Increased reasoning levels consume more credits and have higher latency, but higher performance for complicated tasks.",
+    )
 }
 
 pub fn custom_model_router_title() -> &'static str {
     tr("Custom Model Router")
 }
 pub fn custom_model_router_description() -> &'static str {
-    tr("Routes each request to a concrete model based on your routing rules, rather than using a single fixed model.")
+    tr(
+        "Routes each request to a concrete model based on your routing rules, rather than using a single fixed model.",
+    )
 }
 
 pub enum CostRow {

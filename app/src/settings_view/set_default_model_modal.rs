@@ -73,9 +73,11 @@ impl SetDefaultModelModalBody {
         });
 
         let save_button = ctx.add_typed_action_view(|_| {
-            ActionButton::new(light_i18n::tr("Change default model"), PrimaryTheme).on_click(|ctx| {
-                ctx.dispatch_typed_action(SetDefaultModelModalBodyAction::Save);
-            })
+            ActionButton::new(light_i18n::tr("Change default model"), PrimaryTheme).on_click(
+                |ctx| {
+                    ctx.dispatch_typed_action(SetDefaultModelModalBodyAction::Save);
+                },
+            )
         });
 
         Self {

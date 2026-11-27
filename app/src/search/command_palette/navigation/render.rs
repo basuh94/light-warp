@@ -355,7 +355,9 @@ impl CommandRenderInfo {
                 },
                 command_text: Some(last_run_command),
                 hint_text: match mins_since_completion {
-                    Some(mins) if mins >= 60 => light_i18n::tr("Completed over 1 hour ago").to_string(),
+                    Some(mins) if mins >= 60 => {
+                        light_i18n::tr("Completed over 1 hour ago").to_string()
+                    }
                     Some(mins) if mins == 1 => light_i18n::tr!("Completed {} minute ago", mins),
                     Some(mins) => light_i18n::tr!("Completed {} minutes ago", mins),
                     None => light_i18n::tr("No timestamp found").to_string(),

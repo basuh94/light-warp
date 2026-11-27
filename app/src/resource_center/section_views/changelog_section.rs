@@ -30,7 +30,6 @@ struct ChangelogMouseStateHandles {
     view_changelogs_mouse_state: MouseStateHandle,
 }
 
-
 pub struct ChangelogSectionView {
     changelog_model_handle: ModelHandle<ChangelogModel>,
     changelog_button_mouse_states: ChangelogMouseStateHandles,
@@ -97,7 +96,9 @@ impl ChangelogSectionView {
             changelog_fetch_error: create_formatted_text_from_string(
                 light_i18n::tr("Unable to fetch the latest changelog.").to_string(),
             ),
-            changelog_loading: create_formatted_text_from_string(light_i18n::tr("Loading...").to_string()),
+            changelog_loading: create_formatted_text_from_string(
+                light_i18n::tr("Loading...").to_string(),
+            ),
         }
     }
 

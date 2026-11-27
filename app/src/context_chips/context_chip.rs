@@ -172,7 +172,9 @@ impl ChipDisabledReason {
             Self::RequiresExecutable { command } if command == "gh" => {
                 light_i18n::tr("Requires the GitHub CLI").to_string()
             }
-            Self::RequiresExecutable { command } => light_i18n::tr!("Requires the `{}` command", command),
+            Self::RequiresExecutable { command } => {
+                light_i18n::tr!("Requires the `{}` command", command)
+            }
         }
     }
 }

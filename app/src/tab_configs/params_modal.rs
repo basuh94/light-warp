@@ -162,8 +162,9 @@ impl TabConfigParamsModal {
                     ctx.dispatch_typed_action(TabConfigParamsModalAction::Submit);
                 })
         });
-        let submit_button_disabled =
-            ctx.add_typed_action_view(|_| ActionButton::new(light_i18n::tr("Open Tab"), DisabledTheme));
+        let submit_button_disabled = ctx.add_typed_action_view(|_| {
+            ActionButton::new(light_i18n::tr("Open Tab"), DisabledTheme)
+        });
         Self {
             param_fields: Vec::new(),
             pending_config: None,

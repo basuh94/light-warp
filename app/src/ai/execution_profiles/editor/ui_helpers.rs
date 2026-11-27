@@ -102,10 +102,14 @@ pub fn render_header_section(
 }
 
 fn render_header_title(appearance: &Appearance) -> Box<dyn Element> {
-    Text::new_inline(light_i18n::tr("Edit Profile"), appearance.ui_font_family(), 16.)
-        .with_style(Properties::default().weight(Weight::Bold))
-        .with_color(appearance.theme().active_ui_text_color().into())
-        .finish()
+    Text::new_inline(
+        light_i18n::tr("Edit Profile"),
+        appearance.ui_font_family(),
+        16.,
+    )
+    .with_style(Properties::default().weight(Weight::Bold))
+    .with_color(appearance.theme().active_ui_text_color().into())
+    .finish()
 }
 
 fn render_header_name_label(appearance: &Appearance) -> Box<dyn Element> {
@@ -749,7 +753,9 @@ fn render_command_allowlist_section(
 
     render_list_section(
         light_i18n::tr("Command allowlist"),
-        light_i18n::tr("Regular expressions to match commands that can be automatically executed by Oz."),
+        light_i18n::tr(
+            "Regular expressions to match commands that can be automatically executed by Oz.",
+        ),
         &profile_data.command_allowlist,
         &view.command_allowlist_mouse_state_handles,
         Some(&view.command_allowlist_editor),
@@ -912,8 +918,10 @@ pub fn render_plan_auto_sync_toggle(
     .finish();
 
     let desc_elem = Text::new(
-        light_i18n::tr("The plans this agent creates will be automatically added and synced to Warp Drive.")
-            .to_string(),
+        light_i18n::tr(
+            "The plans this agent creates will be automatically added and synced to Warp Drive.",
+        )
+        .to_string(),
         appearance.ui_font_family(),
         11.,
     )
@@ -986,7 +994,8 @@ pub fn render_web_search_toggle(
     .finish();
 
     let desc_elem = Text::new(
-        light_i18n::tr("The agent may use web search when helpful for completing tasks.").to_string(),
+        light_i18n::tr("The agent may use web search when helpful for completing tasks.")
+            .to_string(),
         appearance.ui_font_family(),
         11.,
     )

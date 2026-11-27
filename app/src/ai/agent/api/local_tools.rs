@@ -267,7 +267,10 @@ impl LocalTool {
                     .iter()
                     .map(|file| FileToRead {
                         path: file.name.clone(),
-                        lines: file.line_ranges.first().map(|range| (range.start, range.end)),
+                        lines: file
+                            .line_ranges
+                            .first()
+                            .map(|range| (range.start, range.end)),
                     })
                     .collect(),
             }),
@@ -404,7 +407,11 @@ impl LocalTool {
 }
 
 fn or_current_dir(path: String) -> String {
-    if path.is_empty() { ".".to_owned() } else { path }
+    if path.is_empty() {
+        ".".to_owned()
+    } else {
+        path
+    }
 }
 
 /// Accepts a list of strings, a single string, or a JSON-encoded list.
@@ -631,7 +638,10 @@ fn describe_grep(result: &GrepResult) -> String {
                 })
                 .collect();
             if total > MAX_LISTED_PATHS {
-                lines.push(format!("[{} more files not shown]", total - MAX_LISTED_PATHS));
+                lines.push(format!(
+                    "[{} more files not shown]",
+                    total - MAX_LISTED_PATHS
+                ));
             }
             lines.join("\n")
         }
@@ -653,7 +663,10 @@ fn describe_find_files(result: &FileGlobV2Result) -> String {
             if total == 0 {
                 lines.push("No files found.".to_owned());
             } else if total > MAX_LISTED_PATHS {
-                lines.push(format!("[{} more files not shown]", total - MAX_LISTED_PATHS));
+                lines.push(format!(
+                    "[{} more files not shown]",
+                    total - MAX_LISTED_PATHS
+                ));
             }
             if !success.warnings.is_empty() {
                 lines.push(format!("Warnings: {}", success.warnings));

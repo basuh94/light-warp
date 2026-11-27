@@ -1571,7 +1571,8 @@ impl WorkflowView {
         // Block saving if secrets are detected in the workflow when secret redaction is enabled.
         if self.workflow_contains_secrets(ctx) {
             self.display_error_toast(
-                light_i18n::tr("This workflow cannot be saved because it contains secrets").to_string(),
+                light_i18n::tr("This workflow cannot be saved because it contains secrets")
+                    .to_string(),
                 ctx,
             );
             return;
@@ -1605,7 +1606,10 @@ impl WorkflowView {
                     id
                 } else {
                     report_error!("No client_id obtained for creating workflow");
-                    self.display_error_toast(String::from(light_i18n::tr("Could not create workflow")), ctx);
+                    self.display_error_toast(
+                        String::from(light_i18n::tr("Could not create workflow")),
+                        ctx,
+                    );
                     return;
                 };
 
@@ -2433,7 +2437,8 @@ impl WorkflowView {
                     .finish();
 
                 let button_with_tool_tip = appearance.ui_builder().tool_tip_on_element(
-                    light_i18n::tr("Generate a title, descriptions, or parameters with Warp AI").to_string(),
+                    light_i18n::tr("Generate a title, descriptions, or parameters with Warp AI")
+                        .to_string(),
                     self.ui_state_handles.ai_assist_tool_tip.clone(),
                     rendered_button,
                     ParentAnchor::TopMiddle,

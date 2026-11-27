@@ -13,7 +13,9 @@ use warp_multi_agent_api::message::tool_call_result::Result as ToolResult;
 use warp_multi_agent_api::{RunShellCommandResult, ShellCommandFinished, run_shell_command_result};
 
 use super::tools::{LocalTool, ToolOutcome};
-use super::{StreamKind, TurnInput, TurnWriter, history_messages, root_task, system_prompt, turn_inputs};
+use super::{
+    StreamKind, TurnInput, TurnWriter, history_messages, root_task, system_prompt, turn_inputs,
+};
 
 fn message(kind: MessageKind) -> Message {
     Message {

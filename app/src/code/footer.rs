@@ -1482,7 +1482,9 @@ impl CodeFooterView {
             LspModelState::Stopped { .. } | LspModelState::Stopping { .. } => {
                 Some(light_i18n::tr!("{}: stopped", server.server_name()))
             }
-            LspModelState::Failed { .. } => Some(light_i18n::tr!("{}: error", server.server_name())),
+            LspModelState::Failed { .. } => {
+                Some(light_i18n::tr!("{}: error", server.server_name()))
+            }
         }
     }
 
@@ -1518,7 +1520,8 @@ impl CodeFooterView {
                 .unwrap_or(light_i18n::tr("this workspace"));
             Some((
                 Some(light_i18n::tr!(
-                    "Language support is not currently enabled for {}", root_name
+                    "Language support is not currently enabled for {}",
+                    root_name
                 )),
                 true,
             ))
@@ -1587,7 +1590,10 @@ impl CodeFooterView {
                 ..
             } => match PersistedWorkspace::as_ref(app).has_enabled_lsp_server_for_file_path(path) {
                 LSPEnablementResultForFile::UnsupportedLanguage => (
-                    Some(light_i18n::tr("Language support is unavailable for this file type").to_string()),
+                    Some(
+                        light_i18n::tr("Language support is unavailable for this file type")
+                            .to_string(),
+                    ),
                     false,
                 ),
                 LSPEnablementResultForFile::LSPNotEnabled { root_name } => match lsp_repo_status {
@@ -1599,7 +1605,10 @@ impl CodeFooterView {
                         false,
                     ),
                     LspRepoStatus::Ready | LspRepoStatus::Enabled => (
-                        Some(light_i18n::tr("Language server is unavailable for this codebase").to_string()),
+                        Some(
+                            light_i18n::tr("Language server is unavailable for this codebase")
+                                .to_string(),
+                        ),
                         false,
                     ),
                     LspRepoStatus::DisabledAndNotInstalled { .. }
@@ -1611,7 +1620,10 @@ impl CodeFooterView {
                         true,
                     ),
                     LspRepoStatus::Installing { server_type } => (
-                        Some(light_i18n::tr!("Installing {}...", server_type.binary_name())),
+                        Some(light_i18n::tr!(
+                            "Installing {}...",
+                            server_type.binary_name()
+                        )),
                         false,
                     ),
                 },
@@ -1641,7 +1653,10 @@ impl CodeFooterView {
                 for status in lsp_repo_statuses.values() {
                     if let LspRepoStatus::Installing { server_type } = status {
                         return (
-                            Some(light_i18n::tr!("Installing {}...", server_type.binary_name())),
+                            Some(light_i18n::tr!(
+                                "Installing {}...",
+                                server_type.binary_name()
+                            )),
                             false,
                         );
                     }
@@ -1657,7 +1672,10 @@ impl CodeFooterView {
 
                 // All servers are enabled/ready but no live servers — unavailable
                 (
-                    Some(light_i18n::tr!("Language support is unavailable for {}", root_name)),
+                    Some(light_i18n::tr!(
+                        "Language support is unavailable for {}",
+                        root_name
+                    )),
                     false,
                 )
             }

@@ -293,9 +293,7 @@ pub fn render_warping_indicator<V: View>(
     let message = if let Some(summarization_type) = summarization_type {
         // Choose the appropriate message based on summarization type
         let base_message = match summarization_type {
-            SummarizationType::ConversationSummary => {
-                light_i18n::tr("Summarizing conversation...")
-            }
+            SummarizationType::ConversationSummary => light_i18n::tr("Summarizing conversation..."),
             SummarizationType::ToolCallResultSummary => {
                 light_i18n::tr("Summarizing command output...")
             }
@@ -353,7 +351,9 @@ pub fn render_warping_indicator<V: View>(
                     .as_ref()
                     .and_then(|id| TemplatableMCPServerManager::get_mcp_name(id, app))
                 {
-                    Some(server) => light_i18n::tr!("Calling \"{}\" MCP tool on {}...", name, server),
+                    Some(server) => {
+                        light_i18n::tr!("Calling \"{}\" MCP tool on {}...", name, server)
+                    }
                     None => light_i18n::tr!("Calling \"{}\" MCP tool...", name),
                 }
             }
@@ -984,13 +984,17 @@ fn render_force_refresh_inline(
         // Mirror `render_output_status_text` exactly: same `Text` configuration plus
         // the `Container::with_margin_top(1.)` wrapper so this sits on the same
         // baseline as the adjacent `Last seen by agent ...` text.
-        let text = Text::new(light_i18n::tr(" · Check now").to_string(), font_family, font_size)
-            .with_color(color)
-            .with_style(Properties::default())
-            .with_clip(ClipConfig::end())
-            .with_selectable(false)
-            .soft_wrap(false)
-            .finish();
+        let text = Text::new(
+            light_i18n::tr(" · Check now").to_string(),
+            font_family,
+            font_size,
+        )
+        .with_color(color)
+        .with_style(Properties::default())
+        .with_clip(ClipConfig::end())
+        .with_selectable(false)
+        .soft_wrap(false)
+        .finish();
         let text_with_margin = Container::new(text).with_margin_top(1.).finish();
 
         // Tooltip overlay, positioned above the element on hover. Same pattern as
@@ -998,7 +1002,10 @@ fn render_force_refresh_inline(
         let mut stack = Stack::new().with_child(text_with_margin);
         if state.is_hovered() {
             let tool_tip = ui_builder
-                .tool_tip(light_i18n::tr("Ask the agent to check this command now, skipping its timer.").to_owned())
+                .tool_tip(
+                    light_i18n::tr("Ask the agent to check this command now, skipping its timer.")
+                        .to_owned(),
+                )
                 .build()
                 .finish();
             stack.add_positioned_overlay_child(

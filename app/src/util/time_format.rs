@@ -3,7 +3,9 @@ use std::time::Duration as StdDuration;
 
 use chrono::{DateTime, Duration, Local, Utc};
 pub fn format_message_timestamp(datetime: &DateTime<Local>) -> String {
-    datetime.format(light_i18n::tr("%-m/%-d at %-I:%M %p")).to_string()
+    datetime
+        .format(light_i18n::tr("%-m/%-d at %-I:%M %p"))
+        .to_string()
 }
 
 pub fn is_trustworthy_message_timestamp(datetime: &DateTime<Local>) -> bool {

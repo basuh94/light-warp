@@ -186,7 +186,8 @@ pub(super) fn render_completed_todo_items(
 
         if i == 0 {
             if let Some((index, list_len)) = index_and_len {
-                completed_text += light_i18n::tr!("Completed {} ({}/{})",
+                completed_text += light_i18n::tr!(
+                    "Completed {} ({}/{})",
                     completed_item.title,
                     index + 1,
                     list_len

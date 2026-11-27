@@ -2675,7 +2675,9 @@ impl AnySubMenu {
                     self.selected_item(),
                     Some(AnyMenuItem::Submenu { .. })
                 ) {
-                    light_i18n::tr("Press the up key or the down key to select a menu item. Press the right key to open the submenu")
+                    light_i18n::tr(
+                        "Press the up key or the down key to select a menu item. Press the right key to open the submenu",
+                    )
                 } else {
                     light_i18n::tr("Press the up key or the down key to select a menu item")
                 };

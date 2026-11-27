@@ -586,7 +586,11 @@ impl TabData {
         let mut menu_items = vec![];
         let tab_title = Self::copyable_metadata_value(Some(pane_group.display_title(ctx)));
         if !uses_vertical_tabs(ctx) {
-            Self::push_copy_metadata_menu_item(&mut menu_items, light_i18n::tr("Copy tab title"), tab_title);
+            Self::push_copy_metadata_menu_item(
+                &mut menu_items,
+                light_i18n::tr("Copy tab title"),
+                tab_title,
+            );
             return menu_items;
         }
 
@@ -820,7 +824,10 @@ impl TabData {
         }
 
         let (label, action) = if self.pinned {
-            (light_i18n::tr("Unpin tab"), WorkspaceAction::UnpinTab(index))
+            (
+                light_i18n::tr("Unpin tab"),
+                WorkspaceAction::UnpinTab(index),
+            )
         } else {
             (light_i18n::tr("Pin tab"), WorkspaceAction::PinTab(index))
         };
@@ -859,7 +866,8 @@ impl TabData {
             );
         }
         if show_move_to_group {
-            menu_items.push(MenuItemFields::new_submenu(light_i18n::tr("Move to group")).into_item());
+            menu_items
+                .push(MenuItemFields::new_submenu(light_i18n::tr("Move to group")).into_item());
         }
         if show_remove_from_group {
             menu_items.push(

@@ -1146,12 +1146,13 @@ impl ProfileModelSelector {
                 items.push(MenuItem::Separator);
             }
             items.push(MenuItem::Header {
-                fields: MenuItemFields::new(light_i18n::tr("Custom models")).with_override_text_color(
-                    appearance
-                        .theme()
-                        .sub_text_color(appearance.theme().background())
-                        .into_solid(),
-                ),
+                fields: MenuItemFields::new(light_i18n::tr("Custom models"))
+                    .with_override_text_color(
+                        appearance
+                            .theme()
+                            .sub_text_color(appearance.theme().background())
+                            .into_solid(),
+                    ),
                 clickable: false,
                 right_side_fields: None,
             });
@@ -2074,7 +2075,9 @@ impl ProfileModelSelector {
             Flex::row()
                 .with_main_axis_size(MainAxisSize::Max)
                 .with_cross_axis_alignment(CrossAxisAlignment::Center)
-                .with_child(self.render_model_spec_value_label(light_i18n::tr("Cost").to_string(), app))
+                .with_child(
+                    self.render_model_spec_value_label(light_i18n::tr("Cost").to_string(), app),
+                )
                 .with_child(
                     Expanded::new(
                         1.,
@@ -2124,7 +2127,12 @@ impl ProfileModelSelector {
                 bg_bar_color,
                 app,
             ),
-            self.render_model_spec_value(light_i18n::tr("Speed").to_string(), spec.speed, bg_bar_color, app),
+            self.render_model_spec_value(
+                light_i18n::tr("Speed").to_string(),
+                spec.speed,
+                bg_bar_color,
+                app,
+            ),
         ];
         if let Some(byo_key_source) = byo_key_source {
             spec_values.push(self.render_model_spec_api_key(byo_key_source, app));
@@ -2190,11 +2198,15 @@ impl ProfileModelSelector {
         let (title, description) = match kind {
             ModelSpecSidecarKind::Auto => (
                 light_i18n::tr("Auto mode"),
-                light_i18n::tr("Auto will select the best model for the task. Cost-efficiency optimizes for cost, Responsiveness optimizes for response speed."),
+                light_i18n::tr(
+                    "Auto will select the best model for the task. Cost-efficiency optimizes for cost, Responsiveness optimizes for response speed.",
+                ),
             ),
             ModelSpecSidecarKind::Reasoning => (
                 light_i18n::tr("Reasoning level"),
-                light_i18n::tr("Increased reasoning levels consume more credits and have higher latency, but higher performance for complicated tasks."),
+                light_i18n::tr(
+                    "Increased reasoning levels consume more credits and have higher latency, but higher performance for complicated tasks.",
+                ),
             ),
         };
 

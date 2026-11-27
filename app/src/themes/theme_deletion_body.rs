@@ -25,7 +25,6 @@ const BUTTON_FONT_SIZE: f32 = 14.;
 const BUTTON_BORDER_RADIUS: f32 = 4.;
 const BORDER_WIDTH: f32 = 1.;
 
-
 #[derive(Default)]
 struct MouseStateHandles {
     cancel_mouse_state: MouseStateHandle,
@@ -213,9 +212,13 @@ impl View for ThemeDeletionBody {
             .with_cross_axis_alignment(CrossAxisAlignment::Stretch)
             .with_child(
                 Container::new(
-                    Text::new_inline(light_i18n::tr("This will permanently delete the theme."), appearance.ui_font_family(), 14.)
-                        .with_color(appearance.theme().active_ui_text_color().into())
-                        .finish(),
+                    Text::new_inline(
+                        light_i18n::tr("This will permanently delete the theme."),
+                        appearance.ui_font_family(),
+                        14.,
+                    )
+                    .with_color(appearance.theme().active_ui_text_color().into())
+                    .finish(),
                 )
                 .finish(),
             )

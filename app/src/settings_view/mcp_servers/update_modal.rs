@@ -220,7 +220,10 @@ impl UpdateModalBody {
 
     fn render_description(&self, appearance: &Appearance) -> Box<dyn Element> {
         // Modal appears only when multiple updates are available
-        let description = light_i18n::tr!("This server has {} updates available, which would you like to proceed with?", self.update_options.len());
+        let description = light_i18n::tr!(
+            "This server has {} updates available, which would you like to proceed with?",
+            self.update_options.len()
+        );
 
         Text::new(
             description,

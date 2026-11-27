@@ -328,7 +328,12 @@ impl MCPServersEditPageView {
             false,
             self.log_out_icon_button_mouse_handle.clone(),
         )
-        .with_tooltip(move || ui_builder.tool_tip(light_i18n::tr("Log out").to_string()).build().finish())
+        .with_tooltip(move || {
+            ui_builder
+                .tool_tip(light_i18n::tr("Log out").to_string())
+                .build()
+                .finish()
+        })
         .build()
         .on_click(|ctx, _, _| ctx.dispatch_typed_action(MCPServersEditPageViewAction::LogOut))
         .finish();
@@ -620,8 +625,10 @@ impl MCPServersEditPageView {
             ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
                 toast_stack.add_ephemeral_toast(
                     DismissibleToast::error(
-                        light_i18n::tr("Cannot add multiple MCP servers while editing a single server.")
-                            .to_string(),
+                        light_i18n::tr(
+                            "Cannot add multiple MCP servers while editing a single server.",
+                        )
+                        .to_string(),
                     ),
                     window_id,
                     ctx,
@@ -905,7 +912,9 @@ impl TypedActionView for MCPServersEditPageView {
                         let window_id = ctx.window_id();
                         ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
                             toast_stack.add_ephemeral_toast(
-                                DismissibleToast::error(light_i18n::tr("No MCP Server specified.").to_string()),
+                                DismissibleToast::error(
+                                    light_i18n::tr("No MCP Server specified.").to_string(),
+                                ),
                                 window_id,
                                 ctx,
                             );

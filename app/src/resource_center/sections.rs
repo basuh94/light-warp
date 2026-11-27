@@ -68,13 +68,17 @@ pub fn sections(ctx: &mut ViewContext<ResourceCenterMainView>) -> Vec<Section> {
             },
             ContentItem {
                 title: light_i18n::tr("Integrate Warp with your IDE"),
-                description: light_i18n::tr("Configure Warp to launch from your most used development tools"),
+                description: light_i18n::tr(
+                    "Configure Warp to launch from your most used development tools",
+                ),
                 url: "https://docs.warp.dev/terminal/integrations-and-plugins",
                 button_label: light_i18n::tr("View documentation"),
             },
             ContentItem {
                 title: light_i18n::tr("How Warp uses Warp"),
-                description: light_i18n::tr("Learn how Warp's engineering team uses their favorite features"),
+                description: light_i18n::tr(
+                    "Learn how Warp's engineering team uses their favorite features",
+                ),
                 url: "https://www.warp.dev/blog/how-warp-uses-warp",
                 button_label: light_i18n::tr("Read article"),
             },

@@ -315,7 +315,10 @@ impl MCPServersSettingsPageView {
                 "Ignoring MCP deeplink autoinstall for '{autoinstall_param}': installation modal already open"
             );
             self.add_error_toast(
-                light_i18n::tr("Finish the current MCP install before opening another install link.").to_string(),
+                light_i18n::tr(
+                    "Finish the current MCP install before opening another install link.",
+                )
+                .to_string(),
                 ctx,
             );
             return;
@@ -330,7 +333,10 @@ impl MCPServersSettingsPageView {
             log::warn!(
                 "Unrecognized autoinstall value '{autoinstall_param}': no matching gallery item found"
             );
-            self.add_error_toast(light_i18n::tr!("Unknown MCP server '{}'", autoinstall_param), ctx);
+            self.add_error_toast(
+                light_i18n::tr!("Unknown MCP server '{}'", autoinstall_param),
+                ctx,
+            );
             return;
         };
 
@@ -358,7 +364,10 @@ impl MCPServersSettingsPageView {
             // gallery entry cannot be turned into a valid template. Surface the
             // failure to the user rather than silently returning.
             self.add_error_toast(
-                light_i18n::tr!("MCP server '{}' cannot be installed from this link.", gallery_title),
+                light_i18n::tr!(
+                    "MCP server '{}' cannot be installed from this link.",
+                    gallery_title
+                ),
                 ctx,
             );
             return;

@@ -1,7 +1,7 @@
 //! SearchItem implementation for conversation menu items.
 
-use light_i18n::tr;
 use fuzzy_match::FuzzyMatchResult;
+use light_i18n::tr;
 use ordered_float::OrderedFloat;
 use warp_core::ui::theme::Fill;
 use warpui::elements::{ConstrainedBox, Container, Highlight, ParentElement, Shrinkable, Text};

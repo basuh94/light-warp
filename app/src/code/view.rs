@@ -957,25 +957,28 @@ impl CodeView {
 
     fn display_load_failure(window_id: WindowId, ctx: &mut ViewContext<Self>) {
         ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
-            let toast = DismissibleToast::error(String::from(light_i18n::tr("Failed to load file.")))
-                .with_object_id("failed_to_load_file".to_string());
+            let toast =
+                DismissibleToast::error(String::from(light_i18n::tr("Failed to load file.")))
+                    .with_object_id("failed_to_load_file".to_string());
             toast_stack.add_ephemeral_toast(toast, window_id, ctx);
         });
     }
 
     fn display_save_failure(window_id: WindowId, ctx: &mut ViewContext<Self>) {
         ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
-            let toast = DismissibleToast::error(String::from(light_i18n::tr("Failed to save file.")))
-                .with_object_id("failed_to_save_file".to_string());
+            let toast =
+                DismissibleToast::error(String::from(light_i18n::tr("Failed to save file.")))
+                    .with_object_id("failed_to_save_file".to_string());
             toast_stack.add_ephemeral_toast(toast, window_id, ctx);
         });
     }
 
     fn display_remote_disconnected_save_failure(window_id: WindowId, ctx: &mut ViewContext<Self>) {
         ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
-            let toast =
-                DismissibleToast::error(String::from(light_i18n::tr("Cannot save — remote session disconnected.")))
-                    .with_object_id("failed_to_save_file_remote_disconnected".to_string());
+            let toast = DismissibleToast::error(String::from(light_i18n::tr(
+                "Cannot save — remote session disconnected.",
+            )))
+            .with_object_id("failed_to_save_file_remote_disconnected".to_string());
             toast_stack.add_ephemeral_toast(toast, window_id, ctx);
         });
     }
@@ -2144,9 +2147,12 @@ impl CodeView {
         };
 
         let mut items = vec![
-            MenuItemFields::new_with_label(light_i18n::tr("Close saved"), &format!("{modifier_keys} U"))
-                .with_on_select_action(CodeViewAction::CloseSaved)
-                .into_item(),
+            MenuItemFields::new_with_label(
+                light_i18n::tr("Close saved"),
+                &format!("{modifier_keys} U"),
+            )
+            .with_on_select_action(CodeViewAction::CloseSaved)
+            .into_item(),
             MenuItemFields::toggle_pane_action(is_maximized)
                 .with_on_select_action(CodeViewAction::ToggleMaximized)
                 .into_item(),

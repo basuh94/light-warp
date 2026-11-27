@@ -319,7 +319,11 @@ impl KeybindingRow {
             Empty::new().finish()
         };
 
-        let press_new_shortcut_text = render_text(light_i18n::tr("Press new keyboard shortcut"), None, appearance);
+        let press_new_shortcut_text = render_text(
+            light_i18n::tr("Press new keyboard shortcut"),
+            None,
+            appearance,
+        );
 
         let new_shortcut_element = Container::new(press_new_shortcut_text)
             .with_margin_left(ROW_LEFT_MARGIN)
@@ -438,7 +442,11 @@ impl KeybindingRow {
                     let cancel_button_color = self.get_button_text_color(appearance, state);
                     if index == 0 {
                         SavePosition::new(
-                            render_button(light_i18n::tr("Cancel"), appearance, cancel_button_color),
+                            render_button(
+                                light_i18n::tr("Cancel"),
+                                appearance,
+                                cancel_button_color,
+                            ),
                             "first_keybinding_cancel",
                         )
                         .finish()
@@ -501,7 +509,10 @@ impl KeybindingsView {
 
         search_editor.update(ctx, |editor, ctx| {
             editor.clear_buffer_and_reset_undo_stack(ctx);
-            editor.set_placeholder_text(light_i18n::tr("Search by name or by keys (ex. \"cmd d\")"), ctx);
+            editor.set_placeholder_text(
+                light_i18n::tr("Search by name or by keys (ex. \"cmd d\")"),
+                ctx,
+            );
         });
 
         let search_bar = ctx.add_typed_action_view(|_| SearchBar::new(search_editor.clone()));
@@ -797,7 +808,10 @@ impl SettingsPageMeta for KeybindingsView {
 
         self.search_editor.update(ctx, |editor, ctx| {
             editor.clear_buffer_and_reset_undo_stack(ctx);
-            editor.set_placeholder_text(light_i18n::tr("Search by name or by keys (ex. \"cmd d\")"), ctx);
+            editor.set_placeholder_text(
+                light_i18n::tr("Search by name or by keys (ex. \"cmd d\")"),
+                ctx,
+            );
         });
 
         if allow_steal_focus {
@@ -1021,7 +1035,9 @@ impl KeybindingsWidget {
                     )
                     .with_child(
                         Container::new(render_text(
-                            light_i18n::tr("to reference these keybindings in a side pane at anytime."),
+                            light_i18n::tr(
+                                "to reference these keybindings in a side pane at anytime.",
+                            ),
                             Some(UiComponentStyles {
                                 font_size: Some(font_size),
                                 font_color: Some(
@@ -1101,7 +1117,9 @@ impl SettingsWidget for KeybindingsWidget {
         {
             Some(LocalOnlyIconState::Visible {
                 mouse_state: self.local_only_icon_mouse_state.clone(),
-                custom_tooltip: Some(light_i18n::tr("Keyboard shortcuts are not synced to the cloud").to_string()),
+                custom_tooltip: Some(
+                    light_i18n::tr("Keyboard shortcuts are not synced to the cloud").to_string(),
+                ),
             })
         } else {
             None

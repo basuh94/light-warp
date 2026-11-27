@@ -63,7 +63,6 @@ const FONT_SIZE: f32 = 12.;
 
 const TELEMETRY_DOCS_URL: &str = "https://docs.warp.dev/support-and-community/privacy-and-security/privacy#what-telemetry-data-does-warp-collect-and-why";
 
-
 pub fn data_management_url(custom_token: Option<&str>) -> String {
     match custom_token {
         Some(token) => format!(
@@ -126,34 +125,38 @@ impl PrivacyPageView {
         });
 
         let add_regex_modal_view = ctx.add_typed_action_view(|ctx| {
-            Modal::new(Some(light_i18n::tr("Add regex pattern").to_string()), add_regex_body, ctx)
-                .with_modal_style(UiComponentStyles {
-                    width: Some(600.),
-                    height: Some(400.),
-                    ..Default::default()
-                })
-                .with_header_style(UiComponentStyles {
-                    padding: Some(Coords {
-                        top: 24.,
-                        bottom: 0.,
-                        left: 24.,
-                        right: 24.,
-                    }),
-                    font_size: Some(16.),
-                    font_weight: Some(Weight::Bold),
-                    ..Default::default()
-                })
-                .with_body_style(UiComponentStyles {
-                    padding: Some(Coords {
-                        top: 0.,
-                        bottom: 24.,
-                        left: 24.,
-                        right: 24.,
-                    }),
-                    ..Default::default()
-                })
-                .with_background_opacity(100)
-                .with_dismiss_on_click()
+            Modal::new(
+                Some(light_i18n::tr("Add regex pattern").to_string()),
+                add_regex_body,
+                ctx,
+            )
+            .with_modal_style(UiComponentStyles {
+                width: Some(600.),
+                height: Some(400.),
+                ..Default::default()
+            })
+            .with_header_style(UiComponentStyles {
+                padding: Some(Coords {
+                    top: 24.,
+                    bottom: 0.,
+                    left: 24.,
+                    right: 24.,
+                }),
+                font_size: Some(16.),
+                font_weight: Some(Weight::Bold),
+                ..Default::default()
+            })
+            .with_body_style(UiComponentStyles {
+                padding: Some(Coords {
+                    top: 0.,
+                    bottom: 24.,
+                    left: 24.,
+                    right: 24.,
+                }),
+                ..Default::default()
+            })
+            .with_background_opacity(100)
+            .with_dismiss_on_click()
         });
         ctx.subscribe_to_view(&add_regex_modal_view, |me, _, event, ctx| {
             me.handle_modal_event(event, ctx);
@@ -887,7 +890,9 @@ impl SecretRedactionWidget {
 
         if enterprise_regex_list.is_empty() {
             return ui_builder
-                .paragraph(light_i18n::tr("No enterprise regexes have been configured by your organization."))
+                .paragraph(light_i18n::tr(
+                    "No enterprise regexes have been configured by your organization.",
+                ))
                 .with_style(UiComponentStyles {
                     font_color: Some(description_text_color),
                     ..Default::default()
@@ -986,9 +991,10 @@ impl SecretRedactionWidget {
                         .with_main_axis_size(MainAxisSize::Max)
                         .with_main_axis_alignment(MainAxisAlignment::SpaceBetween)
                         .with_cross_axis_alignment(CrossAxisAlignment::Center)
-                        .with_child(
-                            self.render_section_title(light_i18n::tr("Recommended").to_string(), appearance),
-                        )
+                        .with_child(self.render_section_title(
+                            light_i18n::tr("Recommended").to_string(),
+                            appearance,
+                        ))
                         .with_child(
                             Container::new(
                                 ui_builder
@@ -997,7 +1003,8 @@ impl SecretRedactionWidget {
                                         self.add_all_button_mouse_state.clone(),
                                     )
                                     .with_text_and_icon_label(Self::add_button(
-                                        light_i18n::tr("Add all"), appearance,
+                                        light_i18n::tr("Add all"),
+                                        appearance,
                                     ))
                                     .with_style(Self::add_button_style())
                                     .build()
@@ -1155,7 +1162,11 @@ impl SettingsWidget for SecretRedactionWidget {
                 .with_child(
                     Shrinkable::new(
                         1.0,
-                        render_sub_header(appearance, light_i18n::tr("Secret redaction"), Some(local_only_icon_state)),
+                        render_sub_header(
+                            appearance,
+                            light_i18n::tr("Secret redaction"),
+                            Some(local_only_icon_state),
+                        ),
                     )
                     .finish(),
                 )
@@ -1190,10 +1201,15 @@ impl SettingsWidget for SecretRedactionWidget {
             .with_child(secret_redaction_title_row)
             .with_child(
                 ui_builder
-                    .paragraph(light_i18n::tr("When this setting is enabled, Warp will scan blocks, the contents of \
+                    .paragraph(
+                        light_i18n::tr(
+                            "When this setting is enabled, Warp will scan blocks, the contents of \
                         Warp Drive objects, and Oz prompts for potential sensitive \
                         information and prevent saving or sending this data to any \
-                        servers. You can customize this list via regexes.").to_owned())
+                        servers. You can customize this list via regexes.",
+                        )
+                        .to_owned(),
+                    )
                     .with_style(UiComponentStyles {
                         font_color: Some(description_text_color),
                         font_size: Some(FONT_SIZE + 1.), // One size up from current 12px to 13px
@@ -1439,11 +1455,15 @@ impl SettingsWidget for AppAnalyticsWidget {
             .is_some_and(|w| w.billing_metadata.customer_type == CustomerType::Enterprise);
         // Keep the old description for enterprise users because we do not collect block input/output for them.
         let description = if is_enterprise {
-            light_i18n::tr("App analytics help us make the product better for you. We only collect \
-                app usage metadata, never console input or output.")
+            light_i18n::tr(
+                "App analytics help us make the product better for you. We only collect \
+                app usage metadata, never console input or output.",
+            )
         } else {
-            light_i18n::tr("App analytics help us make the product better for you. We may collect \
-                certain console interactions to improve Warp's AI capabilities.")
+            light_i18n::tr(
+                "App analytics help us make the product better for you. We may collect \
+                certain console interactions to improve Warp's AI capabilities.",
+            )
         };
 
         let org_setting = UserWorkspaces::handle(app)
@@ -1495,7 +1515,8 @@ impl SettingsWidget for AppAnalyticsWidget {
         } else {
             switch
                 .with_tooltip(TooltipConfig {
-                    text: light_i18n::tr("This setting is managed by your organization.").to_string(),
+                    text: light_i18n::tr("This setting is managed by your organization.")
+                        .to_string(),
                     styles: ui_builder.default_tool_tip_styles(),
                 })
                 .disable()
@@ -1599,8 +1620,10 @@ impl SettingsWidget for CrashReportsWidget {
             .with_child(
                 ui_builder
                     .paragraph(
-                        light_i18n::tr("Crash reports assist with debugging and stability improvements.")
-                            .to_owned(),
+                        light_i18n::tr(
+                            "Crash reports assist with debugging and stability improvements.",
+                        )
+                        .to_owned(),
                     )
                     .with_style(UiComponentStyles {
                         font_color: Some(
@@ -1684,7 +1707,8 @@ impl SettingsWidget for CloudConversationStorageWidget {
         } else {
             switch
                 .with_tooltip(TooltipConfig {
-                    text: light_i18n::tr("This setting is managed by your organization.").to_string(),
+                    text: light_i18n::tr("This setting is managed by your organization.")
+                        .to_string(),
                     styles: ui_builder.default_tool_tip_styles(),
                 })
                 .disable()
@@ -1706,13 +1730,17 @@ impl SettingsWidget for CloudConversationStorageWidget {
                 ui_builder
                     .paragraph(
                         if is_checked {
-                            light_i18n::tr("Agent conversations can be shared with others and are retained \
+                            light_i18n::tr(
+                                "Agent conversations can be shared with others and are retained \
                             when you log in on different devices. This data is only stored \
-                            for product functionality, and Warp will not use it for analytics.")
+                            for product functionality, and Warp will not use it for analytics.",
+                            )
                         } else {
-                            light_i18n::tr("Agent conversations are only stored locally on your machine, are \
+                            light_i18n::tr(
+                                "Agent conversations are only stored locally on your machine, are \
                             lost upon logout, and cannot be shared. Note: conversation data \
-                            for ambient agents are still stored in the cloud.")
+                            for ambient agents are still stored in the cloud.",
+                            )
                         }
                         .to_owned(),
                     )
@@ -1847,8 +1875,10 @@ impl SettingsWidget for DataManagementWidget {
             ))
             .with_child(
                 ui_builder
-                    .paragraph(light_i18n::tr("At any time, you may choose to delete your Warp account permanently. \
-                        You will no longer be able to use Warp."))
+                    .paragraph(light_i18n::tr(
+                        "At any time, you may choose to delete your Warp account permanently. \
+                        You will no longer be able to use Warp.",
+                    ))
                     .with_style(UiComponentStyles {
                         font_color: Some(
                             appearance

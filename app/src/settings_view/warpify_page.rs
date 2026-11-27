@@ -486,10 +486,10 @@ struct TitleWidget {
 impl TitleWidget {
     fn render_top_of_page(&self, appearance: &Appearance, _app: &AppContext) -> Box<dyn Element> {
         let warpify_description = vec![
-            FormattedTextFragment::plain_text(
-                light_i18n::tr("Configure whether Warp attempts to “Warpify” (add support for blocks, \
-                    input modes, etc) certain shells. "),
-            ),
+            FormattedTextFragment::plain_text(light_i18n::tr(
+                "Configure whether Warp attempts to “Warpify” (add support for blocks, \
+                    input modes, etc) certain shells. ",
+            )),
             FormattedTextFragment::hyperlink(
                 light_i18n::tr("Learn more"),
                 "https://docs.warp.dev/terminal/warpify/subshells",

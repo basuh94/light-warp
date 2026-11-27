@@ -30,7 +30,6 @@ use crate::themes::theme::Fill;
 use crate::ui_components::blended_colors;
 use crate::ui_components::icons::Icon;
 
-
 const BLOCK_FILTER_BAR_WIDTH: f32 = 380.;
 const BLOCK_FILTER_BAR_PADDING: f32 = 4.;
 const BLOCK_FILTER_EDITOR_PADDING: f32 = 6.;

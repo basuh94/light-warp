@@ -22,7 +22,6 @@ use crate::util::file::external_editor::settings::{
 use crate::util::file::external_editor::{EditorSettings, SUPPORTED_EDITORS};
 use crate::view_components::{Dropdown, DropdownItem};
 
-
 #[derive(Debug, Clone, PartialEq)]
 pub enum ExternalEditorAction {
     SetEditor(EditorChoice),
@@ -292,7 +291,9 @@ impl View for ExternalEditorView {
 
         let code_panels_editor = render_dropdown_item(
             appearance,
-            light_i18n::tr("Choose an editor to open files from the code review panel, project explorer, and global search"),
+            light_i18n::tr(
+                "Choose an editor to open files from the code review panel, project explorer, and global search",
+            ),
             None,
             None,
             LocalOnlyIconState::for_setting(

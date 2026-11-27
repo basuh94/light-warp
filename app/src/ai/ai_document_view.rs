@@ -670,7 +670,10 @@ impl AIDocumentView {
                 let appearance = Appearance::as_ref(app);
                 let ui_builder = appearance.ui_builder().clone();
                 let tooltip = ui_builder
-                    .tool_tip(light_i18n::tr("Save and auto-sync this plan to your Warp Drive").to_string())
+                    .tool_tip(
+                        light_i18n::tr("Save and auto-sync this plan to your Warp Drive")
+                            .to_string(),
+                    )
                     .build()
                     .finish();
                 let sync_button_mouse_state = self.sync_button_mouse_state.clone();
@@ -722,9 +725,10 @@ impl AIDocumentView {
                 let theme = appearance.theme();
                 let color = theme.nonactive_ui_detail().into_solid();
                 let ui_builder = appearance.ui_builder().clone();
-                let tooltip_text =
-                    light_i18n::tr("This plan is synced to your Warp Drive and will auto save any edits you make.")
-                        .to_string();
+                let tooltip_text = light_i18n::tr(
+                    "This plan is synced to your Warp Drive and will auto save any edits you make.",
+                )
+                .to_string();
                 let synced_status_mouse_state = self.synced_status_mouse_state.clone();
                 Container::new(
                     ConstrainedBox::new(
@@ -1149,7 +1153,9 @@ impl TypedActionView for AIDocumentView {
                 let window_id = ctx.window_id();
                 ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
                     toast_stack.add_ephemeral_toast(
-                        DismissibleToast::success(light_i18n::tr("Copied to clipboard as Markdown").to_string()),
+                        DismissibleToast::success(
+                            light_i18n::tr("Copied to clipboard as Markdown").to_string(),
+                        ),
                         window_id,
                         ctx,
                     );
@@ -1167,7 +1173,9 @@ impl TypedActionView for AIDocumentView {
                 let window_id = ctx.window_id();
                 ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
                     toast_stack.add_ephemeral_toast(
-                        DismissibleToast::success(light_i18n::tr("Link copied to clipboard").to_string()),
+                        DismissibleToast::success(
+                            light_i18n::tr("Link copied to clipboard").to_string(),
+                        ),
                         window_id,
                         ctx,
                     );
@@ -1180,7 +1188,9 @@ impl TypedActionView for AIDocumentView {
                 let window_id = ctx.window_id();
                 ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
                     toast_stack.add_ephemeral_toast(
-                        DismissibleToast::success(light_i18n::tr("Plan ID copied to clipboard").to_string()),
+                        DismissibleToast::success(
+                            light_i18n::tr("Plan ID copied to clipboard").to_string(),
+                        ),
                         window_id,
                         ctx,
                     );

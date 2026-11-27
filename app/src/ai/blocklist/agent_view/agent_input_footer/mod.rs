@@ -443,7 +443,9 @@ impl AgentInputFooter {
         let fast_forward_button = ctx.add_typed_action_view(|_ctx| {
             ActionButton::new("", FastForwardButtonTheme)
                 .with_icon(Icon::FastForward)
-                .with_tooltip(light_i18n::tr("Auto-approve all agent actions for this task"))
+                .with_tooltip(light_i18n::tr(
+                    "Auto-approve all agent actions for this task",
+                ))
                 .with_size(button_size)
                 .with_tooltip_alignment(TooltipAlignment::Left)
                 .with_disabled_theme(FastForwardLockedTheme)
@@ -510,57 +512,73 @@ impl AgentInputFooter {
         });
 
         let install_plugin_button = ctx.add_typed_action_view(|_ctx| {
-            ActionButton::new(light_i18n::tr("Enable notifications"), InstallPluginButtonTheme)
-                .with_icon(Icon::Download)
-                .with_tooltip(
-                    light_i18n::tr("Install the Warp plugin to enable rich agent notifications within Warp"),
-                )
-                .with_size(cli_button_size)
-                .with_tooltip_alignment(TooltipAlignment::Left)
-                .with_adjoined_side(AdjoinedSide::Right)
-                .on_click(|ctx| {
-                    ctx.dispatch_typed_action(AgentInputFooterAction::InstallPlugin);
-                })
+            ActionButton::new(
+                light_i18n::tr("Enable notifications"),
+                InstallPluginButtonTheme,
+            )
+            .with_icon(Icon::Download)
+            .with_tooltip(light_i18n::tr(
+                "Install the Warp plugin to enable rich agent notifications within Warp",
+            ))
+            .with_size(cli_button_size)
+            .with_tooltip_alignment(TooltipAlignment::Left)
+            .with_adjoined_side(AdjoinedSide::Right)
+            .on_click(|ctx| {
+                ctx.dispatch_typed_action(AgentInputFooterAction::InstallPlugin);
+            })
         });
 
         let plugin_instructions_button = ctx.add_typed_action_view(|_ctx| {
-            ActionButton::new(light_i18n::tr("Notifications setup instructions"), InstallPluginButtonTheme)
-                .with_icon(Icon::Info)
-                .with_tooltip(light_i18n::tr("View instructions to install the Warp plugin"))
-                .with_size(cli_button_size)
-                .with_tooltip_alignment(TooltipAlignment::Left)
-                .with_adjoined_side(AdjoinedSide::Right)
-                .on_click(|ctx| {
-                    ctx.dispatch_typed_action(
-                        AgentInputFooterAction::OpenPluginInstallInstructionsPane,
-                    );
-                })
+            ActionButton::new(
+                light_i18n::tr("Notifications setup instructions"),
+                InstallPluginButtonTheme,
+            )
+            .with_icon(Icon::Info)
+            .with_tooltip(light_i18n::tr(
+                "View instructions to install the Warp plugin",
+            ))
+            .with_size(cli_button_size)
+            .with_tooltip_alignment(TooltipAlignment::Left)
+            .with_adjoined_side(AdjoinedSide::Right)
+            .on_click(|ctx| {
+                ctx.dispatch_typed_action(
+                    AgentInputFooterAction::OpenPluginInstallInstructionsPane,
+                );
+            })
         });
 
         let update_plugin_button = ctx.add_typed_action_view(|_ctx| {
-            ActionButton::new(light_i18n::tr("Update Warp plugin"), InstallPluginButtonTheme)
-                .with_icon(Icon::Download)
-                .with_tooltip(light_i18n::tr("A new version of the Warp plugin is available"))
-                .with_size(cli_button_size)
-                .with_tooltip_alignment(TooltipAlignment::Left)
-                .with_adjoined_side(AdjoinedSide::Right)
-                .on_click(|ctx| {
-                    ctx.dispatch_typed_action(AgentInputFooterAction::UpdatePlugin);
-                })
+            ActionButton::new(
+                light_i18n::tr("Update Warp plugin"),
+                InstallPluginButtonTheme,
+            )
+            .with_icon(Icon::Download)
+            .with_tooltip(light_i18n::tr(
+                "A new version of the Warp plugin is available",
+            ))
+            .with_size(cli_button_size)
+            .with_tooltip_alignment(TooltipAlignment::Left)
+            .with_adjoined_side(AdjoinedSide::Right)
+            .on_click(|ctx| {
+                ctx.dispatch_typed_action(AgentInputFooterAction::UpdatePlugin);
+            })
         });
 
         let update_instructions_button = ctx.add_typed_action_view(|_ctx| {
-            ActionButton::new(light_i18n::tr("Plugin update instructions"), InstallPluginButtonTheme)
-                .with_icon(Icon::Info)
-                .with_tooltip(light_i18n::tr("View instructions to update the Warp plugin"))
-                .with_size(cli_button_size)
-                .with_tooltip_alignment(TooltipAlignment::Left)
-                .with_adjoined_side(AdjoinedSide::Right)
-                .on_click(|ctx| {
-                    ctx.dispatch_typed_action(
-                        AgentInputFooterAction::OpenPluginUpdateInstructionsPane,
-                    );
-                })
+            ActionButton::new(
+                light_i18n::tr("Plugin update instructions"),
+                InstallPluginButtonTheme,
+            )
+            .with_icon(Icon::Info)
+            .with_tooltip(light_i18n::tr(
+                "View instructions to update the Warp plugin",
+            ))
+            .with_size(cli_button_size)
+            .with_tooltip_alignment(TooltipAlignment::Left)
+            .with_adjoined_side(AdjoinedSide::Right)
+            .on_click(|ctx| {
+                ctx.dispatch_typed_action(AgentInputFooterAction::OpenPluginUpdateInstructionsPane);
+            })
         });
 
         let dismiss_plugin_chip_button = ctx.add_typed_action_view(|_ctx| {
@@ -1496,10 +1514,12 @@ impl AgentInputFooter {
                             );
                             if let Some(log_path) = log_path {
                                 toast = toast.with_link(
-                                    ToastLink::new(light_i18n::tr("See logs for details").to_owned())
-                                        .with_onclick_action(WorkspaceAction::OpenFilePath {
-                                            path: log_path,
-                                        }),
+                                    ToastLink::new(
+                                        light_i18n::tr("See logs for details").to_owned(),
+                                    )
+                                    .with_onclick_action(
+                                        WorkspaceAction::OpenFilePath { path: log_path },
+                                    ),
                                 );
                             }
                             toast
@@ -1523,7 +1543,9 @@ impl AgentInputFooter {
             .cli_agent(ctx)
             .and_then(plugin_manager_for)
             .map(|m| m.install_success_message())
-            .unwrap_or(light_i18n::tr("Warp plugin installed. Please restart the session to activate."));
+            .unwrap_or(light_i18n::tr(
+                "Warp plugin installed. Please restart the session to activate.",
+            ));
         self.handle_plugin_operation(
             light_i18n::tr("Installing Warp plugin..."),
             light_i18n::tr("Failed to install Warp plugin"),
@@ -1540,7 +1562,9 @@ impl AgentInputFooter {
             .cli_agent(ctx)
             .and_then(plugin_manager_for)
             .map(|m| m.update_success_message())
-            .unwrap_or(light_i18n::tr("Warp plugin updated. Please restart the session to activate."));
+            .unwrap_or(light_i18n::tr(
+                "Warp plugin updated. Please restart the session to activate.",
+            ));
         self.handle_plugin_operation(
             light_i18n::tr("Updating Warp plugin..."),
             light_i18n::tr("Failed to update Warp plugin"),
@@ -1916,7 +1940,10 @@ impl AgentInputFooter {
         match self.cli_voice_input_lifecycle.state() {
             VoiceInputLifecycleState::Idle => {
                 if !crate::ai::AIRequestUsageModel::as_ref(ctx).can_request_voice() {
-                    self.show_cli_voice_error_toast(light_i18n::tr("Voice input limit reached"), ctx);
+                    self.show_cli_voice_error_toast(
+                        light_i18n::tr("Voice input limit reached"),
+                        ctx,
+                    );
                     return;
                 }
 
@@ -2054,13 +2081,19 @@ impl AgentInputFooter {
             }
             Err(e) => match e {
                 TranscribeError::QuotaLimit => {
-                    self.show_cli_voice_error_toast(light_i18n::tr("Voice input limit reached"), ctx);
+                    self.show_cli_voice_error_toast(
+                        light_i18n::tr("Voice input limit reached"),
+                        ctx,
+                    );
                 }
                 _ => {
                     report_error!(
                         anyhow::Error::new(e).context("Failed to transcribe CLI voice input")
                     );
-                    self.show_cli_voice_error_toast(light_i18n::tr("Failed to transcribe voice input"), ctx);
+                    self.show_cli_voice_error_toast(
+                        light_i18n::tr("Failed to transcribe voice input"),
+                        ctx,
+                    );
                 }
             },
         }
@@ -2101,9 +2134,9 @@ impl AgentInputFooter {
     fn show_cli_microphone_access_toast(&self, ctx: &mut ViewContext<Self>) {
         let window_id = ctx.window_id();
         ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
-            let toast = DismissibleToast::error(String::from(
-                light_i18n::tr("Failed to start voice input (you may need to enable Microphone access)"),
-            ));
+            let toast = DismissibleToast::error(String::from(light_i18n::tr(
+                "Failed to start voice input (you may need to enable Microphone access)",
+            )));
             toast_stack.add_ephemeral_toast(toast, window_id, ctx);
         });
     }

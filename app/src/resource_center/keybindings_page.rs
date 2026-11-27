@@ -346,7 +346,11 @@ impl KeybindingsView {
                         .build()
                         .finish(),
                 )
-                .with_child(self.render_text(light_i18n::tr("To toggle this panel").into(), None, appearance))
+                .with_child(self.render_text(
+                    light_i18n::tr("To toggle this panel").into(),
+                    None,
+                    appearance,
+                ))
                 .with_cross_axis_alignment(CrossAxisAlignment::Center)
                 .finish();
 
@@ -383,11 +387,16 @@ impl KeybindingsView {
 
         Container::new(
             column
-                .with_child(self.render_text(
-                    light_i18n::tr("Go to settings > keyboard shortcuts to configure custom keybindings").into(),
-                    None,
-                    appearance,
-                ))
+                .with_child(
+                    self.render_text(
+                        light_i18n::tr(
+                            "Go to settings > keyboard shortcuts to configure custom keybindings",
+                        )
+                        .into(),
+                        None,
+                        appearance,
+                    ),
+                )
                 .with_child(settings_link)
                 .finish(),
         )

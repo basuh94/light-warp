@@ -212,11 +212,13 @@ impl View for ExecutionProfileView {
                         let mut permissions_column = Flex::column()
                             .with_child(
                                 Container::new(
-                                    Text::new(light_i18n::tr("PERMISSIONS"), appearance.ui_font_family(), 10.)
-                                        .with_color(
-                                            appearance.theme().disabled_ui_text_color().into(),
-                                        )
-                                        .finish(),
+                                    Text::new(
+                                        light_i18n::tr("PERMISSIONS"),
+                                        appearance.ui_font_family(),
+                                        10.,
+                                    )
+                                    .with_color(appearance.theme().disabled_ui_text_color().into())
+                                    .finish(),
                                 )
                                 .with_margin_bottom(8.)
                                 .finish(),
@@ -745,8 +747,12 @@ fn render_computer_use_permission_line_with_icon(
     let permission_text = match permission {
         crate::ai::execution_profiles::ComputerUsePermission::Never
         | crate::ai::execution_profiles::ComputerUsePermission::Unknown => light_i18n::tr("Never"),
-        crate::ai::execution_profiles::ComputerUsePermission::AlwaysAsk => light_i18n::tr("Always ask"),
-        crate::ai::execution_profiles::ComputerUsePermission::AlwaysAllow => light_i18n::tr("Always allow"),
+        crate::ai::execution_profiles::ComputerUsePermission::AlwaysAsk => {
+            light_i18n::tr("Always ask")
+        }
+        crate::ai::execution_profiles::ComputerUsePermission::AlwaysAllow => {
+            light_i18n::tr("Always allow")
+        }
     };
     render_permission_line_with_icon(icon, label, permission_text, appearance, is_ai_enabled)
 }
@@ -790,7 +796,11 @@ fn render_bool_permission_line_with_icon(
     appearance: &Appearance,
     is_ai_enabled: bool,
 ) -> Box<dyn Element> {
-    let permission_text = if enabled { light_i18n::tr("On") } else { light_i18n::tr("Off") };
+    let permission_text = if enabled {
+        light_i18n::tr("On")
+    } else {
+        light_i18n::tr("Off")
+    };
     render_permission_line_with_icon(icon, label, permission_text, appearance, is_ai_enabled)
 }
 

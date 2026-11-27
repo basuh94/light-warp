@@ -2975,7 +2975,11 @@ impl View for FileTreeView {
                 self.enablement,
                 CodingPanelEnablementState::UnsupportedSession
             ) {
-                return self.render_error_state(light_i18n::tr("The Project Explorer doesn't currently work in WSL.").to_string(), app);
+                return self.render_error_state(
+                    light_i18n::tr("The Project Explorer doesn't currently work in WSL.")
+                        .to_string(),
+                    app,
+                );
             }
 
             return self.render_loading_state(app);

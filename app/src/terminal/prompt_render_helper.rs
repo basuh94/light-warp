@@ -256,14 +256,20 @@ impl PromptRenderHelper {
                 RemoteServerSetupState::Installing {
                     progress_percent: None,
                 } => light_i18n::tr("Installing Warp SSH Extension...").to_string(),
-                RemoteServerSetupState::Updating => light_i18n::tr("Updating Warp SSH Extension...").to_string(),
-                RemoteServerSetupState::Initializing => light_i18n::tr("Initializing...").to_string(),
+                RemoteServerSetupState::Updating => {
+                    light_i18n::tr("Updating Warp SSH Extension...").to_string()
+                }
+                RemoteServerSetupState::Initializing => {
+                    light_i18n::tr("Initializing...").to_string()
+                }
                 RemoteServerSetupState::Ready => light_i18n::tr("Starting shell...").to_string(),
                 // Failed and Unsupported both fall back to the wrapper-only SSH
                 // flow, so we render the same generic prompt as a normal
                 // SSH session that doesn't have the remote-server extension.
                 RemoteServerSetupState::Failed { .. }
-                | RemoteServerSetupState::Unsupported { .. } => light_i18n::tr("Starting shell...").to_string(),
+                | RemoteServerSetupState::Unsupported { .. } => {
+                    light_i18n::tr("Starting shell...").to_string()
+                }
             };
         }
 

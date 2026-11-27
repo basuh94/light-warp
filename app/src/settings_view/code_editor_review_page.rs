@@ -89,7 +89,10 @@ impl EditorAndCodeReviewPageView {
             Box::new(AutoSaveToggleWidget::default()),
         ]);
 
-        PageType::new_uncategorized(widgets, Some(PageTitle::new(light_i18n::tr("Editor and Code Review"))))
+        PageType::new_uncategorized(
+            widgets,
+            Some(PageTitle::new(light_i18n::tr("Editor and Code Review"))),
+        )
     }
 
     fn update_code_editor_line_number_mode_dropdown(
@@ -439,8 +442,10 @@ impl SettingsWidget for CodeReviewPanelToggleWidget {
                 })
                 .finish(),
             Some(
-                light_i18n::tr("Show a button in the top right of the window to toggle the code review panel.")
-                    .into(),
+                light_i18n::tr(
+                    "Show a button in the top right of the window to toggle the code review panel.",
+                )
+                .into(),
             ),
         )
     }
@@ -483,7 +488,10 @@ impl SettingsWidget for CodeReviewDiffStatsToggleWidget {
                     );
                 })
                 .finish(),
-            Some(light_i18n::tr("Show lines added and removed counts on the code review button.").into()),
+            Some(
+                light_i18n::tr("Show lines added and removed counts on the code review button.")
+                    .into(),
+            ),
         )
     }
 }
@@ -524,8 +532,10 @@ impl SettingsWidget for ProjectExplorerToggleWidget {
                 })
                 .finish(),
             Some(
-                light_i18n::tr("Adds an IDE-style project explorer / file tree to the left side tools panel.")
-                    .into(),
+                light_i18n::tr(
+                    "Adds an IDE-style project explorer / file tree to the left side tools panel.",
+                )
+                .into(),
             ),
         )
     }
@@ -607,7 +617,10 @@ impl SettingsWidget for ShowHiddenFilesToggleWidget {
                 })
                 .finish(),
             Some(
-                light_i18n::tr("Show dotfiles and hidden files (starting with .) in the project explorer.").into(),
+                light_i18n::tr(
+                    "Show dotfiles and hidden files (starting with .) in the project explorer.",
+                )
+                .into(),
             ),
         )
     }

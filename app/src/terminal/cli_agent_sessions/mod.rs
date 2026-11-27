@@ -20,7 +20,6 @@ use crate::ai::blocklist::InputConfig;
 /// interrupt silently cancelled the session. See `observe_ctrl_c_write`.
 pub const CTRL_C_CANCEL_WINDOW: Duration = Duration::from_secs(2);
 
-
 /// What caused a session to become [`CLIAgentSessionStatus::Blocked`].
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum BlockedSource {

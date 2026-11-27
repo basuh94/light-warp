@@ -545,7 +545,8 @@ impl Workspace {
             .keys()
             .any(|group_id| Some(*group_id) != shared_group);
         if has_destination_group {
-            menu_items.push(MenuItemFields::new_submenu(light_i18n::tr("Move to group")).into_item());
+            menu_items
+                .push(MenuItemFields::new_submenu(light_i18n::tr("Move to group")).into_item());
         }
         menu_items
     }

@@ -1135,8 +1135,7 @@ impl PersistedWorkspace {
                         },
                         ctx
                     );
-                    if let Some(window_id) = WindowManager::as_ref(ctx).active_window()
-                    {
+                    if let Some(window_id) = WindowManager::as_ref(ctx).active_window() {
                         ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
                             let toast = DismissibleToast::error(light_i18n::tr!(
                                 "Failed to start LSP server for {} with error {}",

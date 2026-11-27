@@ -1,8 +1,8 @@
 //! SearchItem implementation for rewind menu items.
 //! Renders two lines: query text and code changes summary.
 
-use light_i18n::tr;
 use fuzzy_match::FuzzyMatchResult;
+use light_i18n::tr;
 use ordered_float::OrderedFloat;
 use warp_core::ui::Icon;
 use warp_core::ui::color::coloru_with_opacity;
@@ -223,7 +223,9 @@ impl SearchItem for RewindSearchItem {
         } else if self.has_code_changes() {
             tr!(
                 "Rewind to: {} (+{} -{})",
-                self.query_text, self.file_changes.lines_added, self.file_changes.lines_removed
+                self.query_text,
+                self.file_changes.lines_added,
+                self.file_changes.lines_removed
             )
         } else {
             tr!("Rewind to: {} (no code changes)", self.query_text)

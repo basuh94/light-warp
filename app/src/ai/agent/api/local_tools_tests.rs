@@ -47,10 +47,7 @@ fn run_shell_command_accepts_object_and_encoded_arguments() {
         })
     );
     assert_eq!(
-        LocalTool::from_function_call(&call(
-            "run_shell_command",
-            json!("{\"command\":\"dir\"}")
-        )),
+        LocalTool::from_function_call(&call("run_shell_command", json!("{\"command\":\"dir\"}"))),
         Some(LocalTool::RunShellCommand {
             command: "dir".to_owned()
         })
@@ -276,12 +273,14 @@ fn failed_edits_ask_the_model_to_reread_the_file() {
 fn running_commands_report_their_output_so_far() {
     let outcome = ToolOutcome::Command(RunShellCommandResult {
         command: "dir /s".to_owned(),
-        result: Some(run_shell_command_result::Result::LongRunningCommandSnapshot(
-            warp_multi_agent_api::LongRunningShellCommandSnapshot {
-                output: "C:\\proyecto\\Cargo.toml".to_owned(),
-                ..Default::default()
-            },
-        )),
+        result: Some(
+            run_shell_command_result::Result::LongRunningCommandSnapshot(
+                warp_multi_agent_api::LongRunningShellCommandSnapshot {
+                    output: "C:\\proyecto\\Cargo.toml".to_owned(),
+                    ..Default::default()
+                },
+            ),
+        ),
         ..Default::default()
     });
 

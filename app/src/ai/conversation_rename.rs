@@ -8,7 +8,6 @@ use crate::workspace::ToastStack;
 
 const CONVERSATION_TITLE_MAX_CHARS: usize = 500;
 
-
 /// Renames a conversation locally and triggers a conversation rename on the server.
 ///
 /// Renaming is only exposed for open conversations, so the conversation is expected
@@ -55,16 +54,18 @@ pub(crate) fn rename_conversation<T: View>(
         Ok(server_conversation_id) => server_conversation_id,
         Err(err) => {
             let message = match err {
-                BeginConversationRenameError::MissingServerConversationToken => light_i18n::tr("Your conversation hasn't synced to the cloud yet. Try sending another message, then rename it again."),
+                BeginConversationRenameError::MissingServerConversationToken => light_i18n::tr(
+                    "Your conversation hasn't synced to the cloud yet. Try sending another message, then rename it again.",
+                ),
                 BeginConversationRenameError::RenameInProgress => {
                     light_i18n::tr("A rename is already in progress for this conversation")
                 }
                 BeginConversationRenameError::ConversationNotFound => {
                     light_i18n::tr("Conversation not found")
                 }
-                BeginConversationRenameError::ConversationNotReady => {
-                    light_i18n::tr("Your conversation is still syncing. Try renaming it again in a moment.")
-                }
+                BeginConversationRenameError::ConversationNotReady => light_i18n::tr(
+                    "Your conversation is still syncing. Try renaming it again in a moment.",
+                ),
             };
             let window_id = ctx.window_id();
             ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
@@ -95,7 +96,10 @@ pub(crate) fn rename_conversation<T: View>(
                     });
                     ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
                         toast_stack.add_ephemeral_toast(
-                            DismissibleToast::success(light_i18n::tr!("Conversation renamed to {}", title)),
+                            DismissibleToast::success(light_i18n::tr!(
+                                "Conversation renamed to {}",
+                                title
+                            )),
                             window_id,
                             ctx,
                         );
@@ -107,7 +111,10 @@ pub(crate) fn rename_conversation<T: View>(
                     });
                     ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
                         toast_stack.add_ephemeral_toast(
-                            DismissibleToast::error(light_i18n::tr!("Failed to rename conversation: {}", e)),
+                            DismissibleToast::error(light_i18n::tr!(
+                                "Failed to rename conversation: {}",
+                                e
+                            )),
                             window_id,
                             ctx,
                         );

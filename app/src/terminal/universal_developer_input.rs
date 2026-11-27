@@ -92,9 +92,13 @@ impl AtContextMenuDisabledReason {
                 light_i18n::tr("Not supported in SSH sessions without remote server").to_string()
             }
             #[cfg(not(target_family = "wasm"))]
-            AtContextMenuDisabledReason::Subshell => light_i18n::tr("Not supported in subshells").to_string(),
+            AtContextMenuDisabledReason::Subshell => {
+                light_i18n::tr("Not supported in subshells").to_string()
+            }
             #[cfg(target_family = "wasm")]
-            AtContextMenuDisabledReason::Wasm => light_i18n::tr("Requires a filesystem").to_string(),
+            AtContextMenuDisabledReason::Wasm => {
+                light_i18n::tr("Requires a filesystem").to_string()
+            }
             #[cfg(not(target_family = "wasm"))]
             AtContextMenuDisabledReason::DisabledInTerminalMode => {
                 light_i18n::tr("Disabled in terminal mode, re-enable in settings").to_string()
@@ -186,7 +190,6 @@ impl AtContextMenuDisabledReason {
         None
     }
 }
-
 
 const BLURRED_OPACITY: Opacity = 50;
 
@@ -682,7 +685,9 @@ impl UniversalDeveloperInputButtonBar {
         let tooltip = if is_reader {
             Some(light_i18n::tr("Request edit access to change input mode").to_string())
         } else if is_agent_in_control {
-            Some(light_i18n::tr("Input mode locked while agent is monitoring a command").to_string())
+            Some(
+                light_i18n::tr("Input mode locked while agent is monitoring a command").to_string(),
+            )
         } else {
             None
         };

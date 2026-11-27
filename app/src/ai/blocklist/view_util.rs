@@ -154,9 +154,11 @@ pub fn failed_output_presentation(
         RenderableAIError::InvalidApiKey { .. } if crate::ai::local_models::is_enabled() => {
             FailedOutputPresentation::InvalidApiKey {
                 title: light_i18n::tr("No local model configured"),
-                detail: light_i18n::tr("The agent runs on a model server on your machine, such as Ollama. \
-                         Configure it to start using the agent.")
-                    .to_owned(),
+                detail: light_i18n::tr(
+                    "The agent runs on a model server on your machine, such as Ollama. \
+                         Configure it to start using the agent.",
+                )
+                .to_owned(),
             }
         }
         RenderableAIError::InvalidApiKey {
@@ -195,12 +197,10 @@ pub fn failed_output_presentation(
                 light_i18n::tr("I'm sorry, I couldn't complete that request.")
             ))
         }
-        RenderableAIError::AgentExitedShell { .. } => {
-            FailedOutputPresentation::Message(format!(
-                "{}\n\n{error}",
-                light_i18n::tr("I'm sorry, I couldn't complete that request.")
-            ))
-        }
+        RenderableAIError::AgentExitedShell { .. } => FailedOutputPresentation::Message(format!(
+            "{}\n\n{error}",
+            light_i18n::tr("I'm sorry, I couldn't complete that request.")
+        )),
         // Cloud startup failures surface the raw server message directly, matching the
         // dedicated GUI error card which shows the message without an apology prefix.
         RenderableAIError::CloudStartupFailed(msg) => {

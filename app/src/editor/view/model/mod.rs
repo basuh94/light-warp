@@ -534,9 +534,10 @@ impl EditorModel {
                 };
                 AccessibilityContent::new(delta, format!(", {action}"), WarpA11yRole::UserAction)
             }
-            (true, false) => {
-                AccessibilityContent::new_without_help(light_i18n::tr("Unselected"), WarpA11yRole::UserAction)
-            }
+            (true, false) => AccessibilityContent::new_without_help(
+                light_i18n::tr("Unselected"),
+                WarpA11yRole::UserAction,
+            ),
         }
     }
 

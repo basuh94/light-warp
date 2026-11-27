@@ -899,12 +899,20 @@ impl NotificationsTrigger {
             }
             AgentTaskCompleted(command_succeeded) => {
                 if *command_succeeded {
-                    (light_i18n::tr(" finished").to_string(), light_i18n::tr("Latest output: ").to_string())
+                    (
+                        light_i18n::tr(" finished").to_string(),
+                        light_i18n::tr("Latest output: ").to_string(),
+                    )
                 } else {
-                    (light_i18n::tr(" failed").to_string(), light_i18n::tr("Error: ").to_string())
+                    (
+                        light_i18n::tr(" failed").to_string(),
+                        light_i18n::tr("Error: ").to_string(),
+                    )
                 }
             }
-            NotificationsTrigger::NeedsAttention => (light_i18n::tr(" blocked").to_string(), "".to_string()),
+            NotificationsTrigger::NeedsAttention => {
+                (light_i18n::tr(" blocked").to_string(), "".to_string())
+            }
             PasswordPrompt => (
                 light_i18n::tr(" is waiting for a password").to_string(),
                 light_i18n::tr("Latest output: ").to_string(),
@@ -3972,9 +3980,9 @@ impl TerminalView {
         let slow_bootstrap_banner = ctx.add_typed_action_view(|_| {
             Banner::<TerminalAction>::new_with_buttons(
                 BannerTextContent::formatted_text(vec![
-                    FormattedTextFragment::plain_text(
-                        light_i18n::tr("Seems like your shell is taking a while to start...  "),
-                    ),
+                    FormattedTextFragment::plain_text(light_i18n::tr(
+                        "Seems like your shell is taking a while to start...  ",
+                    )),
                     FormattedTextFragment::hyperlink(light_i18n::tr("More info"), KNOWN_ISSUES_URL),
                 ]),
                 vec![BannerTextButton::new(
@@ -3998,9 +4006,16 @@ impl TerminalView {
 
         let control_master_error_banner = ctx.add_typed_action_view(|_| {
             Banner::new_permanently_dismissible(BannerTextContent::formatted_text(vec![
-                FormattedTextFragment::plain_text(light_i18n::tr("Seems like your completions are not working (")),
-                FormattedTextFragment::hyperlink(light_i18n::tr("more info"), CONTROLMASTER_ISSUES_URL),
-                FormattedTextFragment::plain_text(light_i18n::tr("). Enabling the SSH extension in ")),
+                FormattedTextFragment::plain_text(light_i18n::tr(
+                    "Seems like your completions are not working (",
+                )),
+                FormattedTextFragment::hyperlink(
+                    light_i18n::tr("more info"),
+                    CONTROLMASTER_ISSUES_URL,
+                ),
+                FormattedTextFragment::plain_text(light_i18n::tr(
+                    "). Enabling the SSH extension in ",
+                )),
                 FormattedTextFragment::hyperlink_action(
                     light_i18n::tr("settings"),
                     TerminalAction::ShowWarpifySettings,
@@ -4015,9 +4030,9 @@ impl TerminalView {
 
         let incompatible_configuration_banner = ctx.add_typed_action_view(|_| {
             Banner::new(BannerTextContent::formatted_text(vec![
-                FormattedTextFragment::plain_text(
-                    light_i18n::tr("Your shell configuration is incompatible with Warp...  "),
-                ),
+                FormattedTextFragment::plain_text(light_i18n::tr(
+                    "Your shell configuration is incompatible with Warp...  ",
+                )),
                 FormattedTextFragment::hyperlink(light_i18n::tr("More info"), KNOWN_ISSUES_URL),
             ]))
         });
@@ -8090,18 +8105,24 @@ impl TerminalView {
                         light_i18n::tr("Warp Agent needs your permission to read files").to_string()
                     }
                     AIAgentActionType::SearchCodebase(..) => {
-                        light_i18n::tr("Warp Agent needs your permission to search your codebase").to_string()
-                    }
-                    AIAgentActionType::RequestFileEdits { .. } => {
-                        light_i18n::tr("Warp Agent needs your permission to edit a file").to_string()
-                    }
-                    AIAgentActionType::WriteToLongRunningShellCommand { .. } => {
-                        light_i18n::tr("Warp Agent needs your permission to interact with a running shell command")
+                        light_i18n::tr("Warp Agent needs your permission to search your codebase")
                             .to_string()
                     }
-                    _ => light_i18n::tr("Warp Agent needs your confirmation to continue").to_string(),
+                    AIAgentActionType::RequestFileEdits { .. } => {
+                        light_i18n::tr("Warp Agent needs your permission to edit a file")
+                            .to_string()
+                    }
+                    AIAgentActionType::WriteToLongRunningShellCommand { .. } => light_i18n::tr(
+                        "Warp Agent needs your permission to interact with a running shell command",
+                    )
+                    .to_string(),
+                    _ => {
+                        light_i18n::tr("Warp Agent needs your confirmation to continue").to_string()
+                    }
                 })
-                .unwrap_or(light_i18n::tr("Warp Agent needs your confirmation to continue").to_string());
+                .unwrap_or(
+                    light_i18n::tr("Warp Agent needs your confirmation to continue").to_string(),
+                );
             return Some(AIBlockNotificationSummary {
                 success: false,
                 title,
@@ -13764,8 +13785,9 @@ impl TerminalView {
                 }
 
                 if self.is_navigated_away_from_window(ctx) {
-                    let notification_title =
-                        title.clone().unwrap_or_else(|| light_i18n::tr("Notification").to_string());
+                    let notification_title = title
+                        .clone()
+                        .unwrap_or_else(|| light_i18n::tr("Notification").to_string());
                     let notification = BlockNotification {
                         title: notification_title,
                         body: body.clone(),
@@ -13918,15 +13940,21 @@ impl TerminalView {
                     .as_ref(app)
                     .remote_server_setup_state(sid)
                     .map(|state| match state {
-                        RemoteServerSetupState::Checking => light_i18n::tr("Checking...").to_string(),
+                        RemoteServerSetupState::Checking => {
+                            light_i18n::tr("Checking...").to_string()
+                        }
                         RemoteServerSetupState::Installing {
                             progress_percent: Some(p),
                         } => light_i18n::tr!("Installing... ({}%)", p),
                         RemoteServerSetupState::Installing {
                             progress_percent: None,
                         } => light_i18n::tr("Installing...").to_string(),
-                        RemoteServerSetupState::Updating => light_i18n::tr("Updating...").to_string(),
-                        RemoteServerSetupState::Initializing => light_i18n::tr("Initializing...").to_string(),
+                        RemoteServerSetupState::Updating => {
+                            light_i18n::tr("Updating...").to_string()
+                        }
+                        RemoteServerSetupState::Initializing => {
+                            light_i18n::tr("Initializing...").to_string()
+                        }
                         _ => light_i18n::tr("Starting shell...").to_string(),
                     })
             })
@@ -14991,7 +15019,8 @@ impl TerminalView {
         // Set fallback title since /init may have no initial query
         BlocklistAIHistoryModel::handle(ctx).update(ctx, |history, _ctx| {
             if let Some(conversation) = history.conversation_mut(&conversation_id) {
-                conversation.set_fallback_display_title(light_i18n::tr("Project setup").to_string());
+                conversation
+                    .set_fallback_display_title(light_i18n::tr("Project setup").to_string());
             }
         });
 
@@ -17828,11 +17857,12 @@ impl TerminalView {
                 ];
 
                 if is_single_selection {
-                    let mut copy_output_menu_item = MenuItemFields::new(light_i18n::tr("Copy output"))
-                        .with_on_select_action(TerminalAction::ContextMenu(
-                            ContextMenuAction::CopyBlockOutputs,
-                        ))
-                        .with_disabled(tail_block.output_grid().is_empty());
+                    let mut copy_output_menu_item =
+                        MenuItemFields::new(light_i18n::tr("Copy output"))
+                            .with_on_select_action(TerminalAction::ContextMenu(
+                                ContextMenuAction::CopyBlockOutputs,
+                            ))
+                            .with_disabled(tail_block.output_grid().is_empty());
 
                     // If there is an active filter on a block, then we want to display a
                     // Copy filtered output option and assign the "terminal:copy_outputs" keybinding to it.
@@ -23486,12 +23516,12 @@ impl TerminalView {
             return;
         }
         let text = match blocked_type {
-            Osc52ClipboardBlockedType::Write => {
-                light_i18n::tr("A terminal program tried to write to your clipboard. This is disabled by default for security reasons, to protect against malicious software.")
-            }
-            Osc52ClipboardBlockedType::Read => {
-                light_i18n::tr("A terminal program tried to read your clipboard. This is disabled by default for security reasons, to protect against malicious software.")
-            }
+            Osc52ClipboardBlockedType::Write => light_i18n::tr(
+                "A terminal program tried to write to your clipboard. This is disabled by default for security reasons, to protect against malicious software.",
+            ),
+            Osc52ClipboardBlockedType::Read => light_i18n::tr(
+                "A terminal program tried to read your clipboard. This is disabled by default for security reasons, to protect against malicious software.",
+            ),
         };
         let button_label = match blocked_type {
             Osc52ClipboardBlockedType::Write => light_i18n::tr("Allow clipboard writes"),
@@ -23607,23 +23637,30 @@ impl TerminalView {
         let show_banner = if honor_ps1 {
             let banner_content = if shell_plugins.contains("p10k_unsupported") {
                 Some(BannerTextContent::formatted_text(vec![
-                    FormattedTextFragment::bold(light_i18n::tr("Powerlevel10k now supports Warp!  ")),
-                    FormattedTextFragment::plain_text(
-                        light_i18n::tr("You seem to be running an older (unsupported) version, please follow "),
-                    ),
+                    FormattedTextFragment::bold(light_i18n::tr(
+                        "Powerlevel10k now supports Warp!  ",
+                    )),
+                    FormattedTextFragment::plain_text(light_i18n::tr(
+                        "You seem to be running an older (unsupported) version, please follow ",
+                    )),
                     FormattedTextFragment::hyperlink(
                         light_i18n::tr("these instructions"),
                         P10K_UPDATE_INSTRUCTIONS_URL,
                     ),
-                    FormattedTextFragment::plain_text(light_i18n::tr(" to update to the latest version.")),
+                    FormattedTextFragment::plain_text(light_i18n::tr(
+                        " to update to the latest version.",
+                    )),
                 ]))
             } else if shell_plugins.contains("pure") {
                 Some(BannerTextContent::formatted_text(vec![
-                    FormattedTextFragment::plain_text(
-                        light_i18n::tr("Pure is not yet supported in Warp. You might consider one of the \
-                        supported prompts as an alternative.  "),
+                    FormattedTextFragment::plain_text(light_i18n::tr(
+                        "Pure is not yet supported in Warp. You might consider one of the \
+                        supported prompts as an alternative.  ",
+                    )),
+                    FormattedTextFragment::hyperlink(
+                        light_i18n::tr("Learn more"),
+                        PROMPT_COMPATIBILITY_URL,
                     ),
-                    FormattedTextFragment::hyperlink(light_i18n::tr("Learn more"), PROMPT_COMPATIBILITY_URL),
                 ]))
             } else {
                 None
@@ -26839,8 +26876,10 @@ impl TerminalView {
         ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
             toast_stack.add_ephemeral_toast(
                 DismissibleToast::error(
-                    light_i18n::tr("Can not invoke environment variable subshell in a non-local session")
-                        .to_owned(),
+                    light_i18n::tr(
+                        "Can not invoke environment variable subshell in a non-local session",
+                    )
+                    .to_owned(),
                 ),
                 window_id,
                 ctx,
@@ -26976,8 +27015,9 @@ impl TerminalView {
         let (shell_path_string, shell_type) = shell_session_info;
         if shell_type == ShellType::PowerShell {
             ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
-                let toast =
-                    DismissibleToast::error(light_i18n::tr("PowerShell subshells not supported").to_owned());
+                let toast = DismissibleToast::error(
+                    light_i18n::tr("PowerShell subshells not supported").to_owned(),
+                );
                 toast_stack.add_ephemeral_toast(toast, window_id, ctx);
             });
             return;
@@ -26987,7 +27027,9 @@ impl TerminalView {
         // subshell start
         self.env_vars = env_var_collection.vars;
         self.model.lock().set_env_var_collection_name(Some(
-            env_var_collection.title.unwrap_or(light_i18n::tr("Untitled").to_owned()),
+            env_var_collection
+                .title
+                .unwrap_or(light_i18n::tr("Untitled").to_owned()),
         ));
         self.set_and_execute_subshell_command(&shell_path_string, shell_type, ctx);
 
@@ -28873,7 +28915,8 @@ impl TypedActionView for TerminalView {
                             ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
                                 toast_stack.add_ephemeral_toast(
                                     DismissibleToast::error(
-                                        light_i18n::tr("Bundled skills cannot be edited").to_string(),
+                                        light_i18n::tr("Bundled skills cannot be edited")
+                                            .to_string(),
                                     ),
                                     window_id,
                                     ctx,
@@ -28890,7 +28933,8 @@ impl TypedActionView for TerminalView {
                     ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
                         toast_stack.add_ephemeral_toast(
                             DismissibleToast::error(
-                                light_i18n::tr("Editing skills is not supported in this build").to_string(),
+                                light_i18n::tr("Editing skills is not supported in this build")
+                                    .to_string(),
                             ),
                             window_id,
                             ctx,

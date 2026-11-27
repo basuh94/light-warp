@@ -731,16 +731,17 @@ impl RequestedCommandView {
             .map(|k| k.displayed())
             .unwrap_or_default();
 
-            let accept_item = MenuItemFields::new_with_label(
-                light_i18n::tr("Run"),
-                accept_keystroke.as_str(),
-            )
-            .with_on_select_action(RequestedCommandViewAction::Accept)
-            .into_item();
+            let accept_item =
+                MenuItemFields::new_with_label(light_i18n::tr("Run"), accept_keystroke.as_str())
+                    .with_on_select_action(RequestedCommandViewAction::Accept)
+                    .into_item();
 
-            let auto_item = MenuItemFields::new_with_label(light_i18n::tr("Auto-approve"), auto_keystroke.as_str())
-                .with_on_select_action(RequestedCommandViewAction::AcceptAndAutoExecute)
-                .into_item();
+            let auto_item = MenuItemFields::new_with_label(
+                light_i18n::tr("Auto-approve"),
+                auto_keystroke.as_str(),
+            )
+            .with_on_select_action(RequestedCommandViewAction::AcceptAndAutoExecute)
+            .into_item();
 
             self.accept_split_button_menu.update(ctx, |menu, ctx| {
                 menu.set_items(vec![accept_item, auto_item], ctx);
@@ -866,7 +867,9 @@ impl RequestedCommandView {
             ) if show_for_action_id == &self.action_id => {
                 *shown.lock() = true;
                 Some(render_autonomy_checkbox_setting_speedbump_footer(
-                    light_i18n::tr("Always allow the Warp Agent to execute read-only commands (relies on model)"),
+                    light_i18n::tr(
+                        "Always allow the Warp Agent to execute read-only commands (relies on model)",
+                    ),
                     *checked,
                     AIBlockAction::ToggleAutoexecuteReadonlyCommandsSpeedbumpCheckbox,
                     self.autoexecute_readonly_commands_speedbump_checkbox_handle
@@ -1231,7 +1234,9 @@ impl RequestedCommandView {
             }
             Some(AIActionStatus::Blocked) => {
                 title = match &self.action_type {
-                    RequestedActionViewType::Command => light_i18n::tr("OK if I run this command and read the output?").into(),
+                    RequestedActionViewType::Command => {
+                        light_i18n::tr("OK if I run this command and read the output?").into()
+                    }
                     RequestedActionViewType::McpTool => self.mcp_blocked_title(app).into(),
                 };
             }
@@ -1252,7 +1257,10 @@ impl RequestedCommandView {
                                         );
 
                                     if is_errored {
-                                        light_i18n::tr("Agent ran into an issue. Take over control.").into()
+                                        light_i18n::tr(
+                                            "Agent ran into an issue. Take over control.",
+                                        )
+                                        .into()
                                     } else if *is_blocked {
                                         light_i18n::tr("Agent needs your input to continue").into()
                                     } else {
@@ -1539,9 +1547,7 @@ pub(crate) fn header_message_for_user_take_over_reason(
     match reason {
         UserTakeOverReason::Manual => light_i18n::tr("User is in control."),
         UserTakeOverReason::Stop { .. } => light_i18n::tr("Paused agent. User is in control."),
-        UserTakeOverReason::TransferFromAgent { .. } => {
-            light_i18n::tr("User in control")
-        }
+        UserTakeOverReason::TransferFromAgent { .. } => light_i18n::tr("User in control"),
     }
 }
 
@@ -1721,16 +1727,24 @@ impl View for RequestedCommandView {
                     let mut col =
                         Flex::column().with_cross_axis_alignment(CrossAxisAlignment::Stretch);
                     col.add_child(
-                        Text::new_inline(light_i18n::tr("Request").to_string(), font_family, TREE_FONT_SIZE)
-                            .with_color(colors.annotation)
-                            .soft_wrap(false)
-                            .finish(),
+                        Text::new_inline(
+                            light_i18n::tr("Request").to_string(),
+                            font_family,
+                            TREE_FONT_SIZE,
+                        )
+                        .with_color(colors.annotation)
+                        .soft_wrap(false)
+                        .finish(),
                     );
                     col.add_child(
-                        Text::new_inline(light_i18n::tr("(no arguments)").to_string(), font_family, TREE_FONT_SIZE)
-                            .with_color(colors.annotation)
-                            .soft_wrap(false)
-                            .finish(),
+                        Text::new_inline(
+                            light_i18n::tr("(no arguments)").to_string(),
+                            font_family,
+                            TREE_FONT_SIZE,
+                        )
+                        .with_color(colors.annotation)
+                        .soft_wrap(false)
+                        .finish(),
                     );
                     col.finish()
                 };
@@ -1804,10 +1818,14 @@ impl View for RequestedCommandView {
                                 .finish(),
                             );
                             col.add_child(
-                                Text::new(light_i18n::tr!("Error: {}", e), font_family, TREE_FONT_SIZE)
-                                    .with_color(theme.ui_error_color())
-                                    .with_selectable(true)
-                                    .finish(),
+                                Text::new(
+                                    light_i18n::tr!("Error: {}", e),
+                                    font_family,
+                                    TREE_FONT_SIZE,
+                                )
+                                .with_color(theme.ui_error_color())
+                                .with_selectable(true)
+                                .finish(),
                             );
                             col.finish()
                         }
@@ -2129,10 +2147,11 @@ impl TypedActionView for RequestedCommandView {
                     .as_deref()
                     .is_some_and(|t| !t.is_empty());
 
-                let copy_item: MenuItem<RequestedCommandViewAction> = MenuItemFields::new(light_i18n::tr("Copy"))
-                    .with_on_select_action(RequestedCommandViewAction::CopyMcpSelection)
-                    .with_disabled(!has_selection)
-                    .into_item();
+                let copy_item: MenuItem<RequestedCommandViewAction> =
+                    MenuItemFields::new(light_i18n::tr("Copy"))
+                        .with_on_select_action(RequestedCommandViewAction::CopyMcpSelection)
+                        .with_disabled(!has_selection)
+                        .into_item();
 
                 let json_for_menu = json_text.clone();
                 let copy_json_item: MenuItem<RequestedCommandViewAction> =

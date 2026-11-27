@@ -6,9 +6,9 @@
 //! - Commands are deduplicated, keeping the most recent occurrence
 //! - The result is that current session items appear at the bottom (closer to input)
 
-use light_i18n::tr;
 use chrono::{DateTime, Local};
 use fuzzy_match::FuzzyMatchResult;
+use light_i18n::tr;
 use ordered_float::OrderedFloat;
 use warpui::{AppContext, Entity, EntityId, ModelHandle, SingletonEntity};
 

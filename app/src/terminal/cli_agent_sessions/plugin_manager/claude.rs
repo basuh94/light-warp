@@ -211,7 +211,9 @@ impl CliAgentPluginManager for ClaudeCodePluginManager {
 
 static INSTALL_INSTRUCTIONS: LazyLock<PluginInstructions> = LazyLock::new(|| PluginInstructions {
     title: light_i18n::tr("Install Warp Plugin for Claude Code"),
-    subtitle: light_i18n::tr("Ensure that jq is installed on your machine. Then, run these commands."),
+    subtitle: light_i18n::tr(
+        "Ensure that jq is installed on your machine. Then, run these commands.",
+    ),
     steps: Vec::leak(vec![
         PluginInstructionStep {
             description: light_i18n::tr("Add the Warp plugin marketplace repository"),
@@ -228,8 +230,10 @@ static INSTALL_INSTRUCTIONS: LazyLock<PluginInstructions> = LazyLock::new(|| Plu
     ]),
     post_install_notes: Vec::leak(vec![
         light_i18n::tr("Restart Claude Code to activate the plugin."),
-        light_i18n::tr("There are some known issues with Claude Code's plugin system. \
-             If the plugin is not found after step 1, you can try manually adding an \"extraKnownMarketplaces\" entry to ~/.claude/settings.json."),
+        light_i18n::tr(
+            "There are some known issues with Claude Code's plugin system. \
+             If the plugin is not found after step 1, you can try manually adding an \"extraKnownMarketplaces\" entry to ~/.claude/settings.json.",
+        ),
     ]),
 });
 
@@ -256,7 +260,9 @@ static UPDATE_INSTRUCTIONS: LazyLock<PluginInstructions> = LazyLock::new(|| Plug
             link: None,
         },
     ]),
-    post_install_notes: Vec::leak(vec![light_i18n::tr("Restart Claude Code to activate the update.")]),
+    post_install_notes: Vec::leak(vec![light_i18n::tr(
+        "Restart Claude Code to activate the update.",
+    )]),
 });
 
 fn check_installed(claude_dir: &Path) -> bool {

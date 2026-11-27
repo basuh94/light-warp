@@ -820,9 +820,9 @@ fn render_body(props: ZeroStateBodyProps<'_>, app: &AppContext) -> Vec<Box<dyn E
                 key: "/init".to_owned(),
                 ..Default::default()
             }),
-            MessageItem::text(
-                light_i18n::tr("to index this codebase and generate an AGENTS.md for optimal performance"),
-            ),
+            MessageItem::text(light_i18n::tr(
+                "to index this codebase and generate an AGENTS.md for optimal performance",
+            )),
         ])
         .with_text_color(main_text_color);
         body_items.push(

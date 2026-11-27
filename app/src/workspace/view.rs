@@ -366,11 +366,11 @@ use crate::settings_view::{SettingsSection, SettingsView, SettingsViewEvent, fla
 #[cfg(all(target_os = "windows", feature = "local_tty"))]
 use crate::shell_indicator::ShellIndicatorType;
 use crate::tab::{
-    COMPACT_TAB_WIDTH_THRESHOLD, ColorPickerTarget, NewSessionMenuItem,
-    PaneNameMenuTarget, SelectedTabColor, TAB_BAR_BORDER_HEIGHT, TAB_INDICATOR_HEIGHT,
-    TAB_PIN_INDICATOR_ICON_SIZE, TAB_PIN_VANISH_THRESHOLD, TabBarState, TabComponent, TabData,
-    TabShortcutModifierState, TabTelemetryAction, color_picker_menu_items, next_tab_color,
-    tab_position_id, uses_vertical_tabs,
+    COMPACT_TAB_WIDTH_THRESHOLD, ColorPickerTarget, NewSessionMenuItem, PaneNameMenuTarget,
+    SelectedTabColor, TAB_BAR_BORDER_HEIGHT, TAB_INDICATOR_HEIGHT, TAB_PIN_INDICATOR_ICON_SIZE,
+    TAB_PIN_VANISH_THRESHOLD, TabBarState, TabComponent, TabData, TabShortcutModifierState,
+    TabTelemetryAction, color_picker_menu_items, next_tab_color, tab_position_id,
+    uses_vertical_tabs,
 };
 use crate::tab_configs::action_sidecar::SidecarItemKind;
 use crate::tab_configs::remove_confirmation_dialog::{
@@ -2255,7 +2255,10 @@ impl Workspace {
                     log::warn!("Failed to remove tab config file: {e:?}");
                     self.toast_stack.update(ctx, |toast_stack, ctx| {
                         toast_stack.add_ephemeral_toast(
-                            DismissibleToast::error(light_i18n::tr!("Failed to remove tab config: {}", e)),
+                            DismissibleToast::error(light_i18n::tr!(
+                                "Failed to remove tab config: {}",
+                                e
+                            )),
                             ctx,
                         );
                     });
@@ -2756,7 +2759,8 @@ impl Workspace {
                             &raw_path,
                             home_dir.as_ref().and_then(|h| h.to_str()),
                         );
-                        let message = light_i18n::tr!("Failed to load tab config {}: {}",
+                        let message = light_i18n::tr!(
+                            "Failed to load tab config {}: {}",
                             friendly_path,
                             error.error_message
                         );
@@ -2764,12 +2768,11 @@ impl Workspace {
                         let toast = DismissibleToast::error(message)
                             .with_object_id(object_id.clone())
                             .with_link(
-                                ToastLink::new(light_i18n::tr("Open file").to_string()).with_onclick_action(
-                                    WorkspaceAction::OpenTabConfigErrorFile {
+                                ToastLink::new(light_i18n::tr("Open file").to_string())
+                                    .with_onclick_action(WorkspaceAction::OpenTabConfigErrorFile {
                                         path,
                                         toast_object_id: object_id,
-                                    },
-                                ),
+                                    }),
                             );
                         toast_stack.update(ctx, |toast_stack, ctx| {
                             toast_stack.add_persistent_toast(toast, ctx);
@@ -2790,7 +2793,8 @@ impl Workspace {
                             &raw_path,
                             home_dir.as_ref().and_then(|h| h.to_str()),
                         );
-                        let message = light_i18n::tr!("Failed to load model config {}: {}",
+                        let message = light_i18n::tr!(
+                            "Failed to load model config {}: {}",
                             friendly_path,
                             error.error_message
                         );
@@ -2798,12 +2802,11 @@ impl Workspace {
                         let toast = DismissibleToast::error(message)
                             .with_object_id(object_id.clone())
                             .with_link(
-                                ToastLink::new(light_i18n::tr("Open file").to_string()).with_onclick_action(
-                                    WorkspaceAction::OpenTabConfigErrorFile {
+                                ToastLink::new(light_i18n::tr("Open file").to_string())
+                                    .with_onclick_action(WorkspaceAction::OpenTabConfigErrorFile {
                                         path,
                                         toast_object_id: object_id,
-                                    },
-                                ),
+                                    }),
                             );
                         toast_stack.update(ctx, |toast_stack, ctx| {
                             toast_stack.add_persistent_toast(toast, ctx);
@@ -4798,7 +4801,9 @@ impl Workspace {
         ));
 
         self.toast_stack.update(ctx, |toast_stack, ctx| {
-            let toast = DismissibleToast::default(light_i18n::tr("Remote control link copied.").to_string());
+            let toast = DismissibleToast::default(
+                light_i18n::tr("Remote control link copied.").to_string(),
+            );
             toast_stack.add_ephemeral_toast(toast, ctx);
         });
     }
@@ -8241,9 +8246,12 @@ impl Workspace {
             match autoupdate::get_update_state(ctx) {
                 AutoupdateStage::UpdateReady { new_version, .. }
                 | AutoupdateStage::UpdatedPendingRestart { new_version } => menu_items.push(
-                    MenuItemFields::new(light_i18n::tr!("Install update ({})", new_version.version))
-                        .with_on_select_action(WorkspaceAction::ApplyUpdate)
-                        .into_item(),
+                    MenuItemFields::new(light_i18n::tr!(
+                        "Install update ({})",
+                        new_version.version
+                    ))
+                    .with_on_select_action(WorkspaceAction::ApplyUpdate)
+                    .into_item(),
                 ),
                 AutoupdateStage::Updating { new_version, .. } => menu_items.push(
                     MenuItemFields::new(light_i18n::tr!("Updating to ({})", new_version.version))
@@ -10030,9 +10038,12 @@ impl Workspace {
                     ) =>
                 {
                     items.push(
-                        MenuItemFields::new(light_i18n::tr!("Updating to ({})", new_version.version))
-                            .with_disabled(true)
-                            .into_item(),
+                        MenuItemFields::new(light_i18n::tr!(
+                            "Updating to ({})",
+                            new_version.version
+                        ))
+                        .with_disabled(true)
+                        .into_item(),
                     )
                 }
                 AutoupdateStage::UnableToUpdateToNewVersion { new_version }
@@ -10345,9 +10356,15 @@ impl Workspace {
 
         let pin_section = if FeatureFlag::PinnedTabs.is_enabled() {
             let (label, action) = if self.tab_groups.get(&group_id).is_some_and(|g| g.pinned) {
-                (light_i18n::tr("Unpin group"), WorkspaceAction::UnpinTabGroup(group_id))
+                (
+                    light_i18n::tr("Unpin group"),
+                    WorkspaceAction::UnpinTabGroup(group_id),
+                )
             } else {
-                (light_i18n::tr("Pin group"), WorkspaceAction::PinTabGroup(group_id))
+                (
+                    light_i18n::tr("Pin group"),
+                    WorkspaceAction::PinTabGroup(group_id),
+                )
             };
             vec![
                 MenuItemFields::new(label)
@@ -10492,8 +10509,11 @@ impl Workspace {
         .finish();
 
         // Flip the anchor side when the sidecar would overflow the window.
-        let render_left =
-            self.should_render_sidecar_left(light_i18n::tr("Move to group"), MOVE_TO_GROUP_SIDECAR_WIDTH, app);
+        let render_left = self.should_render_sidecar_left(
+            light_i18n::tr("Move to group"),
+            MOVE_TO_GROUP_SIDECAR_WIDTH,
+            app,
+        );
         let (offset, parent_anchor, child_anchor) = if render_left {
             (
                 vec2f(-4., 0.),
@@ -13695,7 +13715,9 @@ impl Workspace {
                     ctx.notify();
                 });
                 WorkspaceToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
-                    let toast = DismissibleToast::error(light_i18n::tr("Failed to load conversation.").to_owned());
+                    let toast = DismissibleToast::error(
+                        light_i18n::tr("Failed to load conversation.").to_owned(),
+                    );
                     toast_stack.add_ephemeral_toast(toast, window_id, ctx);
                 });
                 return;
@@ -13756,7 +13778,9 @@ impl Workspace {
             let Some(conversation) = conversation else {
                 log::warn!("Failed to load conversation {conversation_id}");
                 WorkspaceToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
-                    let toast = DismissibleToast::error(light_i18n::tr("Failed to load conversation.").to_owned());
+                    let toast = DismissibleToast::error(
+                        light_i18n::tr("Failed to load conversation.").to_owned(),
+                    );
                     toast_stack.add_ephemeral_toast(toast, window_id, ctx);
                 });
                 // Close the loading pane
@@ -13825,7 +13849,9 @@ impl Workspace {
             let Some(conversation) = conversation else {
                 log::warn!("Failed to load conversation {conversation_id}");
                 WorkspaceToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
-                    let toast = DismissibleToast::error(light_i18n::tr("Failed to load conversation.").to_owned());
+                    let toast = DismissibleToast::error(
+                        light_i18n::tr("Failed to load conversation.").to_owned(),
+                    );
                     toast_stack.add_ephemeral_toast(toast, window_id, ctx);
                 });
                 // Close the loading tab
@@ -14155,7 +14181,9 @@ impl Workspace {
             Err(e) => {
                 report_error!(e.context("Conversation forking failed"));
                 WorkspaceToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
-                    let toast = DismissibleToast::error(light_i18n::tr("Conversation forking failed.").to_owned());
+                    let toast = DismissibleToast::error(
+                        light_i18n::tr("Conversation forking failed.").to_owned(),
+                    );
                     toast_stack.add_ephemeral_toast(toast, window_id, ctx);
                 });
                 return;
@@ -14674,12 +14702,16 @@ impl Workspace {
                         let url = NOTIFICATIONS_TROUBLESHOOT_URL.to_string();
                         view.toast_stack.update(ctx, |toast_stack, ctx| {
                             let toast = DismissibleToast::error(
-                                light_i18n::tr("Warp doesn't have permission to send desktop notifications.")
-                                    .to_string(),
+                                light_i18n::tr(
+                                    "Warp doesn't have permission to send desktop notifications.",
+                                )
+                                .to_string(),
                             )
                             .with_link(
-                                ToastLink::new(light_i18n::tr("Troubleshoot notifications").to_string())
-                                    .with_href(url),
+                                ToastLink::new(
+                                    light_i18n::tr("Troubleshoot notifications").to_string(),
+                                )
+                                .with_href(url),
                             );
                             toast_stack.add_persistent_toast(toast, ctx);
                         });
@@ -15337,14 +15369,17 @@ impl Workspace {
                                 .find(|binding| binding.name == "workspace:view_changelog")
                                 .and_then(|binding| trigger_to_keystroke(binding.trigger));
 
-                            let mut link = ToastLink::new(light_i18n::tr("View changelog").to_owned())
-                                .with_onclick_action(WorkspaceAction::ViewLatestChangelog);
+                            let mut link =
+                                ToastLink::new(light_i18n::tr("View changelog").to_owned())
+                                    .with_onclick_action(WorkspaceAction::ViewLatestChangelog);
                             if let Some(keystroke) = keystroke {
                                 link = link.with_keystroke(keystroke);
                             }
 
-                            let toast = DismissibleToast::default(String::from(light_i18n::tr("Warp updated!")))
-                                .with_link(link);
+                            let toast = DismissibleToast::default(String::from(light_i18n::tr(
+                                "Warp updated!",
+                            )))
+                            .with_link(link);
 
                             stack.add_ephemeral_toast(toast, ctx);
                         });
@@ -18013,7 +18048,8 @@ impl Workspace {
             let window_id = ctx.window_id();
             WorkspaceToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
                 let toast = DismissibleToast::default(
-                    light_i18n::tr("No terminal pane open. Open a new pane to attach as context.").to_owned(),
+                    light_i18n::tr("No terminal pane open. Open a new pane to attach as context.")
+                        .to_owned(),
                 );
                 toast_stack.add_ephemeral_toast(toast, window_id, ctx);
             });
@@ -18031,8 +18067,9 @@ impl Workspace {
         {
             let window_id = ctx.window_id();
             WorkspaceToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
-                let toast =
-                    DismissibleToast::default(light_i18n::tr("This plan is already in context.").to_owned());
+                let toast = DismissibleToast::default(
+                    light_i18n::tr("This plan is already in context.").to_owned(),
+                );
                 toast_stack.add_ephemeral_toast(toast, window_id, ctx);
             });
             return;
@@ -18135,8 +18172,9 @@ impl Workspace {
 
         if !ContextFlag::CreateNewSession.is_enabled() {
             self.toast_stack.update(ctx, |toast_stack, ctx| {
-                let toast =
-                    DismissibleToast::error(light_i18n::tr("Cannot open a new terminal session").to_string());
+                let toast = DismissibleToast::error(
+                    light_i18n::tr("Cannot open a new terminal session").to_string(),
+                );
                 toast_stack.add_ephemeral_toast(toast, ctx);
             });
             return None;
@@ -18586,13 +18624,14 @@ impl Workspace {
                                     )
                                     .with_object_id(object_id_clone)
                                     .with_link(
-                                        ToastLink::new(light_i18n::tr("View").to_string()).with_onclick_action(
-                                            WorkspaceAction::ViewObjectInWarpDrive(
-                                                WarpDriveItemId::Object(
-                                                    CloudObjectTypeAndId::Notebook(notebook.id),
+                                        ToastLink::new(light_i18n::tr("View").to_string())
+                                            .with_onclick_action(
+                                                WorkspaceAction::ViewObjectInWarpDrive(
+                                                    WarpDriveItemId::Object(
+                                                        CloudObjectTypeAndId::Notebook(notebook.id),
+                                                    ),
                                                 ),
                                             ),
-                                        ),
                                     );
                                 } else {
                                     return;
@@ -18604,21 +18643,23 @@ impl Workspace {
                                     || result.operation == ObjectOperation::Update)
                             {
                                 new_toast = new_toast.with_link(
-                                    ToastLink::new(light_i18n::tr("View").to_string()).with_onclick_action(
-                                        WorkspaceAction::ViewObjectInWarpDrive(
-                                            WarpDriveItemId::Object(
-                                                CloudObjectTypeAndId::Workflow(workflow.id),
+                                    ToastLink::new(light_i18n::tr("View").to_string())
+                                        .with_onclick_action(
+                                            WorkspaceAction::ViewObjectInWarpDrive(
+                                                WarpDriveItemId::Object(
+                                                    CloudObjectTypeAndId::Workflow(workflow.id),
+                                                ),
                                             ),
                                         ),
-                                    ),
                                 )
                             }
 
                             if result.operation == ObjectOperation::Trash {
                                 new_toast = new_toast.with_link(
-                                    ToastLink::new(light_i18n::tr("Undo").to_string()).with_onclick_action(
-                                        WorkspaceAction::UndoTrash(cloud_object_type_and_id),
-                                    ),
+                                    ToastLink::new(light_i18n::tr("Undo").to_string())
+                                        .with_onclick_action(WorkspaceAction::UndoTrash(
+                                            cloud_object_type_and_id,
+                                        )),
                                 )
                             }
 
@@ -19192,7 +19233,11 @@ impl Workspace {
         if let Some(keystroke) =
             keybinding_name_to_keystroke("workspace:toggle_mouse_reporting", ctx)
         {
-            let _ = write!(message, "{}", light_i18n::tr!(" Press {} to undo.", keystroke.displayed()));
+            let _ = write!(
+                message,
+                "{}",
+                light_i18n::tr!(" Press {} to undo.", keystroke.displayed())
+            );
         }
 
         self.toast_stack.update(ctx, |view, ctx| {
@@ -20151,7 +20196,8 @@ impl Workspace {
         let body = appearance
             .ui_builder()
             .wrappable_text(
-                light_i18n::tr("Ask Warp AI to explain errors, suggest commands or write scripts.").to_owned(),
+                light_i18n::tr("Ask Warp AI to explain errors, suggest commands or write scripts.")
+                    .to_owned(),
                 true,
             )
             .with_style(UiComponentStyles {
@@ -20828,7 +20874,9 @@ impl Workspace {
                         ToolPanelView::ProjectExplorer => light_i18n::tr("Project explorer"),
                         ToolPanelView::GlobalSearch { .. } => light_i18n::tr("Global search"),
                         ToolPanelView::WarpDrive => "Warp Drive",
-                        ToolPanelView::ConversationListView => light_i18n::tr("Agent conversations"),
+                        ToolPanelView::ConversationListView => {
+                            light_i18n::tr("Agent conversations")
+                        }
                     }
                 } else {
                     light_i18n::tr("Tools panel")
@@ -22122,7 +22170,8 @@ impl Workspace {
     fn render_offline_button(&self, appearance: &Appearance) -> Box<dyn Element> {
         let ui_builder = appearance.ui_builder().clone();
 
-        let tool_tip_label_text = light_i18n::tr("Some features may be unavailable offline").to_string();
+        let tool_tip_label_text =
+            light_i18n::tr("Some features may be unavailable offline").to_string();
         let icon = ConstrainedBox::new(
             Container::new(
                 icons::Icon::CloudOffline
@@ -22539,13 +22588,14 @@ impl Workspace {
                 AutoupdateStage::UnableToUpdateToNewVersion { new_version }
                     if !self.autoupdate_unable_to_update_banner_dismissed =>
                 {
-                    let description =
-                        if is_incoming_version_past_current(new_version.soft_cutoff.as_deref()) {
-                            light_i18n::tr("Some Warp features may not work as expected without updating immediately, but Warp is unable to perform the update.").to_owned()
-                        } else {
-                            "A new version is available but Warp is unable to perform the update."
-                                .to_owned()
-                        };
+                    let description = if is_incoming_version_past_current(
+                        new_version.soft_cutoff.as_deref(),
+                    ) {
+                        light_i18n::tr("Some Warp features may not work as expected without updating immediately, but Warp is unable to perform the update.").to_owned()
+                    } else {
+                        "A new version is available but Warp is unable to perform the update."
+                            .to_owned()
+                    };
 
                     Some(WorkspaceBannerFields {
                         banner_type: WorkspaceBanner::UnableToUpdateToNewVersion,
@@ -22565,12 +22615,14 @@ impl Workspace {
                 AutoupdateStage::UnableToLaunchNewVersion { new_version }
                     if !self.autoupdate_unable_to_launch_new_version =>
                 {
-                    let description =
-                        if is_incoming_version_past_current(new_version.soft_cutoff.as_deref()) {
-                            light_i18n::tr("Some Warp features may not work as expected without updating immediately, but Warp is unable to perform the update.").to_owned()
-                        } else {
-                            light_i18n::tr("Warp was unable to launch the new installed version.").to_owned()
-                        };
+                    let description = if is_incoming_version_past_current(
+                        new_version.soft_cutoff.as_deref(),
+                    ) {
+                        light_i18n::tr("Some Warp features may not work as expected without updating immediately, but Warp is unable to perform the update.").to_owned()
+                    } else {
+                        light_i18n::tr("Warp was unable to launch the new installed version.")
+                            .to_owned()
+                    };
 
                     Some(WorkspaceBannerFields {
                         banner_type: WorkspaceBanner::UnableToLaunchNewVersion,
@@ -22611,11 +22663,14 @@ impl Workspace {
                                     banner_type: WorkspaceBanner::VersionDeprecated,
                                     severity: BannerSeverity::Warning,
                                     heading: None,
-                                    description: light_i18n::tr("Your app is out of date and needs to update.")
-                                        .to_string(),
+                                    description: light_i18n::tr(
+                                        "Your app is out of date and needs to update.",
+                                    )
+                                    .to_string(),
                                     secondary_button: None,
                                     button: Some(WorkspaceBannerButtonDetails {
-                                        text: light_i18n::tr("Restart app and update now").to_string(),
+                                        text: light_i18n::tr("Restart app and update now")
+                                            .to_string(),
                                         action: WorkspaceAction::ApplyUpdate,
                                         variant: BannerButtonVariant::Outlined,
                                         icon: None,
@@ -25447,7 +25502,11 @@ impl TypedActionView for Workspace {
                     "workspace:toggle_sync_all_terminal_inputs_in_all_tabs",
                     ctx,
                 ) {
-                    let _ = write!(message, "{}", light_i18n::tr!(" Press {} to undo.", keystroke.displayed()));
+                    let _ = write!(
+                        message,
+                        "{}",
+                        light_i18n::tr!(" Press {} to undo.", keystroke.displayed())
+                    );
                 }
                 self.toast_stack.update(ctx, |view, ctx| {
                     let new_toast = DismissibleToast::default(message);
@@ -25484,7 +25543,11 @@ impl TypedActionView for Workspace {
                     "workspace:toggle_sync_terminal_inputs_in_tab",
                     ctx,
                 ) {
-                    let _ = write!(message, "{}", light_i18n::tr!(" Press {} to undo.", keystroke.displayed()));
+                    let _ = write!(
+                        message,
+                        "{}",
+                        light_i18n::tr!(" Press {} to undo.", keystroke.displayed())
+                    );
                 }
                 self.toast_stack.update(ctx, |view, ctx| {
                     let new_toast = DismissibleToast::default(message);
@@ -25503,8 +25566,9 @@ impl TypedActionView for Workspace {
                 self.process_updated_sync_state(ctx);
 
                 self.toast_stack.update(ctx, |view, ctx| {
-                    let new_toast =
-                        DismissibleToast::success(light_i18n::tr("Disabled all synchronized inputs.").to_string());
+                    let new_toast = DismissibleToast::success(
+                        light_i18n::tr("Disabled all synchronized inputs.").to_string(),
+                    );
                     view.add_ephemeral_toast(new_toast, ctx);
                 });
                 send_telemetry_from_ctx!(TelemetryEvent::DisableInputSync, ctx);
@@ -26603,7 +26667,9 @@ impl TypedActionView for Workspace {
                 send_telemetry_from_ctx!(TelemetryEvent::ConversationListItemDeleted, ctx);
                 ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
                     toast_stack.add_ephemeral_toast(
-                        DismissibleToast::success(light_i18n::tr("Conversation deleted").to_string()),
+                        DismissibleToast::success(
+                            light_i18n::tr("Conversation deleted").to_string(),
+                        ),
                         window_id,
                         ctx,
                     );

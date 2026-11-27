@@ -74,11 +74,15 @@ pub fn render_inline_notifications_discovery_banner(
 
     let (title, buttons) = match notifications_mode {
         NotificationsMode::Dismissed => (
-            tr("We won't show this banner again, but you can always go to Settings to enable notifications."),
+            tr(
+                "We won't show this banner again, but you can always go to Settings to enable notifications.",
+            ),
             vec![],
         ),
         NotificationsMode::Disabled => (
-            tr("Notifications were turned off, but you can always go to Settings to enable notifications."),
+            tr(
+                "Notifications were turned off, but you can always go to Settings to enable notifications.",
+            ),
             vec![],
         ),
         NotificationsMode::Unset => (
@@ -119,7 +123,9 @@ pub fn render_inline_notifications_discovery_banner(
                     ),
                 },
                 None => (
-                    tr("Don't forget to 'Allow' the permissions request to finish setting up notifications."),
+                    tr(
+                        "Don't forget to 'Allow' the permissions request to finish setting up notifications.",
+                    ),
                     learn_more_button,
                 ),
             };

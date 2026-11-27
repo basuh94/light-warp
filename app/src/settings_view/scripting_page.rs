@@ -71,7 +71,10 @@ impl ScriptingSettingsPageView {
             vec![Box::new(LocalControlModeWidget)];
 
         Self {
-            page: PageType::new_uncategorized(widgets, Some(PageTitle::new(light_i18n::tr("Scripting")))),
+            page: PageType::new_uncategorized(
+                widgets,
+                Some(PageTitle::new(light_i18n::tr("Scripting"))),
+            ),
             local_only_icon_tooltip_states: RefCell::new(HashMap::new()),
             local_control_mode_dropdown,
             #[cfg(target_os = "macos")]
@@ -267,7 +270,12 @@ impl SettingsWidget for WarpControlCliInstallWidget {
             ToggleState::Enabled,
             appearance,
             button,
-            Some(light_i18n::tr("Install the warpctrl command for scripting Warp from your terminal.").to_owned()),
+            Some(
+                light_i18n::tr(
+                    "Install the warpctrl command for scripting Warp from your terminal.",
+                )
+                .to_owned(),
+            ),
         )
     }
 }
@@ -298,7 +306,10 @@ impl SettingsWidget for LocalControlModeWidget {
             ToggleState::Enabled,
             appearance,
             ChildView::new(&view.local_control_mode_dropdown).finish(),
-            Some(light_i18n::tr("warpctrl allows for scripting Warp's UI. Use with care.").to_owned()),
+            Some(
+                light_i18n::tr("warpctrl allows for scripting Warp's UI. Use with care.")
+                    .to_owned(),
+            ),
         )
     }
 }

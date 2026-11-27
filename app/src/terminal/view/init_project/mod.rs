@@ -576,9 +576,13 @@ impl InitStepBlock {
         let is_already_setup = self.model.as_ref(app).is_already_setup();
 
         let display_text = if !is_already_setup {
-            tr("Great - let's begin setting up this project! Would you like to give me permission to index this codebase? It allows me to quickly understand context and provide more targeted solutions when working in this codebase. No code is stored on Warp servers.")
+            tr(
+                "Great - let's begin setting up this project! Would you like to give me permission to index this codebase? It allows me to quickly understand context and provide more targeted solutions when working in this codebase. No code is stored on Warp servers.",
+            )
         } else {
-            tr("It looks like this project has already been initialized. You can re-generate the AGENTS.md for this codebase by clicking the button below.")
+            tr(
+                "It looks like this project has already been initialized. You can re-generate the AGENTS.md for this codebase by clicking the button below.",
+            )
         };
 
         let text = Text::new(
@@ -828,7 +832,9 @@ impl InitStepBlock {
                 };
                 Self::render_ready_with_buttons(
                     action_view,
-                    tr("Would you like to create an AGENTS.md file? Warp can create one for you with project specific rules, context, and conventions inferred from your codebase. The agent will use this context as it codes."),
+                    tr(
+                        "Would you like to create an AGENTS.md file? Warp can create one for you with project specific rules, context, and conventions inferred from your codebase. The agent will use this context as it codes.",
+                    ),
                     app,
                 )
             }

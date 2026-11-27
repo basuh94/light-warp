@@ -1,5 +1,5 @@
-use light_i18n::tr;
 use fuzzy_match::FuzzyMatchResult;
+use light_i18n::tr;
 use ordered_float::OrderedFloat;
 use warp_core::ui::icons::Icon;
 use warpui::elements::{ConstrainedBox, Container, Highlight, Text};

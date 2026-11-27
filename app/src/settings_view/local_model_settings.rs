@@ -171,7 +171,8 @@ impl LocalModelSettingsView {
             .trim()
             .to_owned();
         if url.is_empty() {
-            self.status = ServerStatus::Failed(light_i18n::tr("Enter the server address.").to_owned());
+            self.status =
+                ServerStatus::Failed(light_i18n::tr("Enter the server address.").to_owned());
             ctx.notify();
             return;
         }
@@ -267,11 +268,11 @@ impl LocalModelSettingsView {
         let text = match &self.status {
             ServerStatus::NotChecked => String::new(),
             ServerStatus::Checking => light_i18n::tr("Connecting…").to_owned(),
-            ServerStatus::Connected if self.models.is_empty() => {
-                light_i18n::tr("Connected, but no models are installed. Install one, for example with \
-                     `ollama pull qwen3:8b`.")
-                .to_owned()
-            }
+            ServerStatus::Connected if self.models.is_empty() => light_i18n::tr(
+                "Connected, but no models are installed. Install one, for example with \
+                     `ollama pull qwen3:8b`.",
+            )
+            .to_owned(),
             ServerStatus::Connected => light_i18n::tr!("Connected · {} models", self.models.len()),
             ServerStatus::Failed(error) => light_i18n::tr!("Could not connect: {}", error),
         };
@@ -305,8 +306,10 @@ impl View for LocalModelSettingsView {
                 app,
             ))
             .with_child(render_ai_setting_description(
-                light_i18n::tr("Run the agent on a model server on your machine, such as Ollama. \
-                     Nothing is sent to Warp or anywhere else."),
+                light_i18n::tr(
+                    "Run the agent on a model server on your machine, such as Ollama. \
+                     Nothing is sent to Warp or anywhere else.",
+                ),
                 true,
                 app,
             ));
@@ -361,7 +364,10 @@ impl View for LocalModelSettingsView {
             .with_child(
                 Flex::column()
                     .with_spacing(4.)
-                    .with_child(Self::label(light_i18n::tr("Context window (tokens)"), appearance))
+                    .with_child(Self::label(
+                        light_i18n::tr("Context window (tokens)"),
+                        appearance,
+                    ))
                     .with_child(Self::text_input(&self.context_window_editor, 120., app))
                     .finish(),
             )

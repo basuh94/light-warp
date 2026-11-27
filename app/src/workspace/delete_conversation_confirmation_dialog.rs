@@ -108,8 +108,10 @@ impl View for DeleteConversationConfirmationDialog {
         let dialog = Dialog::new(
             title,
             Some(
-                light_i18n::tr("This conversation will be permanently deleted. This action cannot be undone.")
-                    .into(),
+                light_i18n::tr(
+                    "This conversation will be permanently deleted. This action cannot be undone.",
+                )
+                .into(),
             ),
             UiComponentStyles {
                 width: Some(DIALOG_WIDTH),

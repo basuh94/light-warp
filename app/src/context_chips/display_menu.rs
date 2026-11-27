@@ -884,7 +884,12 @@ impl DisplayChipMenu {
                 false,
             ))
             .with_child(row(Icon::Hash, light_i18n::tr("ID:"), id_value, false))
-            .with_child(row(Icon::Docker, light_i18n::tr("Image:"), image_value, false))
+            .with_child(row(
+                Icon::Docker,
+                light_i18n::tr("Image:"),
+                image_value,
+                false,
+            ))
             .with_child(row(
                 Icon::Github,
                 light_i18n::tr("Repos:"),

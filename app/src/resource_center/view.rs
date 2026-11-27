@@ -328,7 +328,9 @@ impl ResourceCenterView {
         let current_page = self.page_views.get(self.current_view_index).map(|x| x.page);
 
         let header_text = match current_page {
-            Some(ResourceCenterPage::Keybindings) => light_i18n::tr("Keyboard Shortcuts").to_string(),
+            Some(ResourceCenterPage::Keybindings) => {
+                light_i18n::tr("Keyboard Shortcuts").to_string()
+            }
             _ => {
                 if FeatureFlag::AvatarInTabBar.is_enabled() {
                     String::new()
@@ -451,7 +453,8 @@ impl ResourceCenterView {
         let docs_button = self.render_footer_button(ResourceCenterFooterItem::Docs, appearance);
         let mut footer = Flex::row().with_child(docs_button);
         if !ChannelState::is_offline() {
-            footer.add_child(self.render_footer_button(ResourceCenterFooterItem::Slack, appearance));
+            footer
+                .add_child(self.render_footer_button(ResourceCenterFooterItem::Slack, appearance));
             footer.add_child(
                 self.render_footer_button(ResourceCenterFooterItem::Feedback, appearance),
             );

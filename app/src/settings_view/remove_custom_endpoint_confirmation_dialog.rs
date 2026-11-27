@@ -43,9 +43,13 @@ impl RemoveCustomEndpointConfirmationDialog {
         });
 
         let confirm_button = ctx.add_typed_action_view(|_| {
-            ActionButton::new(light_i18n::tr("Remove endpoint"), DangerPrimaryTheme).on_click(|ctx| {
-                ctx.dispatch_typed_action(RemoveCustomEndpointConfirmationDialogAction::Confirm);
-            })
+            ActionButton::new(light_i18n::tr("Remove endpoint"), DangerPrimaryTheme).on_click(
+                |ctx| {
+                    ctx.dispatch_typed_action(
+                        RemoveCustomEndpointConfirmationDialogAction::Confirm,
+                    );
+                },
+            )
         });
 
         Self {

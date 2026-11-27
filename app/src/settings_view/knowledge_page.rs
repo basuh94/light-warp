@@ -26,7 +26,6 @@ use crate::appearance::Appearance;
 use crate::settings::{AISettings, MemoryEnabled, RuleSuggestionsEnabled, WarpDriveContextEnabled};
 use crate::util::bindings;
 
-
 const RULES_DOCS_URL: &str = "https://docs.warp.dev/agents/capabilities/rules";
 
 pub struct KnowledgePageView {
@@ -224,9 +223,9 @@ impl SettingsWidget for RulesWidget {
         );
 
         let rules_description = vec![
-            FormattedTextFragment::plain_text(
-                light_i18n::tr("Rules help the Warp Agent follow your conventions, whether for codebases or specific workflows. "),
-            ),
+            FormattedTextFragment::plain_text(light_i18n::tr(
+                "Rules help the Warp Agent follow your conventions, whether for codebases or specific workflows. ",
+            )),
             FormattedTextFragment::hyperlink(light_i18n::tr("Learn more"), RULES_DOCS_URL),
         ];
         let description = Container::new(
@@ -356,7 +355,9 @@ impl SettingsWidget for WarpDriveContextWidget {
         );
 
         let description = render_ai_setting_description(
-            light_i18n::tr("The Warp Agent can leverage your Warp Drive Contents to tailor responses to your personal and team developer workflows and environments. This includes any Workflows, Notebooks, and Environment Variables."),
+            light_i18n::tr(
+                "The Warp Agent can leverage your Warp Drive Contents to tailor responses to your personal and team developer workflows and environments. This includes any Workflows, Notebooks, and Environment Variables.",
+            ),
             ai_settings.is_any_ai_enabled(app),
             app,
         );
