@@ -94,7 +94,6 @@ pub enum MCPServersListPageViewAction {
     ToggleFileBasedMcp,
 }
 
-
 pub struct MCPServersListPageView {
     handle: WeakViewHandle<Self>,
     server_cards: HashMap<ServerCardItemId, ViewHandle<ServerCardView>>,
@@ -844,7 +843,9 @@ impl MCPServersListPageView {
                 // Show the toast that the server updated, even though we don't update the cloud template in this case
                 let window_id = ctx.window_id();
                 ToastStack::handle(ctx).update(ctx, |toast_stack, ctx| {
-                    let toast = DismissibleToast::success(String::from(light_i18n::tr("MCP server updated")));
+                    let toast = DismissibleToast::success(String::from(light_i18n::tr(
+                        "MCP server updated",
+                    )));
                     toast_stack.add_ephemeral_toast(toast, window_id, ctx);
                 });
             }
@@ -1046,8 +1047,6 @@ impl MCPServersListPageView {
     ) {
         match event {
             TemplatableMCPServerManagerEvent::StateChanged { uuid: _, state: _ }
-            | TemplatableMCPServerManagerEvent::AuthenticationRequired { uuid: _ }
-            | TemplatableMCPServerManagerEvent::CredentialsChanged { uuid: _ }
             | TemplatableMCPServerManagerEvent::ServerInstallationAdded(_)
             | TemplatableMCPServerManagerEvent::ServerInstallationDeleted(_)
             | TemplatableMCPServerManagerEvent::TemplatableMCPServersUpdated
@@ -1147,9 +1146,9 @@ impl MCPServersListPageView {
             Vec<FormattedTextFragment>,
         > = std::sync::LazyLock::new(|| {
             vec![
-                FormattedTextFragment::plain_text(
-                    light_i18n::tr("Automatically detect and spawn MCP servers from globally-scoped third-party AI agent configuration files (e.g. in your home directory). Servers detected inside a repository are never spawned automatically and must be enabled individually in the \"Detected from\" sections below. "),
-                ),
+                FormattedTextFragment::plain_text(light_i18n::tr(
+                    "Automatically detect and spawn MCP servers from globally-scoped third-party AI agent configuration files (e.g. in your home directory). Servers detected inside a repository are never spawned automatically and must be enabled individually in the \"Detected from\" sections below. ",
+                )),
                 FormattedTextFragment::hyperlink(
                     light_i18n::tr("See supported providers."),
                     "https://docs.warp.dev/agents/capabilities/mcp#file-based-mcp-servers",
@@ -1187,7 +1186,9 @@ impl MCPServersListPageView {
 
     fn render_page_body(&self, appearance: &Appearance, app: &AppContext) -> Box<dyn Element> {
         let description_fragments = vec![
-            FormattedTextFragment::plain_text(light_i18n::tr("Add MCP servers to extend the Warp Agent's capabilities. MCP servers expose data sources or tools to agents through a standardized interface, essentially acting like plugins. Add a custom server, or use the presets to get started with popular servers. You can also find team servers that have been shared with you here. ")),
+            FormattedTextFragment::plain_text(light_i18n::tr(
+                "Add MCP servers to extend the Warp Agent's capabilities. MCP servers expose data sources or tools to agents through a standardized interface, essentially acting like plugins. Add a custom server, or use the presets to get started with popular servers. You can also find team servers that have been shared with you here. ",
+            )),
             FormattedTextFragment::hyperlink(
                 light_i18n::tr("Learn more."),
                 "https://docs.warp.dev/agents/capabilities/mcp",
@@ -1306,7 +1307,8 @@ impl MCPServersListPageView {
 
                 // Render one section per provider (e.g. "Detected from Claude").
                 for (provider, cards) in &filtered_file_based_cards {
-                    let section_title = light_i18n::tr!("Detected from {}", provider.display_name());
+                    let section_title =
+                        light_i18n::tr!("Detected from {}", provider.display_name());
                     page.add_child(self.render_server_cards_section(
                         &section_title,
                         cards,
@@ -1502,7 +1504,12 @@ impl MCPServersListPageView {
                         .with_child(
                             appearance
                                 .ui_builder()
-                                .wrappable_text(light_i18n::tr("Once you add a MCP server, it will be shown here."), true)
+                                .wrappable_text(
+                                    light_i18n::tr(
+                                        "Once you add a MCP server, it will be shown here.",
+                                    ),
+                                    true,
+                                )
                                 .with_style(style::description_text(appearance))
                                 .build()
                                 .finish(),
@@ -1777,7 +1784,9 @@ impl MCPServersListPageView {
 
                 if is_shared {
                     match creator {
-                        Some(creator) => Some(TitleChip::text(light_i18n::tr!("Shared by: {}", creator))),
+                        Some(creator) => {
+                            Some(TitleChip::text(light_i18n::tr!("Shared by: {}", creator)))
+                        }
                         None => Some(TitleChip::text(light_i18n::tr("Shared by a team member"))),
                     }
                 } else if matches!(item_id, ServerCardItemId::TemplatableMCP(_)) {

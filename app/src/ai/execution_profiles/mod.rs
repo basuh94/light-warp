@@ -22,10 +22,13 @@ pub(crate) const LONG_CONTEXT_PRICING_WARNING_URL: &str =
     "https://developers.openai.com/api/docs/pricing";
 pub(crate) fn long_context_pricing_warning_title() -> FormattedTextInline {
     vec![
-        FormattedTextFragment::plain_text(
-            light_i18n::tr("OpenAI automatically applies long-context pricing when context exceeds 272,000 tokens. "),
+        FormattedTextFragment::plain_text(light_i18n::tr(
+            "OpenAI automatically applies long-context pricing when context exceeds 272,000 tokens. ",
+        )),
+        FormattedTextFragment::hyperlink(
+            light_i18n::tr("Learn more"),
+            LONG_CONTEXT_PRICING_WARNING_URL,
         ),
-        FormattedTextFragment::hyperlink(light_i18n::tr("Learn more"), LONG_CONTEXT_PRICING_WARNING_URL),
     ]
 }
 
@@ -100,14 +103,6 @@ pub fn resolve_cloud_agent_computer_use_state(
 #[cfg(not(feature = "agent_mode_evals"))]
 pub fn create_default_from_legacy_settings(app: &AppContext) -> AIExecutionProfile {
     create_default_from_legacy_settings_with_profile(AIExecutionProfile::default(), app)
-}
-
-#[cfg(not(feature = "agent_mode_evals"))]
-fn create_default_for_tui_from_legacy_settings(app: &AppContext) -> AIExecutionProfile {
-    create_default_from_legacy_settings_with_profile(
-        AIExecutionProfile::default_profile_for_tui(),
-        app,
-    )
 }
 
 #[cfg(not(feature = "agent_mode_evals"))]

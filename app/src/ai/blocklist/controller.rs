@@ -764,8 +764,7 @@ impl BlocklistAIController {
             OrchestrationEventStreamerEvent::LocalChildHistoryPrepared { .. } => {}
             // Viewer-mode events are handled by `OrchestrationViewerModel`.
             OrchestrationEventStreamerEvent::ChildSpawned { .. }
-            | OrchestrationEventStreamerEvent::ChildStatusChanged { .. }
-            | OrchestrationEventStreamerEvent::WatchedRunStatusChanged { .. } => {}
+            | OrchestrationEventStreamerEvent::ChildStatusChanged { .. } => {}
         });
         // A turn ends as cancelled or failed from many places (a cancelled or errored stream,
         // actions cancelled with nothing to send back, a shell exit, a hook that ended the run),

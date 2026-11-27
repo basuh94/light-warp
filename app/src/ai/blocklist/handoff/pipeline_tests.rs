@@ -74,7 +74,7 @@ fn required_environment_revalidates_after_catalog_refresh() {
         pending.validate(),
         Err(HandoffPrepareError::MissingRequiredEnvironment)
     );
-    pending.set_environment_id(Some(environment_id), true);
+    pending.selected_environment_id = Some(environment_id);
     assert_eq!(
         pending.validate(),
         Err(HandoffPrepareError::InvalidEnvironment)
@@ -86,41 +86,6 @@ fn required_environment_revalidates_after_catalog_refresh() {
         pending.validate(),
         Err(HandoffPrepareError::InvalidEnvironment)
     );
-}
-
-#[test]
-fn model_selection_refreshes_cloud_compatibility_in_both_directions() {
-    App::test((), |mut app| async move {
-        initialize_app_for_terminal_view(&mut app);
-        let mock = Arc::new(MockAIClient::new());
-        let mut pending = pending(mock, None, false, "continue");
-        app.update(|ctx| {
-            pending.set_model_id("custom-router:local:byok".to_owned(), false, ctx);
-        });
-        assert_eq!(pending.selected_model_id, "auto");
-        assert_eq!(pending.config.model_id.as_deref(), Some("auto"));
-        assert!(pending.validate().is_ok());
-
-        app.update(|ctx| {
-            pending.set_model_id("custom-router:local:byok".to_owned(), true, ctx);
-        });
-        assert_eq!(pending.validate(), Err(HandoffPrepareError::InvalidModel));
-
-        app.update(|ctx| {
-            pending.set_model_id("auto".to_owned(), false, ctx);
-        });
-        assert_eq!(pending.validate(), Err(HandoffPrepareError::InvalidModel));
-
-        app.update(|ctx| {
-            pending.set_model_id("auto".to_owned(), true, ctx);
-        });
-        assert!(pending.validate().is_ok());
-
-        app.update(|ctx| {
-            pending.set_model_id("custom-router:local:byok".to_owned(), true, ctx);
-        });
-        assert_eq!(pending.validate(), Err(HandoffPrepareError::InvalidModel));
-    });
 }
 
 #[test]
@@ -265,10 +230,8 @@ fn pending(
         }),
         selected_environment_id: None,
         environment_required: false,
-        environment_selection_is_explicit: false,
         valid_environment_ids: HashSet::new(),
         selected_model_id: "auto".to_owned(),
-        model_selection_is_explicit: false,
         model_is_cloud_runnable: true,
         config: AgentConfigSnapshot {
             model_id: Some("auto".to_owned()),
@@ -332,15 +295,14 @@ fn empty_prompt_substitution_matrix_matches_gui_behavior() {
 }
 
 #[test]
-fn explicit_selection_precedence_and_restoration_are_exactly_once() {
+fn restoration_is_taken_exactly_once() {
     let mock = Arc::new(MockAIClient::new());
     let mut pending = pending(mock, None, false, "continue");
     let first = SyncId::ServerId(ServerId::from(1));
     let second = SyncId::ServerId(ServerId::from(2));
     pending.valid_environment_ids.extend([first, second]);
 
-    pending.set_environment_id(Some(first), true);
-    pending.set_environment_id(Some(second), false);
+    pending.selected_environment_id = Some(first);
 
     let snapshot = pending.presentation_snapshot();
     assert_eq!(snapshot.environment_id, Some(first));
@@ -830,7 +792,6 @@ async fn fork_materialization_precedes_exactly_one_spawn() {
     };
     assert_eq!(created.task_id, task_id());
     assert_eq!(created.run_id, "run-id");
-    assert!(created.url.ends_with("/runs/run-id"));
     assert_eq!(spawn_count.load(Ordering::SeqCst), 1);
 
     let request = observed_request

@@ -127,8 +127,6 @@ mod warp_drive_page;
 mod warpify_page;
 
 pub(crate) use admin_actions::AdminActions;
-#[cfg(feature = "tui")]
-pub(crate) use billing_and_usage::billing_cycle_usage_common::{format_cost_cents, format_credits};
 pub use billing_and_usage_page::create_discount_badge;
 #[cfg(not(target_family = "wasm"))]
 pub use cli_agents_page::cli_agent_settings_widget_id;
@@ -892,14 +890,8 @@ impl<T: Action + Clone> ToggleSettingActionPair<T> {
 
         ToggleSettingActionPair {
             descriptions: SettingActionPairDescriptions {
-                enable: light_i18n::tr!(
-                    "Enable {}",
-                    light_i18n::tr_dynamic(description_suffix)
-                ),
-                disable: light_i18n::tr!(
-                    "Disable {}",
-                    light_i18n::tr_dynamic(description_suffix)
-                ),
+                enable: light_i18n::tr!("Enable {}", light_i18n::tr_dynamic(description_suffix)),
+                disable: light_i18n::tr!("Disable {}", light_i18n::tr_dynamic(description_suffix)),
             },
             contexts: SettingActionPairContexts {
                 enable_predicate: context_prefix.to_owned() & !id!(context_boolean_flag),

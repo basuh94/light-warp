@@ -209,9 +209,6 @@ impl TemplatableMCPServerManager {
                 FILE_BASED_MCP_CREDENTIALS_KEY,
                 &self.file_based_server_credentials,
             );
-            app.emit(TemplatableMCPServerManagerEvent::CredentialsChanged {
-                uuid: installation_uuid,
-            });
             return;
         }
 
@@ -222,9 +219,6 @@ impl TemplatableMCPServerManager {
                 TEMPLATABLE_MCP_CREDENTIALS_KEY,
                 &self.server_credentials,
             );
-            app.emit(TemplatableMCPServerManagerEvent::CredentialsChanged {
-                uuid: installation_uuid,
-            });
         } else {
             report_error!(
                 "Corresponding file or cloud-based server not found for installation UUID",
@@ -245,9 +239,6 @@ impl TemplatableMCPServerManager {
                 FILE_BASED_MCP_CREDENTIALS_KEY,
                 &self.file_based_server_credentials,
             );
-            app.emit(TemplatableMCPServerManagerEvent::CredentialsChanged {
-                uuid: installation_uuid,
-            });
             return;
         }
         if let Some(template_uuid) = self.get_template_uuid(installation_uuid) {
@@ -257,9 +248,6 @@ impl TemplatableMCPServerManager {
                 TEMPLATABLE_MCP_CREDENTIALS_KEY,
                 &self.server_credentials,
             );
-            app.emit(TemplatableMCPServerManagerEvent::CredentialsChanged {
-                uuid: installation_uuid,
-            });
         } else {
             report_error!(
                 "No template UUID found for installation UUID",
@@ -440,7 +428,6 @@ impl TemplatableMCPServerManager {
             spawner: Some(ctx.spawner()),
             pending_reconnections: Default::default(),
             pending_oauth_csrf: Default::default(),
-            authorization_urls: Default::default(),
             cli_spawned_server_uuids: Default::default(),
             builtin_server_uuids: Default::default(),
             builtin_server_token: Default::default(),
@@ -1068,7 +1055,6 @@ impl TemplatableMCPServerManager {
         let (oauth_result_tx, oauth_result_rx) = async_channel::unbounded();
 
         let is_headless = AppExecutionMode::as_ref(ctx).is_autonomous();
-        let use_tui_loopback = settings::settings_mode() == settings::SettingsMode::Tui;
 
         let mut persisted_credentials = self.server_credentials.get(&template_uuid).cloned();
         if persisted_credentials.is_none() && FeatureFlag::FileBasedMcp.is_enabled() {
@@ -1088,16 +1074,9 @@ impl TemplatableMCPServerManager {
             let persist_spawner = ctx.spawner();
             let requires_authentication_spawner = ctx.spawner();
             let authenticated_spawner = ctx.spawner();
-            let callback_mode = if use_tui_loopback {
-                OAuthCallbackMode::Loopback
-            } else {
-                OAuthCallbackMode::CustomScheme {
-                    redirect_uri: format!(
-                        "{}://mcp/oauth2callback",
-                        ChannelState::url_scheme()
-                    ),
-                    result_rx: oauth_result_rx,
-                }
+            let callback_mode = OAuthCallbackMode::CustomScheme {
+                redirect_uri: format!("{}://mcp/oauth2callback", ChannelState::url_scheme()),
+                result_rx: oauth_result_rx,
             };
 
             AuthContext {
@@ -1131,17 +1110,15 @@ impl TemplatableMCPServerManager {
                     Box::pin(async move {
                         spawner
                             .spawn(move |manager, ctx| {
-                                if !use_tui_loopback && !csrf_state.is_empty() {
+                                if !csrf_state.is_empty() {
                                     manager.pending_oauth_csrf.insert(csrf_state, uuid);
                                 }
-                                manager.authorization_urls.insert(uuid, auth_url.clone());
-                                ctx.emit(
-                                    TemplatableMCPServerManagerEvent::AuthenticationRequired {
-                                        uuid,
-                                    },
-                                );
                                 ctx.open_url(&auth_url);
-                                manager.change_server_state(uuid, MCPServerState::Authenticating, ctx);
+                                manager.change_server_state(
+                                    uuid,
+                                    MCPServerState::Authenticating,
+                                    ctx,
+                                );
                             })
                             .await
                             .map_err(|err| {
@@ -1202,7 +1179,6 @@ impl TemplatableMCPServerManager {
             move |me, server_info: Result<_, rmcp::RmcpError>, ctx| {
                 me.spawned_servers.remove(&installation_uuid);
                 me.pending_oauth_csrf.retain(|_, v| *v != installation_uuid);
-                me.authorization_urls.remove(&installation_uuid);
 
                 let error = match server_info {
                     Ok(info) => {
@@ -1312,7 +1288,6 @@ impl TemplatableMCPServerManager {
         }
         self.pending_oauth_csrf
             .retain(|_, v| *v != installation_uuid);
-        self.authorization_urls.remove(&installation_uuid);
         match self.active_servers.remove(&installation_uuid) {
             Some(server_info) => {
                 self.change_server_state(installation_uuid, MCPServerState::ShuttingDown, ctx);

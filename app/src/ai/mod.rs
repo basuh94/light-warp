@@ -42,8 +42,8 @@ pub(crate) mod get_relevant_files;
 pub mod harness_availability;
 pub(crate) mod harness_display;
 pub(crate) mod llms;
-pub(crate) mod local_models;
 pub(crate) mod local_harness_setup;
+pub(crate) mod local_models;
 pub(crate) mod metadata_project_rules;
 pub mod onboarding;
 pub(crate) mod orchestration;
@@ -58,8 +58,6 @@ pub(crate) mod restored_conversations;
 pub(crate) mod runner_display;
 pub(crate) mod skills;
 pub(crate) mod stored_screenshots;
-#[cfg(not(target_family = "wasm"))]
-pub(crate) mod tui_api_keys;
 pub(crate) mod voice;
 pub use agent_tips::*;
 pub use credit_availability::*;
